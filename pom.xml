@@ -8,7 +8,7 @@
 		<version>2.6.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.alura</groupId>
+	<groupId>br.com.controle-financeiro</groupId>
 	<artifactId>controle-financeiro</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>controle-financeiro</name>
