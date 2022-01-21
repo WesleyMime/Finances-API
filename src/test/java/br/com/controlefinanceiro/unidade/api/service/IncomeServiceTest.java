@@ -77,7 +77,7 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldPostIncome() {
-		ResponseEntity<Income> post = incomeService.post(listIncome.get(0));
+		ResponseEntity<Income> post = incomeService.post(incomeForm);
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
 	

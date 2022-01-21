@@ -26,7 +26,10 @@ class ExpenseControllerTestIntegration {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	private ExpenseForm expenseForm = new ExpenseForm("Expense description", new BigDecimal("1700"), LocalDate.now());
+	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01));
+	private ExpenseForm expenseForm2 = new ExpenseForm("Description expense", new BigDecimal("3000"), LocalDate.of(2022, 02, 01));
+	private ExpenseForm expenseForm3 = new ExpenseForm("Expense description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25));
+	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25));
 	
 	@BeforeEach
 	void beforeEach() throws Exception {
@@ -35,7 +38,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm.toString()));
+				.content(expenseForm1.toString()));
 	}
 	
 	//GET
@@ -83,9 +86,19 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm.toString()))
+				.content(expenseForm2.toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isCreated());
+	}
+	
+	@Test
+	void shouldNotPostIncomeTwice() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/expense")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(expenseForm3.toString()))
+		.andExpect(MockMvcResultMatchers
+				.status().isBadRequest());
 	}
 	
 	@Test
@@ -109,7 +122,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm.toString()))
+				.content(expenseForm4.toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isOk());
 	}
@@ -119,7 +132,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/income/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm.toString()))
+				.content(expenseForm1.toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
 	}
@@ -129,7 +142,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/a")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm.toString()))
+				.content(expenseForm1.toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}

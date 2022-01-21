@@ -47,8 +47,7 @@ public class IncomeController {
 
 	@PostMapping
 	public ResponseEntity<Income> postIncome(@Valid @RequestBody IncomeForm incomeForm) {
-		Income income = incomeForm.converter();
-		return incomeService.post(income);
+		return incomeService.post(incomeForm);
 	}
 	
 	@PutMapping("{id}")

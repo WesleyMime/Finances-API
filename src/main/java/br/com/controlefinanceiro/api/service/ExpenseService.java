@@ -49,19 +49,34 @@ public class ExpenseService {
 		return ResponseEntity.ok(expense);
 	}
 
-	public ResponseEntity<Expense> post(Expense expense) {
+	public ResponseEntity<Expense> post(ExpenseForm form) {
+		Expense expense = form.converter();
+		
+		Optional<Expense> sameExpense = checkIfAlreadyExists(expense);
+		
+		if(sameExpense.isPresent()) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		Expense save = expenseRepository.save(expense);
 		return ResponseEntity.status(HttpStatus.CREATED).body(save);
 	}
 	
 	public ResponseEntity<Expense> put(String id, ExpenseForm form) {
 		
+		// Try to find by id
 		ResponseEntity<Expense> one = getOne(id);
 		if(one.getBody() == null) {
 			// Return Bad Request or Not Found
 			return one;
-		}
+		}		
 		Expense updated = form.update(one.getBody());
+		
+		Optional<Expense> sameIncome = checkIfAlreadyExists(updated);
+		if(sameIncome.isPresent()) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		expenseRepository.save(updated);
 		return ResponseEntity.ok(updated);
 	}
@@ -74,5 +89,14 @@ public class ExpenseService {
 		}
 		expenseRepository.deleteById(Long.parseLong(id));
 		return ResponseEntity.ok().build();
+	}
+	
+	private Optional<Expense> checkIfAlreadyExists(Expense expense) {
+		String description = expense.getDescription();
+		Integer monthNumber = expense.getDate().getMonthValue();
+		
+		Optional<Expense> sameExpense = expenseRepository.findByDescriptionAndMonth(description, monthNumber);
+		
+		return sameExpense;
 	}
 }

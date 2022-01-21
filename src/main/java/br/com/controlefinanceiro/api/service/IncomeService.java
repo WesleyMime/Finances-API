@@ -49,19 +49,34 @@ public class IncomeService {
 		return ResponseEntity.ok(income);
 	}
 
-	public ResponseEntity<Income> post(Income income) {
+	public ResponseEntity<Income> post(IncomeForm form) {
+		Income income = form.converter();
+		
+		Optional<Income> sameIncome = checkIfAlreadyExists(income);
+		
+		if(sameIncome.isPresent()) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		Income save = incomeRepository.save(income);
 		return ResponseEntity.status(HttpStatus.CREATED).body(save);
 	}
 	
 	public ResponseEntity<Income> put(String id, IncomeForm form) {
 		
+		// Try to find by id
 		ResponseEntity<Income> one = getOne(id);
 		if(one.getBody() == null) {
 			// Return Bad Request or Not Found
 			return one;
-		}
+		}		
 		Income updated = form.update(one.getBody());
+		
+		Optional<Income> sameIncome = checkIfAlreadyExists(updated);		
+		if(sameIncome.isPresent()) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		incomeRepository.save(updated);
 		return ResponseEntity.ok(updated);
 	}
@@ -74,5 +89,14 @@ public class IncomeService {
 		}
 		incomeRepository.deleteById(Long.parseLong(id));
 		return ResponseEntity.ok().build();
+	}
+	
+	private Optional<Income> checkIfAlreadyExists(Income income) {		
+		String description = income.getDescription();
+		Integer monthNumber = income.getDate().getMonthValue();
+		
+		Optional<Income> sameIncome = incomeRepository.findByDescriptionAndMonth(description, monthNumber);
+
+		return sameIncome;
 	}
 }

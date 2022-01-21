@@ -47,8 +47,7 @@ public class ExpenseController {
 
 	@PostMapping
 	public ResponseEntity<Expense> postExpense(@Valid @RequestBody ExpenseForm expenseForm) {
-		Expense expense = expenseForm.converter();
-		return expenseService.post(expense);
+		return expenseService.post(expenseForm);
 	}
 	
 	@PutMapping("{id}")
