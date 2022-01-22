@@ -17,9 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import br.com.finances.api.service.ExpenseService;
+import br.com.finances.dto.ExpenseDTO;
 import br.com.finances.form.ExpenseForm;
 import br.com.finances.model.Expense;
-import br.com.finances.model.Income;
 import br.com.finances.repository.ExpenseRepository;
 
 class ExpenseServiceTest {
@@ -32,6 +32,7 @@ class ExpenseServiceTest {
 	private List<Expense> listExpense = generateExpense();
 	
 	private ExpenseForm expenseForm = new ExpenseForm("expenseForm description", new BigDecimal("500"), LocalDate.now());
+	private ExpenseDTO expenseDto = new ExpenseDTO(listExpense.get(2));
 	
 	@BeforeEach
 	void beforeEach() {
@@ -45,32 +46,37 @@ class ExpenseServiceTest {
 		Optional<Expense> optional = Optional.of(listExpense.get(0));
 		Mockito.when(expenseRepository.findById(1l))
 		.thenReturn(optional);
+		
+		Mockito.when(expenseRepository.getById(1l))
+		.thenReturn(listExpense.get(0));
+		
+		Mockito.when(expenseRepository.save(Mockito.any()))
+		.thenReturn(listExpense.get(0));
 	}
 	
 	//GET
 	
 	@Test
 	void shouldReturnAllIncome() {
-		ResponseEntity<List<Expense>> all = expenseService.getAll();
-		
-		assertEquals(listExpense.get(0), all.getBody().get(0));;
+		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll();
+		assertEquals(expenseDto.getDescription(), all.getBody().get(2).getDescription());;
 	}
 	
 	@Test
 	void shouldReturnIncomeById() {
-		ResponseEntity<Expense> income = expenseService.getOne("1");
+		ResponseEntity<ExpenseDTO> income = expenseService.getOne("1");
 		assertEquals(HttpStatus.OK, income.getStatusCode());;
 	}
 	
 	@Test
 	void shouldNotReturnIncomeById() {
-		ResponseEntity<Expense> income = expenseService.getOne("a");
+		ResponseEntity<ExpenseDTO> income = expenseService.getOne("a");
 		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());;
 	}
 	
 	@Test
 	void shouldNotFindIncomeById() {
-		ResponseEntity<Expense> income = expenseService.getOne("186767587");
+		ResponseEntity<ExpenseDTO> income = expenseService.getOne("186767587");
 		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());;
 	}
 	
@@ -78,26 +84,26 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldPostIncome() {
-		ResponseEntity<Expense> post = expenseService.post(expenseForm);
+		ResponseEntity<ExpenseDTO> post = expenseService.post(expenseForm);
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
 	
 	//UPDATE
 	@Test
 	void shouldUpdateIncome() {
-		ResponseEntity<Expense> newIncome = expenseService.put("1", expenseForm);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", expenseForm);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindIncomeToUpdate() {
-		ResponseEntity<Expense> newIncome = expenseService.put("100000000", expenseForm);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("100000000", expenseForm);
 		assertEquals(HttpStatus.NOT_FOUND, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotUpdateIncome() {
-		ResponseEntity<Expense> newIncome = expenseService.put("a", expenseForm);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("a", expenseForm);
 		assertEquals(HttpStatus.BAD_REQUEST, newIncome.getStatusCode());
 	}
 	

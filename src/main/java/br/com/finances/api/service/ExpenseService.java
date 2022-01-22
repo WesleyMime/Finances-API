@@ -1,5 +1,6 @@
 package br.com.finances.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.com.finances.dto.ExpenseDTO;
 import br.com.finances.form.ExpenseForm;
 import br.com.finances.model.Expense;
 import br.com.finances.repository.ExpenseRepository;
@@ -23,72 +25,84 @@ public class ExpenseService {
 		this.expenseRepository = expenseRepository;
 	}
 
-	public ResponseEntity<List<Expense>> getAll() {
-		List<Expense> listIncome = expenseRepository.findAll();
-		return ResponseEntity.ok(listIncome);
+	public ResponseEntity<List<ExpenseDTO>> getAll() {
+		List<ExpenseDTO> listExpenseDto = new ArrayList<>();
+		
+		List<Expense> listExpense = expenseRepository.findAll();
+		listExpense.forEach(i -> {
+			listExpenseDto.add(new ExpenseDTO(i));
+		});
+		return ResponseEntity.ok(listExpenseDto);
 	}
 
-	public ResponseEntity<Expense> getOne(String id) {
-		Optional<Expense> incomeOptional = null;
-		
-		try {
-			incomeOptional = expenseRepository.findById(Long.parseLong(id));
-		} catch(NumberFormatException e) {
-			// Not a number
-			return ResponseEntity.badRequest().build();
-		}
-		
-		Expense expense = null;
-		
-		try {
-			expense = incomeOptional.get();
-		} catch (NoSuchElementException e) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		return ResponseEntity.ok(expense);
+	public ResponseEntity<ExpenseDTO> getOne(String id) {
+		ResponseEntity<ExpenseDTO> expenseDto = tryToGetById(id);
+		return expenseDto;
 	}
 
-	public ResponseEntity<Expense> post(ExpenseForm form) {
+	public ResponseEntity<ExpenseDTO> post(ExpenseForm form) {
 		Expense expense = form.converter();
 		
 		Optional<Expense> sameExpense = checkIfAlreadyExists(expense);
 		
 		if(sameExpense.isPresent()) {
 			return ResponseEntity.badRequest().build();
-		}
-		
+		}		
 		Expense save = expenseRepository.save(expense);
-		return ResponseEntity.status(HttpStatus.CREATED).body(save);
+		
+		ExpenseDTO expenseDto = new ExpenseDTO(save);
+		return ResponseEntity.status(HttpStatus.CREATED).body(expenseDto);
 	}
 	
-	public ResponseEntity<Expense> put(String id, ExpenseForm form) {
+	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm form) {
 		
 		// Try to find by id
-		ResponseEntity<Expense> one = getOne(id);
-		if(one.getBody() == null) {
-			// Return Bad Request or Not Found
-			return one;
-		}		
-		Expense updated = form.update(one.getBody());
+		ResponseEntity<ExpenseDTO> getById = tryToGetById(id);
+		if(getById.hasBody() == false) {
+			return getById;
+		}
+		
+		Expense expense = expenseRepository.getById(Long.parseLong(id));		
+		Expense updated = form.update(expense);
 		
 		Optional<Expense> sameIncome = checkIfAlreadyExists(updated);
 		if(sameIncome.isPresent()) {
 			return ResponseEntity.badRequest().build();
 		}
 		
-		expenseRepository.save(updated);
-		return ResponseEntity.ok(updated);
+		Expense save = expenseRepository.save(updated);		
+		ExpenseDTO expenseDto = new ExpenseDTO(save);		
+		return ResponseEntity.ok(expenseDto);
 	}
 
 	public ResponseEntity<?> delete(String id) {
-		ResponseEntity<Expense> one = getOne(id);
-		if(one.getBody() == null) {
-			// Return Bad Request or Not Found
-			return one;
+		ResponseEntity<ExpenseDTO> getById = tryToGetById(id);
+		if(getById.hasBody() == false) {
+			return getById;
 		}
 		expenseRepository.deleteById(Long.parseLong(id));
 		return ResponseEntity.ok().build();
+	}
+	
+	private ResponseEntity<ExpenseDTO> tryToGetById(String id) {
+		Optional<Expense> expenseOptional = null;
+		
+		try {
+			expenseOptional = expenseRepository.findById(Long.parseLong(id));
+		} catch(NumberFormatException e) {
+			// Not a number
+			return ResponseEntity.badRequest().build();
+		}		
+		Expense expense = null;
+		
+		try {
+			expense = expenseOptional.get();
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.notFound().build();
+		}
+		ExpenseDTO expenseDTO = new ExpenseDTO(expense);
+		
+		return ResponseEntity.ok(expenseDTO);
 	}
 	
 	private Optional<Expense> checkIfAlreadyExists(Expense expense) {

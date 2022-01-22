@@ -1,5 +1,6 @@
 package br.com.finances.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.com.finances.dto.IncomeDTO;
 import br.com.finances.form.IncomeForm;
 import br.com.finances.model.Income;
 import br.com.finances.repository.IncomeRepository;
@@ -23,33 +25,22 @@ public class IncomeService {
 		this.incomeRepository = incomeRepository;
 	}
 
-	public ResponseEntity<List<Income>> getAll() {
+	public ResponseEntity<List<IncomeDTO>> getAll() {
+		List<IncomeDTO> listIncomeDto = new ArrayList<>(); 
+		
 		List<Income> listIncome = incomeRepository.findAll();
-		return ResponseEntity.ok(listIncome);
+		listIncome.forEach(i -> {
+			listIncomeDto.add(new IncomeDTO(i));
+		});		
+		return ResponseEntity.ok(listIncomeDto);
 	}
 
-	public ResponseEntity<Income> getOne(String id) {
-		Optional<Income> incomeOptional = null;
-		
-		try {
-			incomeOptional = incomeRepository.findById(Long.parseLong(id));
-		} catch(NumberFormatException e) {
-			// Not a number
-			return ResponseEntity.badRequest().build();
-		}
-		
-		Income income = null;
-		
-		try {
-			income = incomeOptional.get();
-		} catch (NoSuchElementException e) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		return ResponseEntity.ok(income);
+	public ResponseEntity<IncomeDTO> getOne(String id) {
+		ResponseEntity<IncomeDTO> incomeDto = tryToGetById(id);		
+		return incomeDto;
 	}
 
-	public ResponseEntity<Income> post(IncomeForm form) {
+	public ResponseEntity<IncomeDTO> post(IncomeForm form) {
 		Income income = form.converter();
 		
 		Optional<Income> sameIncome = checkIfAlreadyExists(income);
@@ -59,36 +50,60 @@ public class IncomeService {
 		}
 		
 		Income save = incomeRepository.save(income);
-		return ResponseEntity.status(HttpStatus.CREATED).body(save);
+		IncomeDTO incomeDto = new IncomeDTO(save);
+		return ResponseEntity.status(HttpStatus.CREATED).body(incomeDto);
 	}
 	
-	public ResponseEntity<Income> put(String id, IncomeForm form) {
+	public ResponseEntity<IncomeDTO> put(String id, IncomeForm form) {
 		
 		// Try to find by id
-		ResponseEntity<Income> one = getOne(id);
-		if(one.getBody() == null) {
+		ResponseEntity<IncomeDTO> getById = tryToGetById(id);
+		if(getById.hasBody() == false) {
 			// Return Bad Request or Not Found
-			return one;
+			return getById;
 		}		
-		Income updated = form.update(one.getBody());
+		Income income = incomeRepository.getById(Long.parseLong(id));
+		Income updated = form.update(income);
 		
 		Optional<Income> sameIncome = checkIfAlreadyExists(updated);		
 		if(sameIncome.isPresent()) {
 			return ResponseEntity.badRequest().build();
 		}
 		
-		incomeRepository.save(updated);
-		return ResponseEntity.ok(updated);
+		Income save = incomeRepository.save(updated);
+		IncomeDTO incomeDto = new IncomeDTO(save);
+		return ResponseEntity.ok(incomeDto);
 	}
 
 	public ResponseEntity<?> delete(String id) {
-		ResponseEntity<Income> one = getOne(id);
-		if(one.getBody() == null) {
+		ResponseEntity<IncomeDTO> getById = tryToGetById(id);
+		if(getById.hasBody() == false) {
 			// Return Bad Request or Not Found
-			return one;
+			return getById;
 		}
 		incomeRepository.deleteById(Long.parseLong(id));
 		return ResponseEntity.ok().build();
+	}
+	
+	private ResponseEntity<IncomeDTO> tryToGetById(String id) {
+		Optional<Income> incomeOptional = null;
+		
+		try {
+			incomeOptional = incomeRepository.findById(Long.parseLong(id));
+		} catch(NumberFormatException e) {
+			// Not a number
+			return ResponseEntity.badRequest().build();
+		}		
+		Income income = null;
+		
+		try {
+			income = incomeOptional.get();
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.notFound().build();
+		}
+		IncomeDTO incomeDTO = new IncomeDTO(income);
+		
+		return ResponseEntity.ok(incomeDTO);
 	}
 	
 	private Optional<Income> checkIfAlreadyExists(Income income) {		

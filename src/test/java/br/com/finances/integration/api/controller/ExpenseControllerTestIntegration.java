@@ -74,7 +74,7 @@ class ExpenseControllerTestIntegration {
 	@Test
 	void shouldNotFindIncomeById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/45745774"))
+				.get("/expense/45745774"))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
 	}
@@ -130,7 +130,7 @@ class ExpenseControllerTestIntegration {
 	@Test
 	void shouldNotFindIncomeToUpdate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.put("/income/1000000")
+				.put("/expense/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(expenseForm1.toString()))
 		.andExpect(MockMvcResultMatchers

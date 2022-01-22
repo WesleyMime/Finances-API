@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.finances.api.service.ExpenseService;
+import br.com.finances.dto.ExpenseDTO;
 import br.com.finances.form.ExpenseForm;
-import br.com.finances.model.Expense;
 import br.com.finances.repository.ExpenseRepository;
 
 @RestController
@@ -37,22 +37,22 @@ public class ExpenseController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<Expense>> getAllExpense(){
+	public ResponseEntity<List<ExpenseDTO>> getAllExpense(){
 		return expenseService.getAll();
 	}
 	
 	@GetMapping("{id}")
-	public ResponseEntity<Expense> getExpense(@PathVariable(name = "id") String id) {
+	public ResponseEntity<ExpenseDTO> getExpense(@PathVariable(name = "id") String id) {
 		return expenseService.getOne(id);
 	}
 
 	@PostMapping
-	public ResponseEntity<Expense> postExpense(@Valid @RequestBody ExpenseForm expenseForm) {
+	public ResponseEntity<ExpenseDTO> postExpense(@Valid @RequestBody ExpenseForm expenseForm) {
 		return expenseService.post(expenseForm);
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity<Expense> putExpense(@PathVariable(name = "id") String id, @Valid @RequestBody ExpenseForm expenseForm) {
+	public ResponseEntity<ExpenseDTO> putExpense(@PathVariable(name = "id") String id, @Valid @RequestBody ExpenseForm expenseForm) {
 		return expenseService.put(id, expenseForm);
 	}
 	

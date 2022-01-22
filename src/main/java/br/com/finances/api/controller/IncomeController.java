@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.finances.api.service.IncomeService;
+import br.com.finances.dto.IncomeDTO;
 import br.com.finances.form.IncomeForm;
-import br.com.finances.model.Income;
 import br.com.finances.repository.IncomeRepository;
 
 @RestController
@@ -37,22 +37,22 @@ public class IncomeController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<Income>> getAllIncome(){
+	public ResponseEntity<List<IncomeDTO>> getAllIncome(){
 		return incomeService.getAll();
 	}
 	
 	@GetMapping("{id}")
-	public ResponseEntity<Income> getIncome(@PathVariable(name = "id") String id) {
+	public ResponseEntity<IncomeDTO> getIncome(@PathVariable(name = "id") String id) {
 		return incomeService.getOne(id);
 	}
 
 	@PostMapping
-	public ResponseEntity<Income> postIncome(@Valid @RequestBody IncomeForm incomeForm) {
+	public ResponseEntity<IncomeDTO> postIncome(@Valid @RequestBody IncomeForm incomeForm) {
 		return incomeService.post(incomeForm);
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity<Income> putIncome(@PathVariable(name = "id") String id, @Valid @RequestBody IncomeForm incomeForm) {
+	public ResponseEntity<IncomeDTO> putIncome(@PathVariable(name = "id") String id, @Valid @RequestBody IncomeForm incomeForm) {
 		return incomeService.put(id, incomeForm);
 	}
 	
