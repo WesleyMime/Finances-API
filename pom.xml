@@ -8,11 +8,11 @@
 		<version>2.6.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.controle-financeiro</groupId>
-	<artifactId>controle-financeiro</artifactId>
+	<groupId>br.com.finances</groupId>
+	<artifactId>finances-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>controle-financeiro</name>
-	<description>API para controle de receitas e despesas.</description>
+	<name>finances-api</name>
+	<description>API for management of income and expenses..</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
