@@ -25,10 +25,23 @@ public class ExpenseService {
 		this.expenseRepository = expenseRepository;
 	}
 
-	public ResponseEntity<List<ExpenseDTO>> getAll() {
+	public ResponseEntity<List<ExpenseDTO>> getAll(String description) {
 		List<ExpenseDTO> listExpenseDto = new ArrayList<>();
+		List<Expense> listExpense = new ArrayList<>();
 		
-		List<Expense> listExpense = expenseRepository.findAll();
+		if(description == null) {
+			listExpense = expenseRepository.findAll();
+		} else {
+			Optional<Expense> optionalExpense = expenseRepository.findByDescription(description);
+			
+			try {
+				Expense expense = optionalExpense.get();
+				listExpense.add(expense);
+			} catch(NoSuchElementException e) {
+				return ResponseEntity.notFound().build();
+			}
+		}
+		
 		listExpense.forEach(i -> {
 			listExpenseDto.add(new ExpenseDTO(i));
 		});
@@ -38,6 +51,31 @@ public class ExpenseService {
 	public ResponseEntity<ExpenseDTO> getOne(String id) {
 		ResponseEntity<ExpenseDTO> expenseDto = tryToGetById(id);
 		return expenseDto;
+	}
+	
+	public ResponseEntity<List<ExpenseDTO>> getByDate(String yearString, String monthString) {
+		Integer year;
+		Integer month;
+		
+		try {
+			year = Integer.parseInt(yearString);
+			month = Integer.parseInt(monthString);
+		} catch(NumberFormatException e) {
+			return ResponseEntity.badRequest().build();
+		}		
+		
+		List<Expense> listExpense = expenseRepository.findByYearAndMonth(year, month);
+		if(listExpense.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		List<ExpenseDTO> listExpenseDto = new ArrayList<>();
+		
+		listExpense.forEach(e -> {
+			listExpenseDto.add(new ExpenseDTO(e));
+		});
+		
+		return ResponseEntity.ok(listExpenseDto);
 	}
 
 	public ResponseEntity<ExpenseDTO> post(ExpenseForm form) {
