@@ -20,13 +20,16 @@ public class Expense {
 	
 	private LocalDate date;
 
+	private Category category;
+
 	public Expense() {
 	}
 
-	public Expense(String description, BigDecimal value, LocalDate date) {
+	public Expense(String description, BigDecimal value, LocalDate date, Category category) {
 		this.description = description;
 		this.value = value;
 		this.date = date;
+		this.category = category;
 	}
 
 	public Long getId() {
@@ -45,6 +48,10 @@ public class Expense {
 		return date;
 	}
 	
+	public Category getCategory() {
+		return category;
+	}
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -61,5 +68,8 @@ public class Expense {
 		this.date = date;
 	}
 	
+	public void setCategory(Category category) {
+		this.category = category;
+	}
 	
 }

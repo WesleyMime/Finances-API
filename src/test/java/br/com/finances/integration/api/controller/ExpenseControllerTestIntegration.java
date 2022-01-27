@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import br.com.finances.form.ExpenseForm;
+import br.com.finances.model.Category;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,10 +27,10 @@ class ExpenseControllerTestIntegration {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01));
-	private ExpenseForm expenseForm2 = new ExpenseForm("Description expense", new BigDecimal("3000"), LocalDate.of(2022, 02, 01));
-	private ExpenseForm expenseForm3 = new ExpenseForm("Expense description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25));
-	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25));
+	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01), Category.Home);
+	private ExpenseForm expenseForm2 = new ExpenseForm("Description expense", new BigDecimal("3000"), LocalDate.of(2022, 02, 01), Category.Others);
+	private ExpenseForm expenseForm3 = new ExpenseForm("Expense description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25), Category.Unforeseen);
+	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25), Category.Leisure);
 	
 	@BeforeEach
 	void beforeEach() throws Exception {
@@ -44,7 +45,7 @@ class ExpenseControllerTestIntegration {
 	//GET
 	
 	@Test
-	void shouldReturnAllIncome() throws Exception {
+	void shouldReturnAllExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/expense"))
 		.andExpect(MockMvcResultMatchers
@@ -54,7 +55,25 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldReturnIncomeById() throws Exception {		
+	void shouldReturnExpenseByDescription() throws Exception {		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/expense?description=Expense description"))
+		.andExpect(MockMvcResultMatchers
+				.content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(MockMvcResultMatchers
+				.status().isOk());
+	}	
+	
+	@Test
+	void shouldNotFindExpenseByDescription() throws Exception {		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/expense?description=a"))
+		.andExpect(MockMvcResultMatchers
+				.status().isNotFound());
+	}
+	
+	@Test
+	void shouldReturnExpenseById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/expense/1"))
 		.andExpect(MockMvcResultMatchers
@@ -64,7 +83,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotReturnIncomeById() throws Exception {		
+	void shouldNotReturnExpenseById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/expense/a"))
 		.andExpect(MockMvcResultMatchers
@@ -72,9 +91,35 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotFindIncomeById() throws Exception {		
+	void shouldNotFindExpenseById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/expense/45745774"))
+		.andExpect(MockMvcResultMatchers
+				.status().isNotFound());
+	}
+	
+	@Test
+	void shouldReturnExpenseByDate() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/expense/2022/01"))
+		.andExpect(MockMvcResultMatchers
+				.content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(MockMvcResultMatchers
+				.status().isOk());
+	}
+	
+	@Test
+	void shouldNotReturnExpenseByDate() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/expense/aa/aa"))
+		.andExpect(MockMvcResultMatchers
+				.status().isBadRequest());
+	}
+	
+	@Test
+	void shouldNotFindExpenseByDate() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/expense/1000/01"))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
 	}
@@ -82,7 +127,7 @@ class ExpenseControllerTestIntegration {
 	//POST
 	
 	@Test
-	void shouldPostIncome() throws Exception {
+	void shouldPostExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +137,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotPostIncomeTwice() throws Exception {
+	void shouldNotPostExpenseTwice() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +147,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotPostIncome() throws Exception {
+	void shouldNotPostExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +163,7 @@ class ExpenseControllerTestIntegration {
 	//UPDATE
 	
 	@Test
-	void shouldUpdateIncome() throws Exception {
+	void shouldUpdateExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/1")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -128,7 +173,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotFindIncomeToUpdate() throws Exception {
+	void shouldNotFindExpenseToUpdate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +183,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotUpdateIncome() throws Exception {
+	void shouldNotUpdateExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/a")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +195,7 @@ class ExpenseControllerTestIntegration {
 	//DELETE
 	
 	@Test
-	void shouldDeleteIncome() throws Exception {
+	void shouldDeleteExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.delete("/expense/1"))
 		.andExpect(MockMvcResultMatchers
@@ -159,7 +204,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotFindIncomeToDelete() throws Exception {
+	void shouldNotFindExpenseToDelete() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.delete("/expense/100000000000"))
 		.andExpect(MockMvcResultMatchers
@@ -168,7 +213,7 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotDeleteIncome() throws Exception {
+	void shouldNotDeleteExpense() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.delete("/expense/a"))
 		.andExpect(MockMvcResultMatchers

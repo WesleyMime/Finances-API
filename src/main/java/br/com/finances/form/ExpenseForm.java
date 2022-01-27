@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import br.com.finances.model.Category;
 import br.com.finances.model.Expense;
 
 public class ExpenseForm {
@@ -17,10 +18,17 @@ public class ExpenseForm {
 	@NotNull
 	private LocalDate date;	
 
-	public ExpenseForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date) {
+	private Category category;
+
+	public ExpenseForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date, Category category) {
 		this.description = description;
 		this.value = value;
 		this.date = date;
+		try {
+			this.category = category;
+		} catch(NullPointerException e) {
+			this.category = Category.Others;
+		}
 	}
 	public String getDescricao() {
 		return description;
@@ -30,9 +38,13 @@ public class ExpenseForm {
 	}
 	public LocalDate getData() {
 		return date;
+	}	
+	public Category getCategory() {
+		return category;
 	}
+	
 	public Expense converter() {
-		return new Expense(this.description, this.value, this.date);
+		return new Expense(this.description, this.value, this.date, this.category);
 	}
 	
 	public Expense update(Expense expense) {
@@ -46,7 +58,8 @@ public class ExpenseForm {
 	public String toString() {
 		return "{\"description\":\"" + this.description + "\", "
 				+ "\"value\":\"" + this.value + "\", "
-				+ "\"date\":\"" + this.date + "\"}";
+				+ "\"date\":\"" + this.date + "\", "
+				+ "\"category\":\"" + this.category + "\" }";
 	}
 	
 	
