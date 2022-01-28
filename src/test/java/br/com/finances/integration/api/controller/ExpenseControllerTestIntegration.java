@@ -45,7 +45,7 @@ class ExpenseControllerTestIntegration {
 	//GET
 	
 	@Test
-	void shouldReturnAllExpense() throws Exception {
+	void shouldReturnAllExpenses() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/expense"))
 		.andExpect(MockMvcResultMatchers

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.finances.api.service.IncomeService;
@@ -37,27 +38,39 @@ public class IncomeController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<IncomeDTO>> getAllIncome(){
-		return incomeService.getAll();
+	public ResponseEntity<List<IncomeDTO>> getAllIncome(
+			@RequestParam(required = false, name = "description") String description){
+		return incomeService.getAll(description);
 	}
 	
+	
 	@GetMapping("{id}")
-	public ResponseEntity<IncomeDTO> getIncome(@PathVariable(name = "id") String id) {
+	public ResponseEntity<IncomeDTO> getIncome(
+			@PathVariable(name = "id") String id) {
 		return incomeService.getOne(id);
 	}
 
+	@GetMapping("{year}/{month}")
+	public ResponseEntity<List<IncomeDTO>> getByDate(
+			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month) {
+		return incomeService.getByDate(year, month);
+	}
+	
 	@PostMapping
-	public ResponseEntity<IncomeDTO> postIncome(@Valid @RequestBody IncomeForm incomeForm) {
+	public ResponseEntity<IncomeDTO> postIncome(
+			@Valid @RequestBody IncomeForm incomeForm) {
 		return incomeService.post(incomeForm);
 	}
 	
 	@PutMapping("{id}")
-	public ResponseEntity<IncomeDTO> putIncome(@PathVariable(name = "id") String id, @Valid @RequestBody IncomeForm incomeForm) {
+	public ResponseEntity<IncomeDTO> putIncome(
+			@PathVariable(name = "id") String id, @Valid @RequestBody IncomeForm incomeForm) {
 		return incomeService.put(id, incomeForm);
 	}
 	
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteIncome(@PathVariable(name = "id") String id) {
+	public ResponseEntity<?> deleteIncome(
+			@PathVariable(name = "id") String id) {
 		return incomeService.delete(id);
 	}
 	
