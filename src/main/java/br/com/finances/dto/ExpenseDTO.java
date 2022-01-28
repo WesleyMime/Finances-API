@@ -39,6 +39,9 @@ public class ExpenseDTO {
 	}
 	
 	public Category getCategory() {
+		if (category == null) {
+			category = Category.Others;
+		}
 		return category;
 	}
 	

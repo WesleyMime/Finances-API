@@ -13,13 +13,13 @@ import br.com.finances.model.Expense;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long>{
-
+	
 	@Query("SELECT e FROM Expense e WHERE e.description = ?1 AND EXTRACT(month FROM e.date) = ?2")
 	// Extract: Get Month from LocalDate
 	Optional<Expense> findByDescriptionAndMonth(String description, Integer month);
 
 	Optional<Expense> findByDescription(String description);
-
+	
 	@Query("SELECT e FROM Expense e WHERE EXTRACT(year from e.date) = ?1 AND EXTRACT(month FROM e.date) = ?2")
 	List<Expense> findByYearAndMonth(Integer year, Integer month);
 

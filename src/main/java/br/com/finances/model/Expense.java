@@ -30,7 +30,6 @@ public class Expense {
 		this.value = value;
 		this.date = date;
 		this.category = category;
-		
 	}
 
 	public Long getId() {
@@ -53,7 +52,7 @@ public class Expense {
 		if(category == null) {
 			this.category = Category.Others;
 		}
-		return category;		
+		return category;
 	}
 	
 	public void setId(Long id) {
@@ -74,7 +73,6 @@ public class Expense {
 	
 	public void setCategory(Category category) {
 		this.category = category;
-		
 	}
 	
 }

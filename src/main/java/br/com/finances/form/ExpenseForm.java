@@ -23,8 +23,7 @@ public class ExpenseForm {
 	public ExpenseForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date, Category category) {
 		this.description = description;
 		this.value = value;
-		this.date = date;
-		
+		this.date = date;		
 		if(category == null) {
 			this.category = Category.Others;
 		} else {
