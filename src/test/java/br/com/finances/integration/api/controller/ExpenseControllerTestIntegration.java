@@ -30,7 +30,7 @@ class ExpenseControllerTestIntegration {
 	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01), Category.Home);
 	private ExpenseForm expenseForm2 = new ExpenseForm("Description expense", new BigDecimal("3000"), LocalDate.of(2022, 02, 01), Category.Others);
 	private ExpenseForm expenseForm3 = new ExpenseForm("Expense description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25), Category.Unforeseen);
-	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25), Category.Leisure);
+	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25), null);
 	
 	@BeforeEach
 	void beforeEach() throws Exception {

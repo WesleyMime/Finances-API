@@ -49,6 +49,9 @@ public class Expense {
 	}
 	
 	public Category getCategory() {
+		if(category == null) {
+			this.category = Category.Others;
+		}
 		return category;
 	}
 	

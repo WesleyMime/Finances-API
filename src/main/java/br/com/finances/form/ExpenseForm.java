@@ -23,11 +23,11 @@ public class ExpenseForm {
 	public ExpenseForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date, Category category) {
 		this.description = description;
 		this.value = value;
-		this.date = date;
-		try {
-			this.category = category;
-		} catch(NullPointerException e) {
+		this.date = date;		
+		if(category == null) {
 			this.category = Category.Others;
+		} else {
+			this.category = category;
 		}
 	}
 	public String getDescricao() {
