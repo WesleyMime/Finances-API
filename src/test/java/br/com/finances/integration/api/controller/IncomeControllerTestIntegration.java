@@ -54,6 +54,24 @@ class IncomeControllerTestIntegration {
 	}
 	
 	@Test
+	void shouldReturnIncomeByDescription() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/income?description=Income description"))
+		.andExpect(MockMvcResultMatchers
+				.content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(MockMvcResultMatchers
+				.status().isOk());
+	}
+	
+	@Test
+	void shouldNotFindIncomeByDescription() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/income?description=a"))
+		.andExpect(MockMvcResultMatchers
+				.status().isNotFound());
+	}	
+	
+	@Test
 	void shouldReturnIncomeById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/income/1"))
@@ -64,19 +82,45 @@ class IncomeControllerTestIntegration {
 	}
 	
 	@Test
+	void shouldNotFindIncomeById() throws Exception {		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/income/87678767876"))
+		.andExpect(MockMvcResultMatchers
+				.status().isNotFound());
+	}
+	
+	@Test
 	void shouldNotReturnIncomeById() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/income/a"))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
+	}	
+	
+	@Test
+	void shouldFindIncomeByDate() throws Exception {		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/income/2022/01"))
+		.andExpect(MockMvcResultMatchers
+				.content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(MockMvcResultMatchers
+				.status().isOk());
 	}
 	
 	@Test
-	void shouldNotFindIncomeById() throws Exception {		
+	void shouldNotFindIncomeByDate() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/45745774"))
+				.get("/income/1000/01"))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
+	}
+		
+	@Test
+	void shouldNotReturnIncomeByDate() throws Exception {		
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/income/a/a"))
+		.andExpect(MockMvcResultMatchers
+				.status().isBadRequest());
 	}
 	
 	//POST

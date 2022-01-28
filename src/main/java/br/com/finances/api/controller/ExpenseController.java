@@ -38,7 +38,7 @@ public class ExpenseController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<ExpenseDTO>> getAllExpense(
+	public ResponseEntity<List<ExpenseDTO>> getAllExpenses(
 			@RequestParam(required = false, name = "description") String description) {
 		return expenseService.getAll(description);
 	}	
@@ -49,10 +49,10 @@ public class ExpenseController {
 		return expenseService.getOne(id);
 	}
 	
-	@GetMapping("{ano}/{mes}")
+	@GetMapping("{year}/{month}")
 	public ResponseEntity<List<ExpenseDTO>> getByDate(
-			@PathVariable(name = "ano") String ano, @PathVariable(name = "mes") String mes) {
-		return expenseService.getByDate(ano, mes);
+			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month) {
+		return expenseService.getByDate(year, month);
 	}
 
 	@PostMapping

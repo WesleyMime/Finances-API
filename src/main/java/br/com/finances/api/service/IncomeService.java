@@ -25,10 +25,21 @@ public class IncomeService {
 		this.incomeRepository = incomeRepository;
 	}
 
-	public ResponseEntity<List<IncomeDTO>> getAll() {
+	public ResponseEntity<List<IncomeDTO>> getAll(String description) {
 		List<IncomeDTO> listIncomeDto = new ArrayList<>(); 
-		
-		List<Income> listIncome = incomeRepository.findAll();
+		List<Income> listIncome = new ArrayList<>();
+
+		if(description == null) {
+			listIncome = incomeRepository.findAll();
+		} else {
+			Optional<Income> optionalIncome = incomeRepository.findByDescription(description);
+			try {
+				Income income = optionalIncome.get();				
+				listIncome.add(income);
+			} catch(NoSuchElementException e) {
+				return ResponseEntity.notFound().build();
+			}
+		}
 		listIncome.forEach(i -> {
 			listIncomeDto.add(new IncomeDTO(i));
 		});		
@@ -38,6 +49,32 @@ public class IncomeService {
 	public ResponseEntity<IncomeDTO> getOne(String id) {
 		ResponseEntity<IncomeDTO> incomeDto = tryToGetById(id);		
 		return incomeDto;
+	}
+	
+	public ResponseEntity<List<IncomeDTO>> getByDate(String yearString, String monthString) {
+		Integer year;
+		Integer month;
+		
+		try {
+			year = Integer.parseInt(yearString);
+			month = Integer.parseInt(monthString);
+		} catch(NumberFormatException e) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		List<IncomeDTO> listIncomeDto = new ArrayList<>(); 
+		
+		List<Income> listIncome = incomeRepository.findByYearAndMonth(year, month);
+		
+		if(listIncome.isEmpty()) {			
+			return ResponseEntity.notFound().build();
+		}
+		
+		listIncome.forEach(i -> {
+			listIncomeDto.add(new IncomeDTO(i));
+		});
+		
+		return ResponseEntity.ok(listIncomeDto);
 	}
 
 	public ResponseEntity<IncomeDTO> post(IncomeForm form) {
@@ -114,4 +151,5 @@ public class IncomeService {
 
 		return sameIncome;
 	}
+
 }

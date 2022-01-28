@@ -52,34 +52,78 @@ class IncomeServiceTest {
 		
 		Mockito.when(incomeRepository.getById(1l))
 		.thenReturn(listIncome.get(0));
+		
+		Mockito.when(incomeRepository.findByDescription("description income test"))
+		.thenReturn(optional);
+		
+		Mockito.when(incomeRepository.findByDescription("a"))
+		.thenReturn(Optional.ofNullable(null));
+		
+		Mockito.when(incomeRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt()))
+		.thenReturn(listIncome);
+		
+		Mockito.when(incomeRepository.findByYearAndMonth(1000, 01))
+		.thenReturn(new ArrayList<>());
 	}
 	
 	//GET
 	
 	@Test
 	void shouldReturnAllIncome() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll();
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);
 		
 		assertEquals(incomeDto.getDescription(), all.getBody().get(2).getDescription());
 	}
 	
 	@Test
+	void shouldReturnIncomeByDescription() {
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll("description income test");
+		
+		assertEquals(listIncome.get(0).getDescription(), all.getBody().get(0).getDescription());
+	}
+	
+	@Test
+	void shouldNotFindIncomeByDescription() {
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll("");		
+		assertEquals(HttpStatus.NOT_FOUND, all.getStatusCode());
+	}
+	
+	@Test
 	void shouldReturnIncomeById() {
 		ResponseEntity<IncomeDTO> income = incomeService.getOne("1");
-		assertEquals(HttpStatus.OK, income.getStatusCode());;
+		assertEquals(HttpStatus.OK, income.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotReturnIncomeById() {
 		ResponseEntity<IncomeDTO> income = incomeService.getOne("a");
-		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());;
+		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindIncomeById() {
 		ResponseEntity<IncomeDTO> income = incomeService.getOne("186767587");
-		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());;
+		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());
 	}
+	
+	@Test
+	void shouldReturnIncomeByDate() {
+		ResponseEntity<List<IncomeDTO>> income = incomeService.getByDate("2022", "01");
+		assertEquals(HttpStatus.OK, income.getStatusCode());
+	}
+	
+	@Test
+	void shouldNotReturnIncomeByDate() {
+		ResponseEntity<List<IncomeDTO>> income = incomeService.getByDate("a", "a");
+		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());
+	}
+	
+	@Test
+	void shouldNotFindIncomeByDate() {
+		ResponseEntity<List<IncomeDTO>> income = incomeService.getByDate("1000", "01");
+		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());
+	}
+	
 	
 	//POST
 	
