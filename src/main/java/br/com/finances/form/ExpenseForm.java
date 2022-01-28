@@ -24,10 +24,11 @@ public class ExpenseForm {
 		this.description = description;
 		this.value = value;
 		this.date = date;
-		try {
-			this.category = category;
-		} catch(NullPointerException e) {
+		
+		if(category == null) {
 			this.category = Category.Others;
+		} else {
+			this.category = category;
 		}
 	}
 	public String getDescricao() {
