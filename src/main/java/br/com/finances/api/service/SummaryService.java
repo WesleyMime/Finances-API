@@ -2,6 +2,7 @@ package br.com.finances.api.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,15 +38,10 @@ public class SummaryService {
 		
 		SummaryDTO summary = new SummaryDTO();
 		
-		BigDecimal totalIncome = incomeRepository.totalIncomeMonth(year, month);
-		BigDecimal totalExpense = expenseRepository.totalExpenseMonth(year, month);
-		
-		BigDecimal finalBalance = BigDecimal.ZERO;
-		try {
-			finalBalance = totalIncome.subtract(totalExpense);
-		} catch(NullPointerException e) {
-			return ResponseEntity.notFound().build();
-		}
+		BigDecimal totalIncome = incomeRepository.totalIncomeMonth(year, month).orElse(BigDecimal.ZERO);
+		BigDecimal totalExpense = expenseRepository.totalExpenseMonth(year, month).orElse(BigDecimal.ZERO);
+
+		BigDecimal finalBalance = totalIncome.subtract(totalExpense);
 		List<ExpenseCategoryDTO> totalExpenseByCategory = expenseRepository.totalExpenseByCategory(year, month);
 		
 		summary.setTotalIncome(totalIncome);

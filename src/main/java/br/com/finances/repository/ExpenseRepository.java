@@ -24,7 +24,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>{
 	List<Expense> findByYearAndMonth(Integer year, Integer month);
 
 	@Query("SELECT sum(value) FROM Expense WHERE year(date) = :year AND month(date) = :month")
-	BigDecimal totalExpenseMonth(Integer year, Integer month);
+	Optional<BigDecimal> totalExpenseMonth(Integer year, Integer month);
 
 	@Query("SELECT new br.com.finances.dto.ExpenseCategoryDTO(category, SUM(value)) FROM Expense WHERE year(date) = :year AND month(date) = :month GROUP BY category" )
 	List<ExpenseCategoryDTO> totalExpenseByCategory(Integer year, Integer month);

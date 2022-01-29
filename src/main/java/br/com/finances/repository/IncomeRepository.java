@@ -23,5 +23,5 @@ public interface IncomeRepository extends JpaRepository<Income, Long>{
 	List<Income> findByYearAndMonth(Integer year, Integer month);
 
 	@Query("SELECT sum(value) FROM Income WHERE year(date) = :year AND month(date) = :month")
-	BigDecimal totalIncomeMonth(Integer year, Integer month);
+	Optional<BigDecimal> totalIncomeMonth(Integer year, Integer month);
 }
