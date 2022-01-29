@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,11 +39,13 @@ public class SummaryServiceTest {
 		
 		summaryService = new SummaryService(incomeRepository, expenseRepository);
 		
+		Optional<BigDecimal> optionalTotal = Optional.of(new BigDecimal(7500));
+		
 		Mockito.when(incomeRepository.totalIncomeMonth(2022, 01))
-		.thenReturn(new BigDecimal(7500));
+		.thenReturn(optionalTotal);
 		
 		Mockito.when(expenseRepository.totalExpenseMonth(2022, 01))
-		.thenReturn(new BigDecimal(7500));
+		.thenReturn(optionalTotal);
 		
 		listExpenseCategoryDto.add(new ExpenseCategoryDTO(Category.Food, new BigDecimal(1500)));
 		Mockito.when(expenseRepository.totalExpenseByCategory(2022, 01))
@@ -78,12 +81,6 @@ public class SummaryServiceTest {
 		BigDecimal totalValue = expenseCategory.get(0).getTotalValue();
 		assertEquals(Category.Food, category);
 		assertEquals(new BigDecimal(1500), totalValue);
-	}
-	
-	@Test
-	void shouldNotFindDateToReturnSummary() {
-		ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("1000", "01");
-		assertEquals(HttpStatus.NOT_FOUND, summary.getStatusCode());
 	}
 	
 	@Test

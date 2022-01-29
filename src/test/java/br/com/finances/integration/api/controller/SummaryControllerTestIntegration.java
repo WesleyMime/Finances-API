@@ -56,16 +56,6 @@ public class SummaryControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldNotFindDateToReturnSummary() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/summary/1000/01")
-				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
-		
-	}
-	
-	@Test
 	void shouldNotReturnSummary() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/summary/aa/aa")
