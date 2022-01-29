@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,11 +82,7 @@ public class IncomeService {
 	public ResponseEntity<IncomeDTO> post(IncomeForm form) {
 		Income income = form.converter();
 		
-		Optional<Income> sameIncome = checkIfAlreadyExists(income);
-		
-		if(sameIncome.isPresent()) {
-			return ResponseEntity.badRequest().build();
-		}
+		checkIfAlreadyExists(income);
 		
 		Income save = incomeRepository.save(income);
 		IncomeDTO incomeDto = new IncomeDTO(save);
@@ -102,10 +100,7 @@ public class IncomeService {
 		Income income = incomeRepository.getById(Long.parseLong(id));
 		Income updated = form.update(income);
 		
-		Optional<Income> sameIncome = checkIfAlreadyExists(updated);		
-		if(sameIncome.isPresent()) {
-			return ResponseEntity.badRequest().build();
-		}
+		checkIfAlreadyExists(updated);
 		
 		Income save = incomeRepository.save(updated);
 		IncomeDTO incomeDto = new IncomeDTO(save);
@@ -143,13 +138,14 @@ public class IncomeService {
 		return ResponseEntity.ok(incomeDTO);
 	}
 	
-	private Optional<Income> checkIfAlreadyExists(Income income) {		
+	private void checkIfAlreadyExists(Income income) {		
 		String description = income.getDescription();
 		Integer monthNumber = income.getDate().getMonthValue();
 		
 		Optional<Income> sameIncome = incomeRepository.findByDescriptionAndMonth(description, monthNumber);
-
-		return sameIncome;
+		if (sameIncome.isPresent()) {
+			throw new EntityExistsException();
+		}
 	}
 
 }

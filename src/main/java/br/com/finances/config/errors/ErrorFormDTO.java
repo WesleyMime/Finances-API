@@ -1,11 +1,11 @@
 package br.com.finances.config.errors;
 
-public class ErrorDto {
+public class ErrorFormDTO {
 
 	private String field;
 	private String message;	
 	
-	public ErrorDto(String field, String message) {
+	public ErrorFormDTO(String field, String message) {
 		this.field = field;
 		this.message = message;
 	}

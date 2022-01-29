@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,11 +83,8 @@ public class ExpenseService {
 	public ResponseEntity<ExpenseDTO> post(ExpenseForm form) {
 		Expense expense = form.converter();
 		
-		Optional<Expense> sameExpense = checkIfAlreadyExists(expense);
+		checkIfAlreadyExists(expense);
 		
-		if(sameExpense.isPresent()) {
-			return ResponseEntity.badRequest().build();
-		}		
 		Expense save = expenseRepository.save(expense);
 		
 		ExpenseDTO expenseDto = new ExpenseDTO(save);
@@ -103,10 +102,7 @@ public class ExpenseService {
 		Expense expense = expenseRepository.getById(Long.parseLong(id));		
 		Expense updated = form.update(expense);
 		
-		Optional<Expense> sameIncome = checkIfAlreadyExists(updated);
-		if(sameIncome.isPresent()) {
-			return ResponseEntity.badRequest().build();
-		}
+		checkIfAlreadyExists(updated);
 		
 		Expense save = expenseRepository.save(updated);		
 		ExpenseDTO expenseDto = new ExpenseDTO(save);		
@@ -143,12 +139,13 @@ public class ExpenseService {
 		return ResponseEntity.ok(expenseDTO);
 	}
 	
-	private Optional<Expense> checkIfAlreadyExists(Expense expense) {
+	private void checkIfAlreadyExists(Expense expense) {
 		String description = expense.getDescription();
 		Integer monthNumber = expense.getDate().getMonthValue();
 		
 		Optional<Expense> sameExpense = expenseRepository.findByDescriptionAndMonth(description, monthNumber);
-		
-		return sameExpense;
+		if(sameExpense.isPresent()) {
+			throw new EntityExistsException();
+		}
 	}
 }
