@@ -29,7 +29,7 @@ public class TokenService {
 				.setSubject(client.getId().toString())
 				.setIssuedAt(today)
 				.setExpiration(dateExpiration)
-				.signWith(SignatureAlgorithm.HS384, this.secret)
+				.signWith(SignatureAlgorithm.HS512, this.secret)
 				.compact();
 	}
 

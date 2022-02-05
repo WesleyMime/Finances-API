@@ -33,4 +33,10 @@ public class ErrorHandler {
 	public ErrorDTO handle(EntityExistsException exception) {
 		return new ErrorDTO("There is already an entity with this description in this month registered.");
 	}
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(EmailAlreadyRegisteredException.class)
+	public ErrorDTO handle(EmailAlreadyRegisteredException exception) {
+		return new ErrorDTO("There is already a client with this email registered.");
+	}
 }
