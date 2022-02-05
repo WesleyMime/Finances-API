@@ -43,8 +43,12 @@ public class Client implements UserDetails{
 		return authorities;
 	}
 	
-	public String getNome() {
+	public String getName() {
 		return name;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
 	@Override
