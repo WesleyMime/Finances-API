@@ -1,5 +1,6 @@
 package br.com.finances.api.service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,11 +11,14 @@ import javax.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.finances.dto.IncomeDTO;
 import br.com.finances.form.IncomeForm;
+import br.com.finances.model.Client;
 import br.com.finances.model.Income;
+import br.com.finances.repository.ClientRepository;
 import br.com.finances.repository.IncomeRepository;
 
 @Service
@@ -22,19 +26,23 @@ public class IncomeService {
 	
 	@Autowired
 	private IncomeRepository incomeRepository;
+	@Autowired
+	private ClientRepository clientRepository;
 	
-	public IncomeService(IncomeRepository incomeRepository) {
+	public IncomeService(IncomeRepository incomeRepository, ClientRepository clientRepository) {
 		this.incomeRepository = incomeRepository;
+		this.clientRepository = clientRepository;
 	}
 
 	public ResponseEntity<List<IncomeDTO>> getAll(String description) {
 		List<IncomeDTO> listIncomeDto = new ArrayList<>(); 
 		List<Income> listIncome = new ArrayList<>();
+		Client client = getClient();
 
 		if(description == null) {
-			listIncome = incomeRepository.findAll();
+			listIncome = incomeRepository.findByClient(client);
 		} else {
-			Optional<Income> optionalIncome = incomeRepository.findByDescription(description);
+			Optional<Income> optionalIncome = incomeRepository.findByDescriptionAndClient(description, client);
 			try {
 				Income income = optionalIncome.get();				
 				listIncome.add(income);
@@ -56,6 +64,7 @@ public class IncomeService {
 	public ResponseEntity<List<IncomeDTO>> getByDate(String yearString, String monthString) {
 		Integer year;
 		Integer month;
+		Client client = getClient();
 		
 		try {
 			year = Integer.parseInt(yearString);
@@ -66,7 +75,7 @@ public class IncomeService {
 		
 		List<IncomeDTO> listIncomeDto = new ArrayList<>(); 
 		
-		List<Income> listIncome = incomeRepository.findByYearAndMonth(year, month);
+		List<Income> listIncome = incomeRepository.findByYearAndMonth(year, month, client);
 		
 		if(listIncome.isEmpty()) {			
 			return ResponseEntity.notFound().build();
@@ -83,7 +92,8 @@ public class IncomeService {
 		Income income = form.converter();
 		
 		checkIfAlreadyExists(income);
-		
+		Client client = getClient();
+		income.setClient(client);
 		Income save = incomeRepository.save(income);
 		IncomeDTO incomeDto = new IncomeDTO(save);
 		return ResponseEntity.status(HttpStatus.CREATED).body(incomeDto);
@@ -99,8 +109,6 @@ public class IncomeService {
 		}		
 		Income income = incomeRepository.getById(Long.parseLong(id));
 		Income updated = form.update(income);
-		
-		checkIfAlreadyExists(updated);
 		
 		Income save = incomeRepository.save(updated);
 		IncomeDTO incomeDto = new IncomeDTO(save);
@@ -119,9 +127,10 @@ public class IncomeService {
 	
 	private ResponseEntity<IncomeDTO> tryToGetById(String id) {
 		Optional<Income> incomeOptional = null;
+		Client client = getClient();
 		
 		try {
-			incomeOptional = incomeRepository.findById(Long.parseLong(id));
+			incomeOptional = incomeRepository.findByIdAndClient(Long.parseLong(id), client);
 		} catch(NumberFormatException e) {
 			// Not a number
 			return ResponseEntity.badRequest().build();
@@ -141,11 +150,17 @@ public class IncomeService {
 	private void checkIfAlreadyExists(Income income) {		
 		String description = income.getDescription();
 		Integer monthNumber = income.getDate().getMonthValue();
+		Client client = getClient();
 		
-		Optional<Income> sameIncome = incomeRepository.findByDescriptionAndMonth(description, monthNumber);
+		Optional<Income> sameIncome = incomeRepository.findByDescriptionAndMonth(description, monthNumber, client);
 		if (sameIncome.isPresent()) {
 			throw new EntityExistsException();
 		}
+	}
+	
+	private Client getClient() {
+		Client client = (Client) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return client;
 	}
 
 }

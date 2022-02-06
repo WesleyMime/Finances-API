@@ -13,6 +13,7 @@ public class ExpenseDTO {
 	private BigDecimal value;
 	private LocalDate date;
 	private Category category;
+	private ClientDTO client;
 	
 	public ExpenseDTO(Expense expense) {
 		this.id = expense.getId();
@@ -20,6 +21,11 @@ public class ExpenseDTO {
 		this.value = expense.getValue();
 		this.date = expense.getDate();
 		this.category = expense.getCategory();
+		try {
+			this.client = new ClientDTO(expense.getClient());
+		} catch(NullPointerException e) {
+			this.client = null;
+		}
 	}
 
 	public Long getId() {
@@ -45,5 +51,7 @@ public class ExpenseDTO {
 		return category;
 	}
 	
-	
+	public ClientDTO getClient() {
+		return client;
+	}
 }
