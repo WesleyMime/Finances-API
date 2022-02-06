@@ -63,7 +63,4 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		super.configure(web);
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(new BCryptPasswordEncoder().encode("password"));
-	}
 }
