@@ -89,5 +89,5 @@ public class Client implements UserDetails{
 				+ "\"password\":\""+ this.password + "\""
 				+ "}";
 	}
-	
+  
 }

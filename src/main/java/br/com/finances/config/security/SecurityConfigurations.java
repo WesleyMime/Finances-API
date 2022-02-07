@@ -64,4 +64,5 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		super.configure(web);
 	}
+	
 }
