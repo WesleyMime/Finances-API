@@ -57,7 +57,7 @@ public class AuthControllerTestIntegration {
 	@Test
 	void shouldAuthenticate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/login
+				.post("/auth/login")
 				.content(listLoginForm.get(1).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
