@@ -40,4 +40,12 @@ public class SignForm {
 		return new Client(this.name, this.email, new BCryptPasswordEncoder().encode(this.password));
 	}
 	
+	@Override
+	public String toString() {
+		return "{"
+				+ "\"name\":\"" + this.name + "\","
+				+ "\"email\":\"" + this.email + "\","
+				+ "\"password\":\"" + this.password + "\""
+				+ "}";
+	}
 }

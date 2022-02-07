@@ -81,6 +81,13 @@ public class Client implements UserDetails{
 		return true;
 	}
 
-	
-	
+	@Override
+	public String toString() {
+		return "{"
+				+ "\"name\":\""+ this.name + "\","
+				+ "\"email\":\""+ this.email + "\","
+				+ "\"password\":\""+ this.password + "\""
+				+ "}";
+	}
+  
 }

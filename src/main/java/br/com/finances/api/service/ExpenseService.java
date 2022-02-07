@@ -10,10 +10,12 @@ import javax.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.finances.dto.ExpenseDTO;
 import br.com.finances.form.ExpenseForm;
+import br.com.finances.model.Client;
 import br.com.finances.model.Expense;
 import br.com.finances.repository.ExpenseRepository;
 
@@ -30,11 +32,12 @@ public class ExpenseService {
 	public ResponseEntity<List<ExpenseDTO>> getAll(String description) {
 		List<ExpenseDTO> listExpenseDto = new ArrayList<>();
 		List<Expense> listExpense = new ArrayList<>();
+		Client client = getClient();
 		
 		if(description == null) {
-			listExpense = expenseRepository.findAll();
+			listExpense = expenseRepository.findByClient(client);
 		} else {
-			Optional<Expense> optionalExpense = expenseRepository.findByDescription(description);
+			Optional<Expense> optionalExpense = expenseRepository.findByDescriptionAndClient(description, client);
 			
 			try {
 				Expense expense = optionalExpense.get();
@@ -58,6 +61,7 @@ public class ExpenseService {
 	public ResponseEntity<List<ExpenseDTO>> getByDate(String yearString, String monthString) {
 		Integer year;
 		Integer month;
+		Client client = getClient();
 		
 		try {
 			year = Integer.parseInt(yearString);
@@ -66,7 +70,7 @@ public class ExpenseService {
 			return ResponseEntity.badRequest().build();
 		}		
 		
-		List<Expense> listExpense = expenseRepository.findByYearAndMonth(year, month);
+		List<Expense> listExpense = expenseRepository.findByYearAndMonth(year, month, client);
 		if(listExpense.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -84,7 +88,8 @@ public class ExpenseService {
 		Expense expense = form.converter();
 		
 		checkIfAlreadyExists(expense);
-		
+		Client client = getClient();
+		expense.setClient(client);
 		Expense save = expenseRepository.save(expense);
 		
 		ExpenseDTO expenseDto = new ExpenseDTO(save);
@@ -102,8 +107,6 @@ public class ExpenseService {
 		Expense expense = expenseRepository.getById(Long.parseLong(id));		
 		Expense updated = form.update(expense);
 		
-		checkIfAlreadyExists(updated);
-		
 		Expense save = expenseRepository.save(updated);		
 		ExpenseDTO expenseDto = new ExpenseDTO(save);		
 		return ResponseEntity.ok(expenseDto);
@@ -120,9 +123,10 @@ public class ExpenseService {
 	
 	private ResponseEntity<ExpenseDTO> tryToGetById(String id) {
 		Optional<Expense> expenseOptional = null;
+		Client client = getClient();
 		
 		try {
-			expenseOptional = expenseRepository.findById(Long.parseLong(id));
+			expenseOptional = expenseRepository.findByIdAndClient(Long.parseLong(id), client);
 		} catch(NumberFormatException e) {
 			// Not a number
 			return ResponseEntity.badRequest().build();
@@ -142,10 +146,16 @@ public class ExpenseService {
 	private void checkIfAlreadyExists(Expense expense) {
 		String description = expense.getDescription();
 		Integer monthNumber = expense.getDate().getMonthValue();
+		Client client = getClient();
 		
-		Optional<Expense> sameExpense = expenseRepository.findByDescriptionAndMonth(description, monthNumber);
+		Optional<Expense> sameExpense = expenseRepository.findByDescriptionAndMonth(description, monthNumber, client);
 		if(sameExpense.isPresent()) {
 			throw new EntityExistsException();
 		}
+	}
+	
+	private Client getClient() {
+		Client client = (Client) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return client;
 	}
 }

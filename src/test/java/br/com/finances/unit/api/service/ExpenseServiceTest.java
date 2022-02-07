@@ -2,7 +2,6 @@ package br.com.finances.unit.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +15,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.api.service.ExpenseService;
 import br.com.finances.dto.ExpenseDTO;
 import br.com.finances.form.ExpenseForm;
-import br.com.finances.model.Category;
+import br.com.finances.model.Client;
 import br.com.finances.model.Expense;
 import br.com.finances.repository.ExpenseRepository;
 
@@ -30,15 +30,20 @@ class ExpenseServiceTest {
 	
 	private ExpenseService expenseService;
 	
-	private List<Expense> listExpense = generateExpense();
+	private TestConstructor testConstructor = new TestConstructor();
 	
-	private ExpenseForm expenseForm = 
-			new ExpenseForm("expenseForm description", new BigDecimal("500"), LocalDate.now(), null);
-	private ExpenseDTO expenseDto = new ExpenseDTO(listExpense.get(2));
+	private List<Expense> listExpense = testConstructor.generateExpense();
+	
+	private ExpenseForm expenseForm = testConstructor.generateExpenseForm().get(0); 
+			
+	private ExpenseDTO expenseDto = testConstructor.generateExpenseDto().get(0);
+	
+	private Client client = testConstructor.getListClient().get(0);
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
 		
 		expenseService = new ExpenseService(expenseRepository);
 		
@@ -46,7 +51,7 @@ class ExpenseServiceTest {
 		.thenReturn(listExpense);
 		
 		Optional<Expense> optional = Optional.of(listExpense.get(0));
-		Mockito.when(expenseRepository.findById(1l))
+		Mockito.when(expenseRepository.findByIdAndClient(1l, client))
 		.thenReturn(optional);
 		
 		Mockito.when(expenseRepository.getById(1l))
@@ -55,16 +60,19 @@ class ExpenseServiceTest {
 		Mockito.when(expenseRepository.save(Mockito.any()))
 		.thenReturn(listExpense.get(0));
 		
-		Mockito.when(expenseRepository.findByDescription("description expense test"))
-		.thenReturn(optional);
-		
-		Mockito.when(expenseRepository.findByDescription("a"))
-		.thenReturn(Optional.ofNullable(null));
-		
-		Mockito.when(expenseRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(expenseRepository.findByClient(client))
 		.thenReturn(listExpense);
 		
-		Mockito.when(expenseRepository.findByYearAndMonth(1000, 01))
+		Mockito.when(expenseRepository.findByDescriptionAndClient("description expense test", client))
+		.thenReturn(optional);
+		
+		Mockito.when(expenseRepository.findByDescriptionAndClient("a", client))
+		.thenReturn(Optional.ofNullable(null));
+		
+		Mockito.when(expenseRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt(), Mockito.any()))
+		.thenReturn(listExpense);
+		
+		Mockito.when(expenseRepository.findByYearAndMonth(1000, 01, client))
 		.thenReturn(new ArrayList<>());
 	
 	}
@@ -74,7 +82,7 @@ class ExpenseServiceTest {
 	@Test
 	void shouldReturnAllExpense() {
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(null);
-		assertEquals(expenseDto.getDescription(), all.getBody().get(2).getDescription());;
+		assertEquals(expenseDto.getDescription(), all.getBody().get(0).getDescription());;
 	}
 	
 	@Test
@@ -174,14 +182,6 @@ class ExpenseServiceTest {
 	void shouldNotDeleteExpense() {
 		ResponseEntity<?> delete = expenseService.delete("a");
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
-	}
-	
-	private List<Expense> generateExpense() {
-		List<Expense> listExpense = new ArrayList<>();
-		listExpense.add(new Expense("description expense test", new BigDecimal("1500"), LocalDate.now(), Category.Food));
-		listExpense.add(new Expense("description test expense", new BigDecimal("2500"), LocalDate.now(), Category.Health));
-		listExpense.add(new Expense("test expense description", new BigDecimal("3500"), LocalDate.now(), null));
-		return listExpense;
 	}
 	
 }

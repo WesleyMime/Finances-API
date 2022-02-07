@@ -3,6 +3,7 @@ package br.com.finances.config.security;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,7 @@ import br.com.finances.model.Client;
 import br.com.finances.repository.ClientRepository;
 
 @Service
+@Profile("prod")
 public class AuthenticationService implements UserDetailsService{
 
 	@Autowired

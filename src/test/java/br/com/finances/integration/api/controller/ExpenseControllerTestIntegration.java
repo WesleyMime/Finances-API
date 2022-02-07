@@ -1,10 +1,13 @@
 package br.com.finances.integration.api.controller;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -12,36 +15,48 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.form.ExpenseForm;
-import br.com.finances.model.Category;
+import br.com.finances.repository.ClientRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@WithMockUser
+@ActiveProfiles("dev")
+@TestInstance(Lifecycle.PER_CLASS)
 class ExpenseControllerTestIntegration {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private ClientRepository clientRepository;
 	
-	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01), Category.Home);
-	private ExpenseForm expenseForm2 = new ExpenseForm("Description expense", new BigDecimal("3000"), LocalDate.of(2022, 02, 01), Category.Others);
-	private ExpenseForm expenseForm3 = new ExpenseForm("Expense description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25), Category.Unforeseen);
-	private ExpenseForm expenseForm4 = new ExpenseForm("Description expense", new BigDecimal("2000"), LocalDate.of(2022, 03, 25), null);
+	private TestConstructor testConstructor = new TestConstructor();
+	private List<ExpenseForm> listExpenseForm = testConstructor.generateExpenseForm();
 	
-	@BeforeEach
-	void beforeEach() throws Exception {
+	@BeforeAll
+	void beforeAll() throws Exception {
 		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
+	
+		clientRepository.save(testConstructor.getListClient().get(0));
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm1.toString()));
+				.content(listExpenseForm.get(0).toString()));
+	}
+	
+	@BeforeEach
+	void beforeEach() {
+		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
 	}
 	
 	//GET
@@ -57,14 +72,12 @@ class ExpenseControllerTestIntegration {
 	}
 	
 	@Test
-	void shouldReturnExpenseByDescription() throws Exception {		
+	void shouldReturnExpenseByDescription() throws Exception {			
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/expense?description=Expense description"))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
+				.get("/expense?description=Description expense"))
 		.andExpect(MockMvcResultMatchers
 				.status().isOk());
-	}	
+	}
 	
 	@Test
 	void shouldNotFindExpenseByDescription() throws Exception {		
@@ -81,7 +94,8 @@ class ExpenseControllerTestIntegration {
 		.andExpect(MockMvcResultMatchers
 				.content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+				.status().isOk())
+		.andDo(MockMvcResultHandlers.print());
 	}
 	
 	@Test
@@ -102,8 +116,10 @@ class ExpenseControllerTestIntegration {
 	
 	@Test
 	void shouldReturnExpenseByDate() throws Exception {
+		LocalDate date = LocalDate.now();
+		
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/expense/2022/01"))
+				.get("/expense/"+ date.getYear() + "/" + date.getMonthValue()))
 		.andExpect(MockMvcResultMatchers
 				.content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
@@ -133,7 +149,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm2.toString()))
+				.content(listExpenseForm.get(1).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isCreated());
 	}
@@ -143,7 +159,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm3.toString()))
+				.content(listExpenseForm.get(2).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}
@@ -169,7 +185,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm4.toString()))
+				.content(listExpenseForm.get(3).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isOk());
 	}
@@ -179,7 +195,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm1.toString()))
+				.content(listExpenseForm.get(0).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
 	}
@@ -189,7 +205,7 @@ class ExpenseControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/expense/a")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm1.toString()))
+				.content(listExpenseForm.get(0).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}

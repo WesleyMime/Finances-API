@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import br.com.finances.model.Client;
 import br.com.finances.model.Income;
 
 public class IncomeForm {
@@ -15,12 +16,14 @@ public class IncomeForm {
 	@NotNull
 	private BigDecimal value;
 	@NotNull
-	private LocalDate date;	
+	private LocalDate date;
+	private Client client;
 
-	public IncomeForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date) {
+	public IncomeForm(String description, BigDecimal value, LocalDate date, Client client) {
 		this.description = description;
 		this.value = value;
 		this.date = date;
+		this.client = client;
 	}
 	public String getDescricao() {
 		return description;
@@ -32,7 +35,7 @@ public class IncomeForm {
 		return date;
 	}
 	public Income converter() {
-		return new Income(this.description, this.value, this.date);
+		return new Income(this.description, this.value, this.date, this.client);
 	}
 	
 	public Income update(Income income) {

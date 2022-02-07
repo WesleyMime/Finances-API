@@ -11,12 +11,18 @@ public class IncomeDTO {
 	private String description;
 	private BigDecimal value;
 	private LocalDate date;
+	private ClientDTO client;
 	
 	public IncomeDTO(Income income) {
 		this.id = income.getId();
 		this.description = income.getDescription();
 		this.value = income.getValue();
 		this.date = income.getDate();
+		try {
+			this.client = new ClientDTO(income.getClient());
+		} catch(NullPointerException e) {
+			this.client = null;
+		}
 	}
 
 	public Long getId() {
@@ -35,6 +41,8 @@ public class IncomeDTO {
 		return date;
 	}
 	
-	
+	public ClientDTO getClient() {
+		return client;
+	}
 	
 }

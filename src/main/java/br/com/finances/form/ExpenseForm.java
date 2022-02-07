@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import br.com.finances.model.Category;
+import br.com.finances.model.Client;
 import br.com.finances.model.Expense;
 
 public class ExpenseForm {
@@ -19,8 +20,9 @@ public class ExpenseForm {
 	private LocalDate date;	
 
 	private Category category;
+	private Client client;
 
-	public ExpenseForm(@NotBlank String description, @NotNull BigDecimal value, @NotNull LocalDate date, Category category) {
+	public ExpenseForm(String description, BigDecimal value, LocalDate date, Category category, Client client) {
 		this.description = description;
 		this.value = value;
 		this.date = date;		
@@ -29,14 +31,15 @@ public class ExpenseForm {
 		} else {
 			this.category = category;
 		}
+		this.client = client;
 	}
-	public String getDescricao() {
+	public String getDescription() {
 		return description;
 	}
-	public BigDecimal getValor() {
+	public BigDecimal getValue() {
 		return value;
 	}
-	public LocalDate getData() {
+	public LocalDate getDate() {
 		return date;
 	}	
 	public Category getCategory() {
@@ -44,13 +47,14 @@ public class ExpenseForm {
 	}
 	
 	public Expense converter() {
-		return new Expense(this.description, this.value, this.date, this.category);
+		return new Expense(this.description, this.value, this.date, this.category, this.client);
 	}
 	
 	public Expense update(Expense expense) {
 		expense.setDescription(this.description);
 		expense.setValue(this.value);
 		expense.setDate(this.date);
+		expense.setCategory(this.category);
 		return expense;
 	}
 	

@@ -1,10 +1,12 @@
 package br.com.finances.integration.api.controller;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -12,37 +14,51 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.form.IncomeForm;
+import br.com.finances.repository.ClientRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@WithMockUser
+@ActiveProfiles("dev")
+@TestInstance(Lifecycle.PER_CLASS)
 class IncomeControllerTestIntegration {
 	
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private ClientRepository clientRepository;
 	
-	private IncomeForm incomeForm1 = new IncomeForm("Income description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01));
-	private IncomeForm incomeForm2 = new IncomeForm("Description income", new BigDecimal("3000"), LocalDate.of(2022, 02, 01));
-	private IncomeForm incomeForm3 = new IncomeForm("Income description", new BigDecimal("1000"), LocalDate.of(2022, 01, 25));
-	private IncomeForm incomeForm4 = new IncomeForm("Description income", new BigDecimal("2000"), LocalDate.of(2022, 03, 25));
+	private TestConstructor testConstructor = new TestConstructor();
+	private List<IncomeForm> listIncomeForm = testConstructor.generateIncomeForm();
 	
-	@BeforeEach
-	void beforeEach() throws Exception {
+		
+	@BeforeAll
+	void beforeAll() throws Exception {
 		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
+		
+		clientRepository.save(testConstructor.getListClient().get(0));
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/income")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm1.toString()));
+				.content(listIncomeForm.get(0).toString()));
 	}
 
+	@BeforeEach
+	void beforeEach() {
+		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
+	
+	}
+	
 	//GET
 	
 	@Test
@@ -132,7 +148,7 @@ class IncomeControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/income")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm2.toString()))
+				.content(listIncomeForm.get(1).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isCreated());
 	}
@@ -142,7 +158,7 @@ class IncomeControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/income")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm3.toString()))
+				.content(listIncomeForm.get(2).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}
@@ -170,7 +186,7 @@ class IncomeControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/income/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm4.toString()))
+				.content(listIncomeForm.get(3).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isOk());
 	}
@@ -180,7 +196,7 @@ class IncomeControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/income/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm1.toString()))
+				.content(listIncomeForm.get(0).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isNotFound());
 	}
@@ -190,7 +206,7 @@ class IncomeControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.put("/income/a")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm1.toString()))
+				.content(listIncomeForm.get(0).toString()))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}
