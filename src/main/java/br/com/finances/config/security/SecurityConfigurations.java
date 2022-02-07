@@ -3,6 +3,7 @@ package br.com.finances.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +20,7 @@ import br.com.finances.repository.ClientRepository;
 
 @Configuration
 @EnableWebSecurity
+@Profile("prod")
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
@@ -61,9 +63,5 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		super.configure(web);
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(new BCryptPasswordEncoder().encode("password"));
 	}
 }

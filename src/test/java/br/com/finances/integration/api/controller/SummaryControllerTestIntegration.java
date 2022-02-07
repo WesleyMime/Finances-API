@@ -1,10 +1,12 @@
 package br.com.finances.integration.api.controller;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -12,39 +14,54 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.form.ExpenseForm;
 import br.com.finances.form.IncomeForm;
-import br.com.finances.model.Category;
+import br.com.finances.repository.ClientRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@WithMockUser
+@ActiveProfiles("dev")
+@TestInstance(Lifecycle.PER_CLASS)
 public class SummaryControllerTestIntegration {
 
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private ClientRepository clientRepository;
 	
-	private ExpenseForm expenseForm1 = new ExpenseForm("Expense description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01), Category.Home);
-	private IncomeForm incomeForm1 = new IncomeForm("Income description", new BigDecimal("1500"), LocalDate.of(2022, 01, 01));
+	private TestConstructor testConstructor = new TestConstructor();
+	private List<IncomeForm> listIncomeForm = testConstructor.generateIncomeForm();
+	private List<ExpenseForm> listExpenseForm = testConstructor.generateExpenseForm();
 	
-	@BeforeEach
-	void beforeEach() throws Exception {
+	@BeforeAll
+	void beforeAll() throws Exception {
 		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
+		
+		clientRepository.save(testConstructor.getListClient().get(0));
 		
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/expense")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(expenseForm1.toString()));
+				.content(listExpenseForm.get(0).toString()));
+		
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/income")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(incomeForm1.toString()));
+				.content(listIncomeForm.get(0).toString()));
+	}
+	
+	@BeforeEach
+	void beforeEach() {
+		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
 	}
 	
 	@Test

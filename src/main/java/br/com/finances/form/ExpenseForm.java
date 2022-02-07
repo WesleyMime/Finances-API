@@ -33,13 +33,13 @@ public class ExpenseForm {
 		}
 		this.client = client;
 	}
-	public String getDescricao() {
+	public String getDescription() {
 		return description;
 	}
-	public BigDecimal getValor() {
+	public BigDecimal getValue() {
 		return value;
 	}
-	public LocalDate getData() {
+	public LocalDate getDate() {
 		return date;
 	}	
 	public Category getCategory() {

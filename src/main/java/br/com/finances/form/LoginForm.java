@@ -24,4 +24,11 @@ public class LoginForm {
 		return new UsernamePasswordAuthenticationToken(email, password);
 	}
 	
+	@Override
+	public String toString() {
+		return "{"
+				+ "\"email\":\"" + this.email + "\","
+				+ "\"password\":\"" + this.password + "\""
+				+ "}";
+	}
 }

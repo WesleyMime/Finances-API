@@ -2,8 +2,6 @@ package br.com.finances.unit.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +14,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.api.service.IncomeService;
 import br.com.finances.dto.IncomeDTO;
 import br.com.finances.form.IncomeForm;
+import br.com.finances.model.Client;
 import br.com.finances.model.Income;
 import br.com.finances.repository.IncomeRepository;
 
@@ -29,14 +29,20 @@ class IncomeServiceTest {
 	
 	private IncomeService incomeService;
 	
-	private List<Income> listIncome = generateIncome();
+	private TestConstructor testConstructor = new TestConstructor();
 	
-	private IncomeForm incomeForm = new IncomeForm("incomeForm description", new BigDecimal("500"), LocalDate.now());
-	private IncomeDTO incomeDto = new IncomeDTO(listIncome.get(2));
+	private List<Income> listIncome = testConstructor.generateIncome();
+	
+	private IncomeForm incomeForm = testConstructor.generateIncomeForm().get(0);
+	
+	private IncomeDTO incomeDto = testConstructor.generateIncomeDto().get(0);
+	
+	private Client client = testConstructor.getListClient().get(0);
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
+		testConstructor.setClient();
 		
 		incomeService = new IncomeService(incomeRepository);
 		
@@ -44,25 +50,28 @@ class IncomeServiceTest {
 		.thenReturn(listIncome);
 		
 		Optional<Income> optional = Optional.of(listIncome.get(0));
-		Mockito.when(incomeRepository.findById(1l))
+		Mockito.when(incomeRepository.findByIdAndClient(1l, client))
 		.thenReturn(optional);
 		
 		Mockito.when(incomeRepository.save(Mockito.any()))
 		.thenReturn(listIncome.get(0));
 		
+		Mockito.when(incomeRepository.findByClient(client))
+		.thenReturn(listIncome);
+		
 		Mockito.when(incomeRepository.getById(1l))
 		.thenReturn(listIncome.get(0));
 		
-		Mockito.when(incomeRepository.findByDescription("description income test"))
+		Mockito.when(incomeRepository.findByDescriptionAndClient("description income test", client))
 		.thenReturn(optional);
 		
-		Mockito.when(incomeRepository.findByDescription("a"))
+		Mockito.when(incomeRepository.findByDescriptionAndClient("a", client))
 		.thenReturn(Optional.ofNullable(null));
 		
-		Mockito.when(incomeRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt()))
+		Mockito.when(incomeRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt(), Mockito.any()))
 		.thenReturn(listIncome);
 		
-		Mockito.when(incomeRepository.findByYearAndMonth(1000, 01))
+		Mockito.when(incomeRepository.findByYearAndMonth(1000, 01, client))
 		.thenReturn(new ArrayList<>());
 	}
 	
@@ -70,9 +79,8 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldReturnAllIncome() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);
-		
-		assertEquals(incomeDto.getDescription(), all.getBody().get(2).getDescription());
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);		
+		assertEquals(incomeDto.getDescription(), all.getBody().get(0).getDescription());
 	}
 	
 	@Test
@@ -170,14 +178,6 @@ class IncomeServiceTest {
 	void shouldNotDeleteIncome() {
 		ResponseEntity<?> delete = incomeService.delete("a");
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
-	}
-	
-	private List<Income> generateIncome() {
-		List<Income> listIncome = new ArrayList<>();
-		listIncome.add(new Income("description income test", new BigDecimal("1500"), LocalDate.now()));
-		listIncome.add(new Income("description test income", new BigDecimal("2500"), LocalDate.now()));
-		listIncome.add(new Income("test income description", new BigDecimal("3500"), LocalDate.now()));
-		return listIncome;
 	}
 	
 }

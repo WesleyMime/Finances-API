@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,6 +16,7 @@ import br.com.finances.api.service.TokenService;
 import br.com.finances.model.Client;
 import br.com.finances.repository.ClientRepository;
 
+@Profile("prod")
 public class TokenAuthenticationFilter extends OncePerRequestFilter{
 
 	private TokenService tokenService;

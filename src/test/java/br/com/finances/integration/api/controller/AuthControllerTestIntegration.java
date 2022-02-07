@@ -1,5 +1,7 @@
 package br.com.finances.integration.api.controller;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -9,28 +11,28 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import br.com.finances.TestConstructor;
 import br.com.finances.form.LoginForm;
 import br.com.finances.form.SignForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles("prod")
 public class AuthControllerTestIntegration {
 
 	@Autowired
 	private MockMvc mockMvc;
 	
-	private SignForm signinForm = new SignForm("Test", "test@email.com", "test");
-	private SignForm signinForm2 = new SignForm("Test", "test", "test");
-	private SignForm signinForm3 = new SignForm("", "test@email.com", "test");
-	private SignForm signinForm4 = new SignForm("Test", "test@email.com", "");
-	private LoginForm loginForm = new LoginForm("test@email.com", "test");
-	private LoginForm loginForm2 = new LoginForm("test2@email.com", "test");
-	private LoginForm loginForm3 = new LoginForm("test@email.com", "test3");
+	private TestConstructor testConstructor = new TestConstructor();
+	
+	private List<SignForm> listSignInForm = testConstructor.generateSignForm();
+	private List<LoginForm> listLoginForm = testConstructor.generateLoginForm();
 	
 	@BeforeEach
 	void beforeEach() throws Exception {
@@ -39,14 +41,24 @@ public class AuthControllerTestIntegration {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/signin")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(signinForm.toString()));
+				.content(listSignInForm.get(5).toString()));
+	}
+	
+	@Test
+	void shouldCreateNewClient() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+				.post("/auth/signin")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(listSignInForm.get(0).toString()))
+		.andExpect(MockMvcResultMatchers
+				.status().isCreated());
 	}
 	
 	@Test
 	void shouldAuthenticate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/login")
-				.content(loginForm.toString())
+				.content(listLoginForm.get(1).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isOk());
@@ -56,7 +68,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotAuthenticate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/login")
-				.content(loginForm2.toString())
+				.content(listLoginForm.get(2).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
@@ -66,7 +78,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotFindEmailToAuthenticate() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/login")
-				.content(loginForm3.toString())
+				.content(listLoginForm.get(5).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
@@ -76,7 +88,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotRegisterClientWithSameEmail() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/signin")
-				.content(signinForm.toString())
+				.content(listSignInForm.get(0).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
@@ -86,7 +98,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotRegisterClientWithEmailNotWellFormed() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/signin")
-				.content(signinForm2.toString())
+				.content(listSignInForm.get(2).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
@@ -96,7 +108,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotRegisterClientWithoutName() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/signin")
-				.content(signinForm3.toString())
+				.content(listSignInForm.get(1).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
@@ -106,7 +118,7 @@ public class AuthControllerTestIntegration {
 	void shouldNotRegisterClientWithoutPassword() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
 				.post("/auth/signin")
-				.content(signinForm4.toString())
+				.content(listSignInForm.get(4).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());

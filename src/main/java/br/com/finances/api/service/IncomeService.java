@@ -1,6 +1,5 @@
 package br.com.finances.api.service;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,7 +17,6 @@ import br.com.finances.dto.IncomeDTO;
 import br.com.finances.form.IncomeForm;
 import br.com.finances.model.Client;
 import br.com.finances.model.Income;
-import br.com.finances.repository.ClientRepository;
 import br.com.finances.repository.IncomeRepository;
 
 @Service
@@ -26,12 +24,9 @@ public class IncomeService {
 	
 	@Autowired
 	private IncomeRepository incomeRepository;
-	@Autowired
-	private ClientRepository clientRepository;
 	
-	public IncomeService(IncomeRepository incomeRepository, ClientRepository clientRepository) {
+	public IncomeService(IncomeRepository incomeRepository) {
 		this.incomeRepository = incomeRepository;
-		this.clientRepository = clientRepository;
 	}
 
 	public ResponseEntity<List<IncomeDTO>> getAll(String description) {
