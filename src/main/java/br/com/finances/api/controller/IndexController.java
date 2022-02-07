@@ -11,7 +11,7 @@ public class IndexController implements ErrorController {
     public String error() {
         return "<h1>Finances API</h1>"
         		+ "<h2><a "
-        		+ "href=\"https://documenter.getpostman.com/view/19203694/UVeCPnzs\" "
+        		+ "href=\"https://documenter.getpostman.com/view/19203694/UVeGs6cv\" "
         		+ "target=\"_blank\">Documentation"
         		+ "</a></h2>";
     }
