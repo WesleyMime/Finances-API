@@ -1,4 +1,4 @@
-package br.com.finances.config.security.auth;
+package br.com.finances.config.auth;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

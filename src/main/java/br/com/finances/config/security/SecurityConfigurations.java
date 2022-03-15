@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import br.com.finances.api.client.ClientRepository;
-import br.com.finances.config.security.auth.AuthenticationService;
+import br.com.finances.config.auth.AuthenticationService;
 
 @Configuration
 @EnableWebSecurity

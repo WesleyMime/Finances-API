@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import br.com.finances.config.security.auth.LoginForm;
-import br.com.finances.config.security.auth.SignForm;
+import br.com.finances.config.auth.LoginForm;
+import br.com.finances.config.auth.SignForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc
