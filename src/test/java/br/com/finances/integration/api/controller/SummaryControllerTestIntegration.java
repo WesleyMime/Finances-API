@@ -1,13 +1,10 @@
 package br.com.finances.integration.api.controller;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -19,15 +16,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import br.com.finances.TestConstructor;
-import br.com.finances.form.ExpenseForm;
-import br.com.finances.form.IncomeForm;
-import br.com.finances.repository.ClientRepository;
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@ActiveProfiles("dev")
+@ActiveProfiles("prod")
 @TestInstance(Lifecycle.PER_CLASS)
 public class SummaryControllerTestIntegration {
 
@@ -36,33 +32,19 @@ public class SummaryControllerTestIntegration {
 	@Autowired
 	private ClientRepository clientRepository;
 	
-	private TestConstructor testConstructor = new TestConstructor();
-	private List<IncomeForm> listIncomeForm = testConstructor.generateIncomeForm();
-	private List<ExpenseForm> listExpenseForm = testConstructor.generateExpenseForm();
+	private static final Client CLIENT = SecurityContextFactory.setClient();
 	
 	@BeforeAll
 	void beforeAll() throws Exception {
-		MockitoAnnotations.openMocks(this);
-		testConstructor.setClient();
-		
-		clientRepository.save(testConstructor.getListClient().get(0));
-		
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/expense")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(listExpenseForm.get(0).toString()));
-		
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/income")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(listIncomeForm.get(0).toString()));
+		if((clientRepository.findByEmail(CLIENT.getUsername()).isEmpty())) {
+			clientRepository.save(CLIENT);			
+		}
 	}
 	
 	@BeforeEach
 	void beforeEach() {
-		MockitoAnnotations.openMocks(this);
-		testConstructor.setClient();
-	}
+		SecurityContextFactory.setClient();
+	}	
 	
 	@Test
 	void shouldReturnSummaryByDate() throws Exception {

@@ -1,93 +1,83 @@
 package br.com.finances.unit.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.com.finances.TestConstructor;
-import br.com.finances.api.service.IncomeService;
-import br.com.finances.dto.IncomeDTO;
-import br.com.finances.form.IncomeForm;
-import br.com.finances.model.Client;
-import br.com.finances.model.Income;
-import br.com.finances.repository.IncomeRepository;
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.income.Income;
+import br.com.finances.api.income.IncomeDTO;
+import br.com.finances.api.income.IncomeDtoMapper;
+import br.com.finances.api.income.IncomeForm;
+import br.com.finances.api.income.IncomeFormMapper;
+import br.com.finances.api.income.IncomeRepository;
+import br.com.finances.api.income.IncomeService;
 
 class IncomeServiceTest {
 
 	@Mock
 	private IncomeRepository incomeRepository;
+	@Mock
+	private ClientRepository clientRepository;
 	
-	private IncomeService incomeService;
+	private IncomeDtoMapper dtoMapper = new IncomeDtoMapper();
+
+	private IncomeFormMapper formMapper = new IncomeFormMapper();
 	
-	private TestConstructor testConstructor = new TestConstructor();
+ 	private IncomeService incomeService;
 	
-	private List<Income> listIncome = testConstructor.generateIncome();
+	private static final String DESCRIPTION = "description";
+	private static final BigDecimal VALUE = new BigDecimal("1500");
+	private static final LocalDate DATE = LocalDate.of(2022, 01, 01);
+	private static final Client CLIENT = SecurityContextFactory.setClient();
 	
-	private IncomeForm incomeForm = testConstructor.generateIncomeForm().get(0);
-	
-	private IncomeDTO incomeDto = testConstructor.generateIncomeDto().get(0);
-	
-	private Client client = testConstructor.getListClient().get(0);
+	private static final IncomeForm FORM = new IncomeForm(DESCRIPTION, VALUE, DATE);
+	private static final Income INCOME = new Income(DESCRIPTION, VALUE, DATE);
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
-		testConstructor.setClient();
 		
-		incomeService = new IncomeService(incomeRepository);
+		this.incomeService = new IncomeService(incomeRepository, clientRepository, dtoMapper, formMapper);
 		
-		Mockito.when(incomeRepository.findAll())
-		.thenReturn(listIncome);
+		when(clientRepository.findByEmail(anyString()))
+		.thenReturn(Optional.of(CLIENT));
 		
-		Optional<Income> optional = Optional.of(listIncome.get(0));
-		Mockito.when(incomeRepository.findByIdAndClient(1l, client))
-		.thenReturn(optional);
-		
-		Mockito.when(incomeRepository.save(Mockito.any()))
-		.thenReturn(listIncome.get(0));
-		
-		Mockito.when(incomeRepository.findByClient(client))
-		.thenReturn(listIncome);
-		
-		Mockito.when(incomeRepository.getById(1l))
-		.thenReturn(listIncome.get(0));
-		
-		Mockito.when(incomeRepository.findByDescriptionAndClient("description income test", client))
-		.thenReturn(optional);
-		
-		Mockito.when(incomeRepository.findByDescriptionAndClient("a", client))
-		.thenReturn(Optional.ofNullable(null));
-		
-		Mockito.when(incomeRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt(), Mockito.any()))
-		.thenReturn(listIncome);
-		
-		Mockito.when(incomeRepository.findByYearAndMonth(1000, 01, client))
-		.thenReturn(new ArrayList<>());
+		when(incomeRepository.save(any()))
+		.thenReturn(INCOME);
 	}
 	
 	//GET
 	
 	@Test
 	void shouldReturnAllIncome() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);		
-		assertEquals(incomeDto.getDescription(), all.getBody().get(0).getDescription());
+		when(incomeRepository.findByClient(CLIENT))
+		.thenReturn(List.of(INCOME));
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);	
+		assertEquals(DESCRIPTION, all.getBody().get(0).getDescription());
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll("description income test");
-		
-		assertEquals(listIncome.get(0).getDescription(), all.getBody().get(0).getDescription());
+		when(incomeRepository.findByDescriptionAndClient(any(), any()))
+		.thenReturn(Optional.of(INCOME));
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);		
+		assertEquals(DESCRIPTION, all.getBody().get(0).getDescription());
 	}
 	
 	@Test
@@ -98,6 +88,8 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldReturnIncomeById() {
+		when(incomeRepository.findByIdAndClient(any(), any()))
+		.thenReturn(Optional.of(INCOME));
 		ResponseEntity<IncomeDTO> income = incomeService.getOne("1");
 		assertEquals(HttpStatus.OK, income.getStatusCode());
 	}
@@ -116,6 +108,8 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldReturnIncomeByDate() {
+		when(incomeRepository.findByYearAndMonth(any(), any(), any()))
+		.thenReturn(List.of(INCOME));
 		ResponseEntity<List<IncomeDTO>> income = incomeService.getByDate("2022", "01");
 		assertEquals(HttpStatus.OK, income.getStatusCode());
 	}
@@ -137,26 +131,30 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldPostIncome() {
-		ResponseEntity<IncomeDTO> post = incomeService.post(incomeForm);
+		ResponseEntity<IncomeDTO> post = incomeService.post(FORM);
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
 	
 	//UPDATE
 	@Test
 	void shouldUpdateIncome() {
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("1", incomeForm);
+		when(incomeRepository.findByIdAndClient(any(), any()))
+		.thenReturn(Optional.of(INCOME));
+		when(incomeRepository.getById(any()))
+		.thenReturn(INCOME);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("1", FORM);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindIncomeToUpdate() {
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("100000000", incomeForm);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("100000000", FORM);
 		assertEquals(HttpStatus.NOT_FOUND, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotUpdateIncome() {
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("a", incomeForm);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("a", FORM);
 		assertEquals(HttpStatus.BAD_REQUEST, newIncome.getStatusCode());
 	}
 	
@@ -164,6 +162,8 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldDeleteIncome() {
+		when(incomeRepository.findByIdAndClient(any(), any()))
+		.thenReturn(Optional.of(INCOME));
 		ResponseEntity<?> delete = incomeService.delete("1");
 		assertEquals(HttpStatus.OK, delete.getStatusCode());
 	}
