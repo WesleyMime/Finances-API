@@ -1,94 +1,89 @@
 package br.com.finances.unit.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.com.finances.TestConstructor;
-import br.com.finances.api.service.ExpenseService;
-import br.com.finances.dto.ExpenseDTO;
-import br.com.finances.form.ExpenseForm;
-import br.com.finances.model.Client;
-import br.com.finances.model.Expense;
-import br.com.finances.repository.ExpenseRepository;
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.expense.Category;
+import br.com.finances.api.expense.Expense;
+import br.com.finances.api.expense.ExpenseDTO;
+import br.com.finances.api.expense.ExpenseDtoMapper;
+import br.com.finances.api.expense.ExpenseForm;
+import br.com.finances.api.expense.ExpenseFormMapper;
+import br.com.finances.api.expense.ExpenseRepository;
+import br.com.finances.api.expense.ExpenseService;
 
 class ExpenseServiceTest {
 
 	@Mock
 	private ExpenseRepository expenseRepository;
+	@Mock
+	private ClientRepository clientRepository;
+	
+	private ExpenseDtoMapper dtoMapper = new ExpenseDtoMapper();
+	
+	private ExpenseFormMapper formMapper = new ExpenseFormMapper();
+	@Mock
+	private Principal principal;	
 	
 	private ExpenseService expenseService;
 	
-	private TestConstructor testConstructor = new TestConstructor();
+	private static final String DESCRIPTION = "Description";
+	private static final BigDecimal VALUE = new BigDecimal("1500");
+	private static final LocalDate DATE = LocalDate.of(2022, 01, 01);
+	private static final Client CLIENT = SecurityContextFactory.setClient();
 	
-	private List<Expense> listExpense = testConstructor.generateExpense();
-	
-	private ExpenseForm expenseForm = testConstructor.generateExpenseForm().get(0); 
-			
-	private ExpenseDTO expenseDto = testConstructor.generateExpenseDto().get(0);
-	
-	private Client client = testConstructor.getListClient().get(0);
+	private static final Expense EXPENSE = new Expense(DESCRIPTION, VALUE, DATE, Category.Others);
+	private static final ExpenseForm FORM = new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Others);
 	
 	@BeforeEach
 	void beforeEach() {
 		MockitoAnnotations.openMocks(this);
-		testConstructor.setClient();
+		SecurityContextFactory.setClient();
 		
-		expenseService = new ExpenseService(expenseRepository);
+		this.expenseService = new ExpenseService(expenseRepository, clientRepository, dtoMapper, formMapper);
 		
-		Mockito.when(expenseRepository.findAll())
-		.thenReturn(listExpense);
-		
-		Optional<Expense> optional = Optional.of(listExpense.get(0));
-		Mockito.when(expenseRepository.findByIdAndClient(1l, client))
-		.thenReturn(optional);
-		
-		Mockito.when(expenseRepository.getById(1l))
-		.thenReturn(listExpense.get(0));
-		
-		Mockito.when(expenseRepository.save(Mockito.any()))
-		.thenReturn(listExpense.get(0));
-		
-		Mockito.when(expenseRepository.findByClient(client))
-		.thenReturn(listExpense);
-		
-		Mockito.when(expenseRepository.findByDescriptionAndClient("description expense test", client))
-		.thenReturn(optional);
-		
-		Mockito.when(expenseRepository.findByDescriptionAndClient("a", client))
-		.thenReturn(Optional.ofNullable(null));
-		
-		Mockito.when(expenseRepository.findByYearAndMonth(Mockito.anyInt(), Mockito.anyInt(), Mockito.any()))
-		.thenReturn(listExpense);
-		
-		Mockito.when(expenseRepository.findByYearAndMonth(1000, 01, client))
-		.thenReturn(new ArrayList<>());
-	
+		when(clientRepository.findByEmail(anyString()))
+		.thenReturn(Optional.of(CLIENT));		
+
+		when(expenseRepository.save(any()))
+		.thenReturn(EXPENSE);
 	}
 	
 	//GET
 	
 	@Test
 	void shouldReturnAllExpense() {
+		when(expenseRepository.findByClient(CLIENT))
+		.thenReturn(List.of(EXPENSE));
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(null);
-		assertEquals(expenseDto.getDescription(), all.getBody().get(0).getDescription());;
+		assertEquals(EXPENSE.getDescription(), all.getBody().get(0).getDescription());
 	}
 	
 	@Test
 	void shouldReturnExpenseByDescription() {
-		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll("description expense test");
-		assertEquals(listExpense.get(0).getDescription(),  all.getBody().get(0).getDescription());
+		when(expenseRepository.findByDescriptionAndClient(DESCRIPTION, CLIENT))
+		.thenReturn(Optional.of(EXPENSE));
+		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(DESCRIPTION);
+		assertEquals(EXPENSE.getDescription(),  all.getBody().get(0).getDescription());
 	}
 	
 	@Test
@@ -99,6 +94,8 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldReturnExpenseById() {
+		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<ExpenseDTO> income = expenseService.getOne("1");
 		assertEquals(HttpStatus.OK, income.getStatusCode());;
 	}
@@ -106,19 +103,22 @@ class ExpenseServiceTest {
 	@Test
 	void shouldNotReturnExpenseById() {
 		ResponseEntity<ExpenseDTO> income = expenseService.getOne("a");
-		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());;
+		assertEquals(HttpStatus.BAD_REQUEST, income.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindExpenseById() {
 		ResponseEntity<ExpenseDTO> income = expenseService.getOne("186767587");
-		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());;
+		assertEquals(HttpStatus.NOT_FOUND, income.getStatusCode());
 	}
 	
 	@Test
 	void shouldReturnExpenseByDate() {
-		String yearString = String.valueOf(LocalDate.now().getYear());
-		String monthString = String.valueOf(LocalDate.now().getMonthValue());
+		when(expenseRepository.findByYearAndMonth(anyInt(), anyInt(), any()))
+		.thenReturn(List.of(EXPENSE));
+		
+		String yearString = String.valueOf(DATE.getYear());
+		String monthString = String.valueOf(DATE.getMonthValue());
 		
 		ResponseEntity<List<ExpenseDTO>> expenseByDate = expenseService.getByDate(yearString, monthString);
 		assertEquals(HttpStatus.OK, expenseByDate.getStatusCode());
@@ -141,26 +141,32 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldPostExpense() {
-		ResponseEntity<ExpenseDTO> post = expenseService.post(expenseForm);
+		when(expenseRepository.save(any()))
+		.thenReturn(EXPENSE);
+		ResponseEntity<ExpenseDTO> post = expenseService.post(FORM);
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
 	
 	//UPDATE
 	@Test
 	void shouldUpdateExpense() {
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", expenseForm);
+		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		.thenReturn(Optional.of(EXPENSE));
+		when(expenseRepository.getById(any()))
+		.thenReturn(EXPENSE);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", FORM);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindExpenseToUpdate() {
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("100000000", expenseForm);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("100000000", FORM);
 		assertEquals(HttpStatus.NOT_FOUND, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotUpdateExpense() {
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("a", expenseForm);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("a", FORM);
 		assertEquals(HttpStatus.BAD_REQUEST, newIncome.getStatusCode());
 	}
 	
@@ -168,6 +174,8 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldDeleteExpense() {
+		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<?> delete = expenseService.delete("1");
 		assertEquals(HttpStatus.OK, delete.getStatusCode());
 	}

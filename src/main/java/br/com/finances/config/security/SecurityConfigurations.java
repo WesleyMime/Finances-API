@@ -15,8 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import br.com.finances.api.service.TokenService;
-import br.com.finances.repository.ClientRepository;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.config.auth.AuthenticationService;
 
 @Configuration
 @EnableWebSecurity

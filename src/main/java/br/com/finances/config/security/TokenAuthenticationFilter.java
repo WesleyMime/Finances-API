@@ -11,9 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.finances.api.service.TokenService;
-import br.com.finances.model.Client;
-import br.com.finances.repository.ClientRepository;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
 
 @Profile("prod")
 public class TokenAuthenticationFilter extends OncePerRequestFilter{
