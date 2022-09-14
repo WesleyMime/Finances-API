@@ -44,7 +44,7 @@ public class AuthenticationService implements UserDetailsService{
 			String token = tokenService.generateToken(authentication);
 			return ResponseEntity.ok(new TokenDTO(token, "Bearer"));
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 		}
 	}
 	

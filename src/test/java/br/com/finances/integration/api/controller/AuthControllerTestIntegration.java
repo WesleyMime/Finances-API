@@ -68,7 +68,7 @@ public class AuthControllerTestIntegration {
 				.content(new LoginForm(EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isUnprocessableEntity());
 	}
 	
 	@Test
@@ -78,7 +78,7 @@ public class AuthControllerTestIntegration {
 				.content(new LoginForm(INVALID, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isUnprocessableEntity());
 	}
 	
 	@Test
