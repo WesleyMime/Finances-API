@@ -1,0 +1,15 @@
+finances:
+    jwt:
+        expiration: 1800000
+        secret: ${JWT_SECRET}
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        initialization-mode: always
+        password: ${POSTGRES_PASSWORD}
+        url: jdbc:postgresql://${POSTGRES_URL}
+        username: ${POSTGRES_USERNAME}
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
