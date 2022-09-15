@@ -1,34 +1,42 @@
 <h1 align="center"> Finances-API </h1>
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-g.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.pt-br.md)
 
-## Sobre o desafio proposto no Challenge Backend
+## About the Challenge Backend
 
-Construir uma API Rest para controle financeiro familiar, onde cadastraremos receitas, despesas, implementaremos consultas, controle de acesso, dentre outras funcionalidades.
+Build a Rest API for family financial control, where we will register income, expenses, implement queries, access control, among other features.
 
-## Objetivos do projeto
+## Project objectives
 
-O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam determinadas atividades a serem implementadas. Para uma melhor gestão das atividades, foi utilizado o trello como ferramenta.
+The project was developed in sprints lasting 1 week each, which had certain activities to be implemented. For better management of activities, trello was used.
 
-- [Trello da Sprint 1](https://trello.com/b/ofAXrAlA/challenge-backend-semana-1)
-- [Trello da Sprint 2](https://trello.com/b/tKBmD8P6/challenge-backend-semana-2)
-- [Trello da Sprint 3](https://trello.com/b/qFYXUVXJ/challenge-backend-semana-3)
+- [Sprint 1 Trello](https://trello.com/b/ofAXrAlA/challenge-backend-semana-1)
+- [Sprint 2 Trello](https://trello.com/b/tKBmD8P6/challenge-backend-semana-2)
+- [Sprint 3 Trello](https://trello.com/b/qFYXUVXJ/challenge-backend-semana-3)
 
-## Tecnologias
+## Technologies
 
- A linguagem de programação, frameworks e tecnologias eram de livre escolha. Eu escolhi desenvolver o projeto com as seguintes tecnologias:
- 
-<img alt="Java" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original-wordmark.svg" width="50" height="50" /> <img alt="Spring" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original-wordmark.svg" width="50" height="50" /> <img alt="Postgres" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original-wordmark.svg" width="50" height="50" /> <img alt="Heroku" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/heroku/heroku-plain-wordmark.svg" width="50" height="50" />
+The programming language, frameworks and technologies were of free choice. I chose to develop the project with the following technologies:
+
+<img alt="Java" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original-wordmark.svg" width="50" height="50" /> <img alt="Spring" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original-wordmark.svg" width="50" height="50" /> <img alt="Postgres" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original-wordmark.svg" width="50" height="50" /> <img alt="Docker" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-plain-wordmark.svg" width="50" height="50" /> <img alt="AWS" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg" width="50" height="50" />
+
 
 ## Deploy
 
-O deploy da aplicação no heroku, podendo ser acessada por esse [link](https://finance-api-challenge.herokuapp.com)
 
-(A aplicação desliga automaticamente se estiver inativa, ao acessar o link ela inicializará de novo e poderá demorar 20 segundos para ficar funcional.)
+The application was deployed on an AWS EC2 instance, which can be accessed through this [link](http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/)
 
-## Documentação
+To run locally you need to have Docker installed.
 
-A documentação feita no Postman pode ser acessada por esse [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) e é o jeito mais prático de se usar esta API.
+- Open the terminal and clone the project using the command
+  "git clone https://github.com/WesleyMime/Finances-API.git"
 
-## Licença
+- Enter the "Finances-API" folder and use the command "docker-compose up".
 
-[Licença MIT](https://github.com/WesleyMime/Finances-API/blob/main/LICENSE)
+If everything is working, the link to access is: http://localhost
+
+
+## Documentation
+
+The documentation made in Postman can be accessed by this [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) and is the most practical way to use this API.
