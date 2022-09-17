@@ -1,9 +1,11 @@
 package br.com.finances.integration.api.controller;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
-
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.income.Income;
+import br.com.finances.api.income.IncomeForm;
+import br.com.finances.api.income.IncomeRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,22 +17,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import br.com.finances.SecurityContextFactory;
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientRepository;
-import br.com.finances.api.income.Income;
-import br.com.finances.api.income.IncomeForm;
-import br.com.finances.api.income.IncomeRepository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@ActiveProfiles("prod")
 @TestInstance(Lifecycle.PER_CLASS)
 class IncomeControllerTestIntegration {
 	
@@ -43,13 +40,13 @@ class IncomeControllerTestIntegration {
 	
 	private static final String DESCRIPTION = "Description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
-	private static final LocalDate DATE = LocalDate.of(2022, 01, 01);
+	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static Client CLIENT = SecurityContextFactory.setClient();
 	private static Long ID;
 		
 		
 	@BeforeAll
-	void beforeAll() throws Exception {
+	void beforeAll() {
 		Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
 		if(findByEmail.isEmpty()) {
 			clientRepository.save(CLIENT);			

@@ -1,9 +1,13 @@
 package br.com.finances.config.auth;
 
-import java.util.Optional;
-
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientDTO;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.config.errors.EmailAlreadyRegisteredException;
+import br.com.finances.config.security.TokenDTO;
+import br.com.finances.config.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,17 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientDTO;
-import br.com.finances.api.client.ClientRepository;
-import br.com.finances.config.errors.EmailAlreadyRegisteredException;
-import br.com.finances.config.security.TokenDTO;
-import br.com.finances.config.security.TokenService;
+import java.util.Optional;
 
 @Service
-@Profile("prod")
 public class AuthenticationService implements UserDetailsService{
 
 	@Autowired
@@ -61,5 +60,10 @@ public class AuthenticationService implements UserDetailsService{
 			throw new EmailAlreadyRegisteredException();
 		}
 		
+	}
+
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 }

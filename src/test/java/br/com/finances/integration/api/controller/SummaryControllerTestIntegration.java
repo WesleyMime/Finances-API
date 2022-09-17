@@ -1,5 +1,8 @@
 package br.com.finances.integration.api.controller;
 
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,19 +14,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import br.com.finances.SecurityContextFactory;
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientRepository;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@ActiveProfiles("prod")
 @TestInstance(Lifecycle.PER_CLASS)
 public class SummaryControllerTestIntegration {
 
@@ -35,7 +32,7 @@ public class SummaryControllerTestIntegration {
 	private static final Client CLIENT = SecurityContextFactory.setClient();
 	
 	@BeforeAll
-	void beforeAll() throws Exception {
+	void beforeAll() {
 		if((clientRepository.findByEmail(CLIENT.getUsername()).isEmpty())) {
 			clientRepository.save(CLIENT);			
 		}
