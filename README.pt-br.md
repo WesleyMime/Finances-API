@@ -1,5 +1,14 @@
 <h1 align="center"> Finances-API </h1>
 
+| :placard: Vitrine.Dev |     |
+  | -------------  | --- |
+| :sparkles: Nome        | **Finances-API**
+| :label: Tecnologias | Java, Spring, Postgres, Docker, AWS
+| :rocket: URL         | http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/
+| :fire: Desafio     | https://www.alura.com.br/challenges/back-end-2/
+
+![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
+
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-g.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.pt-br.md)
 
