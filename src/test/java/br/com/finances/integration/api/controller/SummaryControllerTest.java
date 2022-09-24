@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SummaryControllerTestIntegration {
+public class SummaryControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;

@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestInstance(Lifecycle.PER_CLASS)
-public class AuthControllerTestIntegration {
+public class AuthControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;

@@ -59,7 +59,6 @@ public class AuthenticationService implements UserDetailsService{
 		if(optional.isPresent()) {
 			throw new EmailAlreadyRegisteredException();
 		}
-		
 	}
 
 	@Bean

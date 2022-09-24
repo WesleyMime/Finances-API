@@ -1,15 +1,11 @@
 package br.com.finances.api.generic;
 
+import br.com.finances.api.client.Client;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
-
-import br.com.finances.api.client.Client;
-
-@NoRepositoryBean
-public interface GenericRepository<T> extends JpaRepository<T, Long> {
+public interface GenericRepository<T> {
 
 	List<T> findByClient(Client client);
 
@@ -21,4 +17,7 @@ public interface GenericRepository<T> extends JpaRepository<T, Long> {
 
 	List<T> findByYearAndMonth(Integer year, Integer month, Client client);
 
+	void deleteById(long l);
+
+	T save(T updated);
 }

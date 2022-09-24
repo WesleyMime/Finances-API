@@ -1,17 +1,17 @@
 package br.com.finances.api.expense;
 
+import br.com.finances.api.client.Client;
+import br.com.finances.api.generic.GenericRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-import br.com.finances.api.client.Client;
-import br.com.finances.api.generic.GenericRepository;
-
 @Repository
-public interface ExpenseRepository extends GenericRepository<Expense>{
+public interface ExpenseRepository extends GenericRepository<Expense>, JpaRepository<Expense, Long> {
 	
 	@Query("SELECT e FROM Expense e WHERE e.description = ?1 AND EXTRACT(month FROM e.date) = ?2 AND e.client = ?3")
 	// Extract: Get Month from LocalDate

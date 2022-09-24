@@ -30,7 +30,7 @@ import java.util.Optional;
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestInstance(Lifecycle.PER_CLASS)
-class ExpenseControllerTestIntegration {
+class ExpenseControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;

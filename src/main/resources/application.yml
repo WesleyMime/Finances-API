@@ -1,7 +1,7 @@
 finances:
     jwt:
         expiration: 1800000
-        secret: ${JWT_SECRET}
+        secret: ${JWT_SECRET:oei43qyq3v2511ro5373qbtqhhaer353shes3arhqhq3rv238q57nv2q-35v2c}
 spring:
     datasource:
         driver-class-name: org.postgresql.Driver

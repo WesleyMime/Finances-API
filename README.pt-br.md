@@ -4,7 +4,7 @@
   | -------------  | --- |
 | :sparkles: Nome        | **Finances-API**
 | :label: Tecnologias | Java, Spring, Postgres, Docker, AWS
-| :rocket: URL         | http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/
+| :rocket: URL         | finances-api.com
 | :fire: Desafio     | https://www.alura.com.br/challenges/back-end-2/
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
@@ -34,7 +34,7 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 ## Deploy
 
 
-O deploy da aplicação foi realizado em uma instância EC2 da AWS, podendo ser acessada por esse [link](http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/)
+O deploy da aplicação foi realizado em uma instância EC2 da AWS, podendo ser acessada por esse link finances-api.com
 
 Para rodar localmente é necessário ter Docker instalado.
 

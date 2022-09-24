@@ -4,7 +4,7 @@
   | -------------  | --- |
 | :sparkles: Name        | **Finances-API**
 | :label: Technologies | Java, Spring, Postgres, Docker, AWS
-| :rocket: URL         | http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/
+| :rocket: URL         | https://finances-api.com/
 | :fire: Challenge     | https://www.alura.com.br/challenges/back-end-2/
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
@@ -34,7 +34,7 @@ The programming language, frameworks and technologies were of free choice. I cho
 ## Deploy
 
 
-The application was deployed on an AWS EC2 instance, which can be accessed through this [link](http://ec2-15-228-229-105.sa-east-1.compute.amazonaws.com/)
+The application was deployed on an AWS EC2 instance, which can be accessed through this link https://finances-api.com/
 
 To run locally you need to have Docker installed.
 

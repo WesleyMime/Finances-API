@@ -1,28 +1,25 @@
 package br.com.finances.api.summary;
 
-import java.math.BigDecimal;
-import java.security.Principal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.ExpenseCategoryDTO;
 import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.IncomeRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.List;
 
 @Service
 public class SummaryService {
 
-	@Autowired
-	private IncomeRepository incomeRepository;
-	@Autowired
-	private ExpenseRepository expenseRepository;
-	@Autowired
-	private ClientRepository clientRepository;
+	private final IncomeRepository incomeRepository;
+
+	private final ExpenseRepository expenseRepository;
+
+	private final ClientRepository clientRepository;
 	
 	public SummaryService(IncomeRepository incomeRepository, ExpenseRepository expenseRepository, ClientRepository clientRepository) {
 		this.incomeRepository = incomeRepository;
@@ -31,8 +28,7 @@ public class SummaryService {
 	}
 
 	public ResponseEntity<SummaryDTO> getSummaryByDate(String yearString, String monthString, Principal principal) {
-		Integer year;
-		Integer month;		
+		Integer year; Integer month;
 		Client client = getClientByEmail(principal.getName());
 		
 		try {

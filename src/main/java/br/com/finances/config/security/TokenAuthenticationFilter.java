@@ -33,9 +33,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter{
 			authenticate(token);
 		}
 		
-		
 		filterChain.doFilter(request, response);
-		
 	}
 
 	private String getToken(HttpServletRequest request) {
