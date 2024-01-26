@@ -27,14 +27,12 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 ## Deploy
 
 
-O deploy da aplicação foi realizado em uma instância EC2 da AWS, podendo ser acessada por esse link finances-api.com
-
 Para rodar localmente é necessário ter Docker instalado.
 
 - Abra o terminal e clone o projeto usando o comando
-  "git clone https://github.com/WesleyMime/Finances-API.git"
+  `git clone https://github.com/WesleyMime/Finances-API.git`.
 
-- Entre na pasta "Finances-API" e use o comando "docker-compose up".
+- Entre na pasta `Finances-API` e use o comando `docker-compose up`.
 
 Se tudo estiver funcionando, o link para acessar é: http://localhost
 

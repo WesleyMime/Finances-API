@@ -27,14 +27,12 @@ The programming language, frameworks and technologies were of free choice. I cho
 ## Deploy
 
 
-The application was deployed on an AWS EC2 instance, which can be accessed through this link https://finances-api.com/
-
 To run locally you need to have Docker installed.
 
 - Open the terminal and clone the project using the command
-  "git clone https://github.com/WesleyMime/Finances-API.git"
+  `git clone https://github.com/WesleyMime/Finances-API.git`.
 
-- Enter the "Finances-API" folder and use the command "docker-compose up".
+- Enter the `Finances-API` folder and use the command `docker-compose up`.
 
 If everything is working, the link to access is: http://localhost
 
