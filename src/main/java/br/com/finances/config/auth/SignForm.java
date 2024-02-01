@@ -1,11 +1,9 @@
 package br.com.finances.config.auth;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import br.com.finances.api.client.Client;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class SignForm {
 	

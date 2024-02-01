@@ -2,11 +2,11 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -136,11 +136,8 @@ public class GenericServiceImpl
 
 		try {
 			Optional<T> optional = repository.findByIdAndClient(Long.parseLong(id), client);
-			if (optional.isPresent()) {
-				return ResponseEntity.ok(optional.get());
-			}
-			return ResponseEntity.notFound().build();
-		} catch (NumberFormatException e) {
+            return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (NumberFormatException e) {
 			return ResponseEntity.badRequest().build();
 		}
 	}

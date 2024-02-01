@@ -6,7 +6,7 @@ services:
     image: wesleymime/finances-api
     restart: always
     ports:
-      - 80:80
+      - "8080:8080"
     depends_on:
       - db
     entrypoint: ["java","-Dspring.profiles.active=prod","-Dpostgres_url=db:5432/CHANGEDB","-Dpostgres_username=CHANGEUSR","-Dpostgres_password=CHANGEPWD","-Djwt_secret=CHANGEJWT","-jar","/app.jar"]

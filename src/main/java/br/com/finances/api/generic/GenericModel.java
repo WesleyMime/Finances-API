@@ -1,15 +1,10 @@
 package br.com.finances.api.generic;
 
+import br.com.finances.api.client.Client;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-
-import br.com.finances.api.client.Client;
 
 @MappedSuperclass
 public abstract class GenericModel{
