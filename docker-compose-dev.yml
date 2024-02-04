@@ -9,11 +9,22 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    entrypoint: [
+      "java",
+      "-Dspring.profiles.active=dev",
+      "-DPOSTGRES_URL=db:5432/finances-api",
+      "-DPOSTGRES_USERNAME=finances-api",
+      "-DPOSTGRES_PASSWORD=finances-api",
+      "-jar",
+      "/app.jar"
+    ]
 
   db:
     image: postgres
     restart: always
     environment:
+      POSTGRES_DB: finances-api
+      POSTGRES_USER: finances-api
       POSTGRES_PASSWORD: finances-api
     ports:
       - "5432:5432"

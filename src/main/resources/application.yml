@@ -8,9 +8,9 @@ spring:
         mode: ALWAYS
     datasource:
         driver-class-name: org.postgresql.Driver
-        password: ${POSTGRES_PASSWORD}
-        url: jdbc:postgresql://${POSTGRES_URL}
-        username: ${POSTGRES_USERNAME}
+        password: ${POSTGRES_PASSWORD:finances-api}
+        url: jdbc:postgresql://${POSTGRES_URL:localhost:5432/finances-api}
+        username: ${POSTGRES_USERNAME:finances-api}
     jpa:
         hibernate:
             ddl-auto: update
