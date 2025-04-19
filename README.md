@@ -1,4 +1,4 @@
-<h1 align="center"> Finances-API </h1>
+﻿<h1 align="center"> Finances-API </h1>
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
 

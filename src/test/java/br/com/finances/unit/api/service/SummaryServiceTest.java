@@ -67,30 +67,30 @@ public class SummaryServiceTest {
 	@Test
 	void shouldReturnTotalIncomeInSummary() {
 		ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", principal);
-		BigDecimal totalIncome = summary.getBody().getTotalIncome();
+		BigDecimal totalIncome = summary.getBody().totalIncome();
 		assertEquals(new BigDecimal(7500), totalIncome);
 	}
 	
 	@Test
 	void shouldReturnTotalExpenseInSummary() {
 		ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", principal);
-		BigDecimal totalExpense = summary.getBody().getTotalExpense();
+		BigDecimal totalExpense = summary.getBody().totalExpense();
 		assertEquals(new BigDecimal(7500), totalExpense);
 	}
 	
 	@Test
 	void shouldReturnFinalBalanceInSummary() {
 		ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", principal);
-		BigDecimal finalBalance = summary.getBody().getFinalBalance();
+		BigDecimal finalBalance = summary.getBody().finalBalance();
 		assertEquals(new BigDecimal(0), finalBalance);
 	}
 	
 	@Test
 	void shouldReturnExpenseByCategoryInSummary() {
 		ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", principal);
-		List<ExpenseCategoryDTO> expenseCategory = summary.getBody().getTotalExpenseByCategory();
-		Category category = expenseCategory.get(0).getCategory();
-		BigDecimal totalValue = expenseCategory.get(0).getTotalValue();
+		List<ExpenseCategoryDTO> expenseCategory = summary.getBody().totalExpenseByCategory();
+		Category category = expenseCategory.get(0).category();
+		BigDecimal totalValue = expenseCategory.get(0).totalValue();
 		assertEquals(Category.Food, category);
 		assertEquals(new BigDecimal(1500), totalValue);
 	}

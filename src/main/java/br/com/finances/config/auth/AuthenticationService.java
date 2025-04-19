@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,19 +34,19 @@ public class AuthenticationService implements UserDetailsService{
 		if (client.isEmpty()) {
 			throw new UsernameNotFoundException("Email doesn't exists in the database."); 
 		}
-		
 		return client.get();
 	}
 	public ResponseEntity<TokenDTO> authenticate(LoginForm form, AuthenticationManager authManager, TokenService tokenService) {
-		UsernamePasswordAuthenticationToken login = form.converter();
-		try {
-			Authentication authentication = authManager.authenticate(login);
-			String token = tokenService.generateToken(authentication);
-			return ResponseEntity.ok(new TokenDTO(token, "Bearer"));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-		}
-	}
+        UsernamePasswordAuthenticationToken login = form.converter();
+        Authentication authentication;
+        try {
+            authentication = authManager.authenticate(login);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+        }
+        String token = tokenService.generateToken(authentication);
+        return ResponseEntity.ok(new TokenDTO(token, "Bearer"));
+    }
 	
 	public ResponseEntity<ClientDTO> signIn(SignForm form) {
 		Client client = form.converter();			

@@ -1,22 +1,6 @@
 package br.com.finances.config.security;
 
-public class TokenDTO {
+public record TokenDTO(String token, String type) {
 
-	private String token;
-	private String type;
 
-	public TokenDTO(String token, String type) {
-		this.token = token;
-		this.type = type;
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	
 }

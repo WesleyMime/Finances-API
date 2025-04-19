@@ -37,20 +37,14 @@ public class SummaryService {
 		} catch(NumberFormatException e) {
 			return ResponseEntity.badRequest().build();
 		}
-		
-		SummaryDTO summary = new SummaryDTO();
-		
+
 		BigDecimal totalIncome = incomeRepository.totalIncomeMonth(year, month, client).orElse(BigDecimal.ZERO);
 		BigDecimal totalExpense = expenseRepository.totalExpenseMonth(year, month, client).orElse(BigDecimal.ZERO);
 
 		BigDecimal finalBalance = totalIncome.subtract(totalExpense);
 		List<ExpenseCategoryDTO> totalExpenseByCategory = expenseRepository.totalExpenseByCategory(year, month, client);
-		
-		summary.setTotalIncome(totalIncome);
-		summary.setTotalExpense(totalExpense);
-		summary.setFinalBalance(finalBalance);
-		summary.setTotalExpenseByCategory(totalExpenseByCategory);
-		
+
+		SummaryDTO summary = new SummaryDTO(totalIncome, totalExpense, finalBalance, totalExpenseByCategory);
 		return ResponseEntity.ok(summary);
 	}
 

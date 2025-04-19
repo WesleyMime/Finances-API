@@ -1,28 +1,14 @@
 package br.com.finances.api.expense;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
-public class ExpenseCategoryDTO {
+public record ExpenseCategoryDTO(Category category, BigDecimal totalValue) {
 
-	private Category category;
-	private BigDecimal totalValue;
-	
 	public ExpenseCategoryDTO(Category category, BigDecimal totalValue) {
-		if(category == null) {
-			this.category = Category.Others;
-		} else {
-			this.category = category;
-		}
+		this.category = Objects.requireNonNullElse(category, Category.Others);
 		this.totalValue = totalValue;
 	}
 
-	public Category getCategory() {
-		return category;
-	}
 
-	public BigDecimal getTotalValue() {
-		return totalValue;
-	}
-	
-	
 }
