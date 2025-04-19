@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -30,26 +29,16 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<List<S>> getAll(String description) {
-		List<T> listModel = new ArrayList<>();
 		Client client = getClient();
 
-		if (description == null) {
-			listModel = repository.findByClient(client);
-		} else {
+		if (description != null) {
 			Optional<T> optional = repository.findByDescriptionAndClient(description, client);
+			if (optional.isEmpty()) return ResponseEntity.notFound().build();
 
-			if (optional.isPresent()) {
-				T model = optional.get();
-				listModel.add(model);
-			} else {
-				return ResponseEntity.notFound().build();
-			}
+			S dto = dtoMapper.map(optional.get());
+			return ResponseEntity.ok(List.of(dto));
 		}
-
-		List<S> listDto = new ArrayList<>();
-		listModel.forEach(i -> {
-			listDto.add(dtoMapper.map(i));
-		});
+		List<S> listDto = repository.findByClient(client).stream().map(dtoMapper::map).toList();
 		return ResponseEntity.ok(listDto);
 	}
 
@@ -57,7 +46,7 @@ public class GenericServiceImpl
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
 			// Return Bad Request or Not Found
-			return new ResponseEntity<S>(response.getStatusCode());
+			return new ResponseEntity<>(response.getStatusCode());
 		}
 		return ResponseEntity.ok(dtoMapper.map(response.getBody()));
 	}
@@ -72,18 +61,11 @@ public class GenericServiceImpl
 		} catch (NumberFormatException e) {
 			return ResponseEntity.badRequest().build();
 		}
-
 		List<T> listModel = repository.findByYearAndMonth(year, month, client);
 
-		if (listModel.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
+		if (listModel.isEmpty()) return ResponseEntity.notFound().build();
 
-		List<S> listDto = new ArrayList<>();
-		listModel.forEach(i -> {
-			listDto.add(dtoMapper.map(i));
-		});
-
+		List<S> listDto = listModel.stream().map(dtoMapper::map).toList();
 		return ResponseEntity.ok(listDto);
 	}
 
@@ -105,7 +87,7 @@ public class GenericServiceImpl
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
 			// Return Bad Request or Not Found
-			return new ResponseEntity<S>(response.getStatusCode());
+			return new ResponseEntity<>(response.getStatusCode());
 		}
 		T model = response.getBody();
 
@@ -121,26 +103,24 @@ public class GenericServiceImpl
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
 			// Return Bad Request or Not Found
-			return new ResponseEntity<S>(response.getStatusCode());
+			return new ResponseEntity<>(response.getStatusCode());
 		}
 		repository.deleteById(Long.parseLong(id));
 		return ResponseEntity.ok().build();
 	}
 
-	public T update(T model, U form) {
-		return null;
-	}
-
 	public ResponseEntity<T> tryToGetById(String id) {
-		Client client = getClient();
+        Client client = getClient();
 
-		try {
-			Optional<T> optional = repository.findByIdAndClient(Long.parseLong(id), client);
-            return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        long parsedLong;
+        try {
+            parsedLong = Long.parseLong(id);
         } catch (NumberFormatException e) {
-			return ResponseEntity.badRequest().build();
-		}
-	}
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<T> optional = repository.findByIdAndClient(parsedLong, client);
+        return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
 	private void checkIfAlreadyExists(GenericModel model) {
 		String description = model.getDescription();

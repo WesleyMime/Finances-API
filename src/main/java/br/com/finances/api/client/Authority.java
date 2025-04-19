@@ -6,9 +6,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
+
 @Entity
 public class Authority implements GrantedAuthority{
 
+	@Serial
 	private static final long serialVersionUID = -3339832010368079963L;
 
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)

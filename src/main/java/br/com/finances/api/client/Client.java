@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 public class Client implements UserDetails{
 
+	@Serial
 	private static final long serialVersionUID = 7569357973771317490L;
 	
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
