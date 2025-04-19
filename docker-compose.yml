@@ -13,7 +13,7 @@ services:
       "-DPOSTGRES_URL=db:5432/CHANGEDB",
       "-DPOSTGRES_USERNAME=CHANGEUSR",
       "-DPOSTGRES_PASSWORD=CHANGEPWD",
-      "-DJWT_SECRET=CHANGEJWT",
+      "-DJWT_SECRET=ME7SXkNLos9X6azj8/SMMLXxiq7Wg32PBzTNNohxZ+ykIwKVKMeWmtMwJNl6zhi8QgvcWCmjWu9m4fQagyW0IQ==",
       "-jar",
       "/app.jar"
     ]

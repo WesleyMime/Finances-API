@@ -1,7 +1,6 @@
-
-FROM openjdk:18-jdk-alpine
+FROM openjdk:25-slim-bullseye
 VOLUME /main-app
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN addgroup --system spring && adduser --system spring && adduser spring spring
 USER spring:spring
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
