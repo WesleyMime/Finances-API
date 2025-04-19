@@ -85,7 +85,7 @@ public class AuthControllerTest {
 				.content(new SignForm(NAME, EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isConflict());
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class AuthControllerTest {
 				.content(new SignForm(NAME, INVALID, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isUnprocessableEntity());
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class AuthControllerTest {
 				.content(new SignForm(INVALID, EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isUnprocessableEntity());
 	}
 	
 	@Test
@@ -115,6 +115,6 @@ public class AuthControllerTest {
 				.content(new SignForm(NAME, EMAIL, INVALID).toString())
 				.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isUnprocessableEntity());
 	}
 }

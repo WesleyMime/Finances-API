@@ -164,7 +164,7 @@ class ExpenseControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Home).toString()))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isConflict());
 	}
 	
 	@Test

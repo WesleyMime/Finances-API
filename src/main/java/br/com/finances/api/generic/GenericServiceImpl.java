@@ -2,7 +2,7 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
-import jakarta.persistence.EntityExistsException;
+import br.com.finances.config.errors.FlowAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -129,12 +129,13 @@ public class GenericServiceImpl
 
 		Optional<T> sameValue = repository.findByDescriptionAndMonth(description, monthNumber, client);
 		if (sameValue.isPresent()) {
-			throw new EntityExistsException();
+			throw new FlowAlreadyExistsException();
 		}
 	}
 
 	private Client getClient() {
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		return clientRepository.findByEmail(email).get();
+		Optional<Client> client = clientRepository.findByEmail(email);
+		return client.orElse(null);
 	}
 }

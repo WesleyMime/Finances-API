@@ -165,7 +165,7 @@ class IncomeControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
 		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.status().isConflict());
 	}
 	
 	@Test

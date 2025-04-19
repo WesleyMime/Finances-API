@@ -1,11 +1,10 @@
 package br.com.finances.config.errors;
 
-import jakarta.persistence.EntityExistsException;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
@@ -14,28 +13,31 @@ import java.util.List;
 @RestControllerAdvice
 public class ErrorHandler {
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public List<ErrorFormDTO> handle(MethodArgumentNotValidException exception) {
-		List<ErrorFormDTO> errorFormDto = new ArrayList<>();
-		
-		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-		fieldErrors.forEach(e -> {
-			errorFormDto.add(new ErrorFormDTO(e.getField(), e.getDefaultMessage()));
-		});
-		
-		return errorFormDto;		
+	public ResponseEntity<ProblemDetail> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+		ProblemDetail problemDetail = e.getBody();
+		problemDetail.setStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+		List<FieldErrorDetail> errors = new ArrayList<>();
+		e.getFieldErrors().forEach(fieldError ->
+				errors.add(new FieldErrorDetail(fieldError.getField(), fieldError.getDefaultMessage())));
+		problemDetail.setProperty("errors", errors);
+		return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
 	}
-	
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(EntityExistsException.class)
-	public ErrorDTO handle(EntityExistsException exception) {
-		return new ErrorDTO("There is already an entity with this description in this month registered.");
+
+	@ExceptionHandler(FlowAlreadyExistsException.class)
+	public ResponseEntity<ProblemDetail> flowAlreadyExistsExceptionHandler(FlowAlreadyExistsException e) {
+		e.setTitle("Flow already registered.");
+		e.setDetail("There is already an income or expense with this description in this month registered.");
+		return ResponseEntity.status(e.getStatusCode()).body(e.getBody());
 	}
-	
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+
 	@ExceptionHandler(EmailAlreadyRegisteredException.class)
-	public ErrorDTO handle(EmailAlreadyRegisteredException exception) {
-		return new ErrorDTO("There is already a client with this email registered.");
+	public ResponseEntity<ProblemDetail> emailAlreadyRegisteredExceptionHandler(EmailAlreadyRegisteredException e) {
+		e.setTitle("Email already registered.");
+		e.setDetail("There is already a client with this email registered.");
+		return ResponseEntity.status(e.getStatusCode()).body(e.getBody());
+	}
+
+	private record FieldErrorDetail(String field, String detail) {
 	}
 }
