@@ -1,17 +1,32 @@
-﻿<h1 align="center"> Finances-API </h1>
+﻿<div align="center">
+<h1> Finances-API </h1>
+
+[![en][en-shield]][en-url]
+[![pt-br][pt-br-shield]][pt-br-url]
+[![project_license][license-shield]][license-url]
+[![last-commit][commit-shield]][commit-url]
+</div>
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.md)
-[![pt-br](https://img.shields.io/badge/lang-pt--br-g.svg)](https://github.com/WesleyMime/Finances-API/blob/main/README.pt-br.md)
+## Description
 
-## About the Challenge Backend
+Finances-API is a REST API designed for personal financial management. It allows users to manage their finances
+efficiently by providing features like recording incomes and expenses, querying financial data, and access control
+using JWT authentication.
 
-Build a Rest API for family financial control, where we will register income, expenses, implement queries, access control, among other features.
+## Key Features
+
+- **CRUD operations** for financial records (incomes and expenses).
+- Secure access control using **JWT authentication**.
+- Persistent data storage with **PostgreSQL**.
+- Containerized for easy deployment using **Docker**.
+- API documentation and testing support with **Postman**.
 
 ## Project objectives
 
-The project was developed in sprints lasting 1 week each, which had certain activities to be implemented. For better management of activities, trello was used.
+The project was developed in sprints lasting 1 week each, which had certain activities to be implemented.
+For better management of activities, trello was used.
 
 - [Sprint 1 Trello](https://trello.com/b/ofAXrAlA/challenge-backend-semana-1)
 - [Sprint 2 Trello](https://trello.com/b/tKBmD8P6/challenge-backend-semana-2)
@@ -19,24 +34,64 @@ The project was developed in sprints lasting 1 week each, which had certain acti
 
 ## Technologies
 
-The programming language, frameworks and technologies were of free choice. I chose to develop the project with the following technologies:
-
-<img alt="Java" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original-wordmark.svg" width="50" height="50" /> <img alt="Spring" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original-wordmark.svg" width="50" height="50" /> <img alt="Postgres" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original-wordmark.svg" width="50" height="50" /> <img alt="Docker" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-plain-wordmark.svg" width="50" height="50" />
-
+![java] ![spring] ![postgresql] ![docker]
 
 ## Deploy
 
+The Spring Boot API is running on a Google Cloud Virtual Machine, with DNS and HTTPS from Cloudflare.
+
+The link to access is:
+
+- Spring Boot API https://marujo.site
+
+## Run locally
 
 To run locally you need to have Docker installed.
 
-- Open the terminal and clone the project using the command
-  `git clone https://github.com/WesleyMime/Finances-API.git`.
+- Clone project
 
-- Enter the `Finances-API` folder and use the command `docker-compose up`.
+```
+git clone https://github.com/WesleyMime/Finances-API.git
+```
 
-If everything is working, the link to access is: http://localhost
+- Enter the project folder
 
+```
+cd Finances-API
+```
+
+- Start services
+
+```
+docker compose up
+```
+
+## Use
+
+Once the application is running, you can use Postman or any other API client to interact with the API.
+
+The link to access is:
+
+- http://localhost
 
 ## Documentation
 
 The documentation made in Postman can be accessed by this [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) and is the most practical way to use this API.
+
+## License
+
+Distributed under the MIT license. See `LICENSE.txt` for more information.
+
+[en-shield]: https://img.shields.io/badge/lang-en-green.svg?style=for-the-badge
+[en-url]: https://github.com/WesleyMime/Finances-API/blob/main/README.md
+[pt-br-shield]: https://img.shields.io/badge/lang-pt--br-lightdarkgreen.svg?style=for-the-badge
+[pt-br-url]: https://github.com/WesleyMime/Finances-API/blob/main/README.pt-br.md
+[commit-shield]: https://img.shields.io/github/last-commit/wesleymime/Finances-API.svg?style=for-the-badge
+[commit-url]: https://github.com/wesleymime/Finances-API/commit
+[license-shield]: https://img.shields.io/github/license/wesleymime/Finances-API.svg?style=for-the-badge
+[license-url]: https://github.com/wesleymime/Finances-API/blob/master/LICENSE.txt
+
+[java]: https://img.shields.io/badge/Java-000000?logo=openjdk&logoColor=white&style=for-the-badge
+[spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
+[postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
+[docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
