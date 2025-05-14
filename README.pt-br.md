@@ -17,14 +17,6 @@ Finances-API é uma API REST projetada para gerenciamento financeiro pessoal. El
 finanças eficientemente, fornecendo recursos como registrar renda e despesas, consultar dados financeiros e controle de
 acesso usando autenticação JWT.
 
-## Características principais
-
-- **Operações CRUD** para registros financeiros (renda e despesas).
-- Controle de acesso seguro usando **autenticação JWT**.
-- Armazenamento de dados persistente com **PostgreSQL**.
-- Contêinerzado para facilitar a implantação usando **Docker**.
-- Documentação da API e suporte de teste com **Postman**.
-
 ## Objetivos do projeto
 
 O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam determinadas atividades a serem implementadas. Para uma melhor gestão das atividades, foi utilizado o trello como ferramenta.
@@ -32,6 +24,14 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 - [Trello da Sprint 1](https://trello.com/b/ofAXrAlA/challenge-backend-semana-1)
 - [Trello da Sprint 2](https://trello.com/b/tKBmD8P6/challenge-backend-semana-2)
 - [Trello da Sprint 3](https://trello.com/b/qFYXUVXJ/challenge-backend-semana-3)
+
+## Características principais
+
+- **Operações CRUD** para registros financeiros (renda e despesas).
+- Controle de acesso seguro usando **autenticação JWT**.
+- Armazenamento de dados persistente com **PostgreSQL**.
+- Contêinerzado para facilitar a implantação usando **Docker**.
+- Documentação da API e suporte de teste com **Postman**.
 
 ## Tecnologias
 
@@ -55,7 +55,7 @@ Para rodar é necessário ter Docker instalado.
 git clone https://github.com/WesleyMime/Finances-API.git
 ```
 
-- Enter na pasta do projeto
+- Entre na pasta do projeto
 
 ```
 cd Finances-API
@@ -80,9 +80,9 @@ O link para acesso é:
 
 A documentação feita no Postman pode ser acessada por esse [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) e é o jeito mais prático de se usar esta API.
 
-## License
+## Licença
 
-Distributed under the MIT license. See `LICENSE.txt` for more information.
+Distribuído sob a licença do MIT. Consulte `LICENSE.txt` para obter mais informações.
 
 [en-shield]: https://img.shields.io/badge/lang-en-green.svg?style=for-the-badge
 [en-url]: https://github.com/WesleyMime/Finances-API/blob/main/README.md
@@ -92,16 +92,12 @@ Distributed under the MIT license. See `LICENSE.txt` for more information.
 [commit-url]: https://github.com/wesleymime/Finances-API/commit
 [license-shield]: https://img.shields.io/github/license/wesleymime/Finances-API.svg?style=for-the-badge
 [license-url]: https://github.com/wesleymime/Finances-API/blob/master/LICENSE.txt
-
 [deploy-status]: http://167.234.233.130:3001/api/badge/5/status?upColor=lightdarkgreen&style=for-the-badge
-
 [deploy-url]: https://marujo.site/
 
 [java]: https://img.shields.io/badge/Java-000000?logo=openjdk&logoColor=white&style=for-the-badge
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
 [postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
 [docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
-
 [google]: https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white&style=for-the-badge
-
 [cloudflare]: https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white&style=for-the-badge

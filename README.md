@@ -17,14 +17,6 @@ Finances-API is a REST API designed for personal financial management. It allows
 efficiently by providing features like recording incomes and expenses, querying financial data, and access control
 using JWT authentication.
 
-## Key Features
-
-- **CRUD operations** for financial records (incomes and expenses).
-- Secure access control using **JWT authentication**.
-- Persistent data storage with **PostgreSQL**.
-- Containerized for easy deployment using **Docker**.
-- API documentation and testing support with **Postman**.
-
 ## Project objectives
 
 The project was developed in sprints lasting 1 week each, which had certain activities to be implemented.
@@ -33,6 +25,14 @@ For better management of activities, trello was used.
 - [Sprint 1 Trello](https://trello.com/b/ofAXrAlA/challenge-backend-semana-1)
 - [Sprint 2 Trello](https://trello.com/b/tKBmD8P6/challenge-backend-semana-2)
 - [Sprint 3 Trello](https://trello.com/b/qFYXUVXJ/challenge-backend-semana-3)
+
+## Key Features
+
+- **CRUD operations** for financial records (incomes and expenses).
+- Secure access control using **JWT authentication**.
+- Persistent data storage with **PostgreSQL**.
+- Containerized for easy deployment using **Docker**.
+- API documentation and testing support with **Postman**.
 
 ## Technologies
 
@@ -92,16 +92,12 @@ Distributed under the MIT license. See `LICENSE.txt` for more information.
 [commit-url]: https://github.com/wesleymime/Finances-API/commit
 [license-shield]: https://img.shields.io/github/license/wesleymime/Finances-API.svg?style=for-the-badge
 [license-url]: https://github.com/wesleymime/Finances-API/blob/master/LICENSE.txt
-
 [deploy-status]: http://167.234.233.130:3001/api/badge/5/status?upColor=lightdarkgreen&style=for-the-badge
-
 [deploy-url]: https://marujo.site/
 
 [java]: https://img.shields.io/badge/Java-000000?logo=openjdk&logoColor=white&style=for-the-badge
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
 [postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
 [docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
-
 [google]: https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white&style=for-the-badge
-
 [cloudflare]: https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white&style=for-the-badge
