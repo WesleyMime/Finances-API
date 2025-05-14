@@ -5,6 +5,8 @@
 [![pt-br][pt-br-shield]][pt-br-url]
 [![project_license][license-shield]][license-url]
 [![last-commit][commit-shield]][commit-url]
+[![deploy][deploy-status]][deploy-url]
+
 </div>
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
@@ -34,7 +36,7 @@ For better management of activities, trello was used.
 
 ## Technologies
 
-![java] ![spring] ![postgresql] ![docker]
+![java] ![spring] ![postgresql] ![docker] ![google] ![cloudflare]
 
 ## Deploy
 
@@ -66,7 +68,7 @@ cd Finances-API
 docker compose up
 ```
 
-## Use
+## Usage
 
 Once the application is running, you can use Postman or any other API client to interact with the API.
 
@@ -91,7 +93,15 @@ Distributed under the MIT license. See `LICENSE.txt` for more information.
 [license-shield]: https://img.shields.io/github/license/wesleymime/Finances-API.svg?style=for-the-badge
 [license-url]: https://github.com/wesleymime/Finances-API/blob/master/LICENSE.txt
 
+[deploy-status]: http://167.234.233.130:3001/api/badge/5/status?upColor=lightdarkgreen&style=for-the-badge
+
+[deploy-url]: https://marujo.site/
+
 [java]: https://img.shields.io/badge/Java-000000?logo=openjdk&logoColor=white&style=for-the-badge
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
 [postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
 [docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
+
+[google]: https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white&style=for-the-badge
+
+[cloudflare]: https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white&style=for-the-badge
