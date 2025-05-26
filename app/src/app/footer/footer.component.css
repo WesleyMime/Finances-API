@@ -1,0 +1,34 @@
+footer {
+    background-color: #1a202c;
+    color: #cbd5e0;
+    padding: 11px 40px;
+    text-align: center;
+    font-size: 0.9em;
+    border-top: 1px solid #2d3748;
+  }
+  
+  .footer-links a {
+    color: #cbd5e0;
+    transition: color 0.2s ease;
+  }
+  
+  .footer-links a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  
+  /* Optional: Responsive adjustments */
+  @media (max-width: 600px) {
+      footer {
+          padding: 20px;
+      }
+  
+      .footer-links a {
+          margin: 0 5px; /* Reduce space between links on small screens */
+      }
+  
+      .footer-content {
+           flex-direction: column;
+           gap: 8px;
+      }
+  }
