@@ -1,0 +1,57 @@
+<app-header></app-header>
+<main class="form-container">
+  <div class="form-box">
+    <h2>Crie sua Conta</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="fullName">Nome</label>
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Coloque seu nome"
+          [(ngModel)]="name"
+          name="fullName"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Coloque seu email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Coloque sua senha"
+          [(ngModel)]="passwordValue"
+          name="password"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirme sua Senha</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Coloque sua senha"
+          [(ngModel)]="confirmPasswordValue"
+          name="confirmPassword"
+          required
+        >
+      </div>
+      <br>
+      <button type="submit" class="btn primary account-action-button" routerLink="/">Registrar</button>
+    </form>
+  </div>
+</main>
