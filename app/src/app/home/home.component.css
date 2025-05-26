@@ -6,6 +6,7 @@
   padding: 40px 20px;
   min-height: calc(100vh - 60px); /* fill viewport height minus header height */
   box-sizing: border-box; /* Include padding in height calculation */
+  justify-content: center;
 }
 
 .hero-section {
@@ -27,7 +28,9 @@
 }
 
 .btn {
-  padding: 12px 30px;
+  padding: 12px;
+  width: 90vw;
+  max-width: 900px;
   display: flex;
   border: none;
   border-radius: 5px;
