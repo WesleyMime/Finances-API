@@ -1,0 +1,94 @@
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: calc(100vh - 60px); /* fill viewport height minus header height */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.hero-section h1 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 15px;
+}
+
+.btn {
+  padding: 12px 30px;
+  display: flex;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  justify-content: center;
+}
+
+.btn.primary {
+  background-color: #6b4ee2;
+  color: white;
+}
+
+.btn.secondary {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.features-section {
+  text-align: center;
+  max-width: 900px;
+  width: 100%;
+}
+
+.features-section h2 {
+  font-size: 1.8em;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+  gap: 20px; /* Space between cards */
+  margin-bottom: 30px;
+}
+
+.feature-card {
+  background-color: #1a202c;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 2em;
+  margin-bottom: 15px;
+  color: #9f7aea;
+}
+
+.feature-text {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #e2e8f0;
+}
