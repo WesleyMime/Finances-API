@@ -40,20 +40,6 @@
   justify-content: center;
 }
 
-.btn.primary {
-  background-color: #6b4ee2;
-  color: white;
-}
-
-.btn.secondary {
-  background-color: #2d3748;
-  color: #e2e8f0;
-}
-
-.btn:hover {
-  opacity: 0.9;
-}
-
 .features-section {
   text-align: center;
   max-width: 900px;
