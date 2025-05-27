@@ -33,3 +33,7 @@
   color: #6b4ee2;
   text-decoration: underline;
 }
+
+input.ng-invalid.ng-touched {
+  border-color: rgb(220, 14, 14);
+}
