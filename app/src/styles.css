@@ -56,6 +56,23 @@ body {
   border-color: #6b4ee2;
 }
 
+
+.validation-error {
+  color: rgb(220, 14, 14);
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.server-error {
+  color: rgb(220, 14, 14);
+  margin-top: 15px;
+  text-align: center;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: rgb(220, 14, 14);
+}
+
 .btn:hover {
   opacity: 0.9;
 }
