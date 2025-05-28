@@ -1,0 +1,19 @@
+.forgot-password-link {
+  display: block;
+  text-align: right;
+  font-size: 0.9em;
+  color: #9f7aea;
+  text-decoration: none;
+  margin-top: -10px;
+  margin-bottom: 30px;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: #6b4ee2;
+  text-decoration: underline;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: rgb(220, 14, 14);
+}

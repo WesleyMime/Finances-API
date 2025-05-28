@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderComponent } from "../header/header.component";
 import { NgIf } from '@angular/common';
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
+import { ILoginUser } from '../models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ export class LoginComponent {
     this.passwordVisible = !this.passwordVisible;
   }
   
-  credentials = {email: '', password: ''};
+  credentials: ILoginUser = {email: '', password: ''};
   errorMessage: string | null = null;
 
   onSubmit() {
@@ -31,7 +32,7 @@ export class LoginComponent {
         console.log('Login successful', response);
         this.router.navigate(['/dashboard']);
       },
-      error: (error) => {
+      error: (error: Error) => {
         console.error('Login failed', error);
         this.errorMessage = 'Falha no Login. Por favor verifique suas credenciais.';
       }
