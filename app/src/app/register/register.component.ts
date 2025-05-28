@@ -1,31 +1,53 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HeaderComponent } from "../header/header.component";
+import { NgIf } from '@angular/common';
+import { AuthService } from '../services/auth.service';
+import { IRegisterUser } from '../models/user.model';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink, HeaderComponent],
+  imports: [FormsModule, HeaderComponent, NgIf],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  name: string = '';
-  email: string = '';
-  passwordValue: string = '';
-  confirmPasswordValue: string = '';
 
-  onSubmit() {
-    if (this.passwordValue !== this.confirmPasswordValue) {
-      console.error('Passwords do not match!');
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+  ) {}
+
+  credentials: IRegisterUser = {email: '', name: '', password: '', confirmPassword: ''};
+  passwordVisible: boolean = false;
+  errorMessage: string | null = null;
+
+  togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
+  }
+  
+
+  onSubmit() {    
+    if (this.credentials.password !== this.credentials.confirmPassword) {
+      this.errorMessage = ('Senhas não coincidem!');
       return;
     }
 
     console.log('Registration attempted with:', {
-      fullName: this.name,
-      email: this.email,
-      password: this.passwordValue,
+      fullName: this.credentials.name,
+      email: this.credentials.email
     });
-    // Add actual registration logic here (e.g., call an auth service)
+    this.authService.register(this.credentials).subscribe({
+      next: (response: any) => {
+        console.log('Register successful', response);
+        alert('Registrado com sucesso!');
+        this.router.navigate(['/login']);
+      },
+      error: (error: Error) => {
+        console.log('Register failed', error);
+        this.errorMessage = error.message;
+      }
+    });
   }
 }

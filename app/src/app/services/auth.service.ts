@@ -1,40 +1,30 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
 import { Router } from '@angular/router';
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  token: string;
-  type: string;
-}
+import { ILoginResponse, ILoginUser, IRegisterUser } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/auth/login';
+  private apiUrl = 'http://localhost:8080/auth';
+  private loginEndpoint = '/login';
+  private registerEndpoint = '/signin';
 
   private readonly TOKEN_KEY = 'auth_token';
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  login(credentials: LoginCredentials): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
+  login(credentials: ILoginUser): Observable<ILoginResponse> {
+    return this.http.post<ILoginResponse>(this.apiUrl+this.loginEndpoint, credentials).pipe(
       // Use tap to perform a side effect (storing the token)
       // without modifying the observable stream itself.
       tap(response => {
         if (response && response.token) {
           this.storeToken(response.token);
-        } else {
-          console.error('Login successful but no token received in response.');
-          throw new Error('No token received');
         }
       })
     );
@@ -78,5 +68,22 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  register(registerCredentials: IRegisterUser) {
+    return this.http.post(this.apiUrl+this.registerEndpoint, registerCredentials).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
+    if(error.status == 422) {
+      errorMessage = "Falha no registro. Por favor verifique suas credenciais."
+    }
+    if(error.status == 409) {
+      errorMessage = "Já existe um cliente cadastrado com esse email.";
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }
