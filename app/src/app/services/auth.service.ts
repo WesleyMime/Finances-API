@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
 import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from '../models/user.model';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,9 @@ export class AuthService {
   private registerEndpoint = '/signin';
 
   private readonly TOKEN_KEY = 'auth_token';
+  private readonly EXPIRATION_MINUTES = 30;
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private cookieService: CookieService) { }
 
   login(credentials: ILoginUser): Observable<ILoginResponse> {
     return this.http.post<ILoginResponse>(this.apiUrl+this.loginEndpoint, credentials).pipe(
@@ -24,50 +26,57 @@ export class AuthService {
       // without modifying the observable stream itself.
       tap(response => {
         if (response && response.token) {
-          this.storeToken(response.token);
+          this.setCookie(this.TOKEN_KEY, response.token);
         }
       })
     );
   }
 
-  private storeToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+  setCookie(name: string, value: string) {
+    var date = new Date();
+    let minutesInMiliseconds = this.EXPIRATION_MINUTES * 60 * 1000;
+    date.setTime(date.getTime() + minutesInMiliseconds);
+
+    this.cookieService.set(name, value, { expires: date});
+  }
+  
+  getAuthCookie(): string {
+    return this.cookieService.get(this.TOKEN_KEY);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  /**
-   * Checks if the user is currently logged in (based on the presence of a token).
-   * NOTE: This is a basic check. A more robust check would validate the token's expiration
-   *       or rely on a backend validation endpoint.
-   * @returns True if a token is found in localStorage, false otherwise.
-   */
   isLoggedIn(): boolean {
     const token = this.decodeToken();
-    console.log(token);
-    return !!token; // The !! converts the string/null to a boolean
+    if (!token) return false;
+    
+    token.exp = token.exp * 1000; // Convert to milliseconds
+    if (token.exp < Date.now()) {
+      console.warn("Token expired");
+      this.logout();
+      return false;
+    }
+    console.log("Time remaining until token expiration (min):", Math.floor((token.exp - Date.now()) / 1000 / 60));
+    return true;
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    this.cookieService.delete(this.TOKEN_KEY);
     this.router.navigate(['/']);
   }
 
   decodeToken(): any | null {
-    const token = this.getToken();
-    if (token) {
-      try {
-        const payload = token.split('.')[1];
-        const decodedPayload = atob(payload); // atob decodes base64
-        return JSON.parse(decodedPayload);
-      } catch (e) {
-        console.error('Failed to decode token:', e);
-        return null;
-      }
+    const token = this.getAuthCookie();
+    if (!token) {
+      console.warn('No token found');
+      return;
     }
-    return null;
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = atob(payload); // atob decodes base64
+      return JSON.parse(decodedPayload);
+    } catch (e) {
+      console.error('Failed to decode token:', e);
+      return;
+    }
   }
 
   register(registerCredentials: IRegisterUser) {
@@ -78,12 +87,8 @@ export class AuthService {
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if(error.status == 422) {
-      errorMessage = "Falha no registro. Por favor verifique suas credenciais."
-    }
-    if(error.status == 409) {
-      errorMessage = "Já existe um cliente cadastrado com esse email.";
-    }
+    if(error.status == 422) errorMessage = "Falha no registro. Por favor verifique suas credenciais.";
+    if(error.status == 409) errorMessage = "Já existe um cliente cadastrado com esse email.";
     return throwError(() => new Error(errorMessage));
   }
 }
