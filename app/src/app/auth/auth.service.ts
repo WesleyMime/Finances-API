@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
 import { Router } from '@angular/router';
-import { ILoginResponse, ILoginUser, IRegisterUser } from '../models/user.model';
+import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({

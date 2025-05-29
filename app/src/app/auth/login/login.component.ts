@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgIf } from '@angular/common';
-import { ILoginUser } from '../models/user.model';
-import { HeaderComponent } from '../header/header.component';
-import { AuthService } from '../services/auth.service';
+import { HeaderComponent } from '../../header/header.component';
+import { AuthService } from '../auth.service';
+import { ILoginUser } from '../user.model';
 
 @Component({
   selector: 'app-login',
