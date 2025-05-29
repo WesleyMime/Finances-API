@@ -1,0 +1,79 @@
+<app-header></app-header>
+<main class="form-container">
+  <div class="add-transaction-box">
+    <h2>Adicionar Transação</h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="transactionType">Tipo de Transação*</label>
+        <select
+          id="transactionType"
+          [(ngModel)]="transaction.type"
+          name="transactionType"
+          required
+        >
+          <option value="" disabled selected>Selecione tipo</option>
+          <option *ngFor="let type of transactionTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="transaction.type=='Despesa'">
+        <label for="category">Categoria*</label>
+        <select
+          id="category"
+          [(ngModel)]="transaction.category"
+          name="category"
+          required
+        >
+          <option value="" selected disabled>Selecione categoria</option>
+          <option *ngFor="let cat of categoryForm" [value]="cat.index">{{ cat.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="value">Valor*</label>
+        <input
+          type="number"
+          id="value"
+          placeholder="R$"
+          [(ngModel)]="transaction.value"
+          name="value"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="date">Data*</label>
+        <input
+          type="date"
+          id="date"
+          placeholder="Selecione Data"
+          [(ngModel)]="transaction.date"
+          name="date"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descrição*</label>
+        <textarea
+          id="description"
+          placeholder="eg. Conta de luz"
+          [(ngModel)]="transaction.description"
+          name="notes"
+          required
+          rows="4"
+        ></textarea>
+      </div>
+
+      <p *ngIf="errorMessage" class="server-error">{{ errorMessage }}</p>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary add-transaction-button">
+          Adicionar
+        </button>
+        <p *ngIf="sucessMessage" class="server-success">{{ sucessMessage }}</p>
+      </div>
+    </form>
+  </div>
+</main>
