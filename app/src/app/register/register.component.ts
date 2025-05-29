@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HeaderComponent } from "../header/header.component";
+import { HeaderComponent } from '../header/header.component';
 import { NgIf } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { IRegisterUser } from '../models/user.model';
