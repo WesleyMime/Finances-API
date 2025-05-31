@@ -1,0 +1,229 @@
+.reports-content {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-overview h1 {
+    font-size: 2em;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.page-overview .subtitle {
+    font-size: 1em;
+    color: #cbd5e0;
+    margin-bottom: 30px;
+}
+/* Section styles matching .card */
+.report-section {
+    background-color: #1a202c; /* Match card background */
+    border: 1px solid #2d3748; /* Match card border */
+    border-radius: 8px; /* Match border radius */
+    padding: 25px; /* Match card padding */
+    margin-bottom: 30px; /* Match margin */
+    box-sizing: border-box; /* Ensure padding is included in width */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Keep similar subtle shadow */
+}
+
+/* Section title style matching .chart-title */
+.report-section h3 {
+    font-size: 1.1em; /* Match chart-title font size */
+    font-weight: bold; /* Match font weight */
+    margin: 0 0 15px 0; /* Match margin */
+    color: #e2e8f0; /* Match color */
+}
+
+/* Metrics/Summary styles matching .chart-summary */
+.metrics {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 15px; /* Adjusted from example's 20px to fit section */
+    gap: 10px; /* Match gap */
+}
+
+/* Metric value style matching .summary-value */
+.metric-value {
+    font-size: 1.6em; /* Match summary-value font size */
+    font-weight: bold; /* Match font weight */
+    color: #ffffff; /* White value */
+    margin-right: 0; /* Gap handles spacing now */
+}
+
+/* Metric info style combining .summary-period and percentage color */
+.metric-info {
+    font-size: 0.9em; /* Match card-label / summary-percentage size */
+    color: #a0aec0; /* Match card-label / summary-period color */
+    /* The span inside this is where the percentage is, handled below */
+}
+
+/* Styling for percentage changes within metric-info */
+.metric-info span {
+   font-weight: bold; /* Match summary-percentage font weight */
+   /* Color handled by .green, .red classes */
+}
+
+
+/* Styling for percentage changes based on value */
+.green {
+  color: #48bb78; /* Example green from dashboard CSS */
+}
+
+.red {
+  color: #fc8181; /* Example red from dashboard CSS */
+}
+
+.gray {
+    color: #a0aec0; /* Neutral color matching labels */
+}
+
+/* Chart container styles matching .chart-placeholder */
+.chart {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* Removed padding-top/bottom and borders for a cleaner look matching the placeholders */
+  /* If you want separators, add them specifically where needed */
+}
+
+/* Income vs. Expenses Chart (Bar Chart Simulation) */
+.income-expense-chart .chart-bars {
+  display: flex;
+  align-items: flex-end; /* Bars start from the bottom */
+  height: 120px; /* Match bar-chart placeholder height */
+  gap: 8px; /* Adjust gap between bars for better visual separation */
+  padding: 0 5px; /* Little padding */
+  box-sizing: border-box;
+  justify-content: space-around; /* Evenly distribute bars if not using flex-grow */
+}
+
+.income-expense-chart .bar {
+  /* flex-grow: 1; /* Removed flex-grow to use a fixed width like the example */
+  width: 12px; /* Match bar width */
+  background-color: #6b4ee2; /* Match bar color (purple) */
+  border-top-left-radius: 3px; /* Match border radius */
+  border-top-right-radius: 3px; /* Match border radius */
+  margin: 0 2px; /* Adjust margin if gap isn't enough, or remove if gap is sufficient */
+}
+
+
+/* Spending by Category Chart (Horizontal Bar Chart Simulation) */
+.spending-chart .spending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Keep spacing */
+}
+
+.spending-chart .spending-item {
+  display: flex;
+  align-items: center;
+}
+
+.spending-chart .category-name {
+  width: 120px; /* Fixed width for category names */
+  flex-shrink: 0; /* Prevent shrinking */
+  margin-right: 10px;
+  font-size: 0.9em;
+  color: #cbd5e0; /* Text color */
+}
+
+.spending-chart .category-bar-container {
+  flex-grow: 1; /* Bar container takes remaining space */
+  height: 8px; /* Height of the bar */
+  background-color: #2d3748; /* Background for the bar track (match border color) */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.spending-chart .category-bar {
+  height: 100%;
+  background-color: #4299e1; /* Example bar color (blue-ish) - chose a similar dark theme blue */
+  border-radius: 4px;
+}
+
+.spending-chart .category-percentage {
+  width: 40px; /* Fixed width for percentage */
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 10px;
+  font-size: 0.9em;
+  color: #a0aec0; /* Match label color */
+}
+
+/* Net Worth Trend Chart (Line Chart Simulation) */
+.net-worth-chart svg {
+  display: block;
+  width: 100%;
+  height: 120px; /* Match line-chart placeholder height */
+  /* Added some internal spacing */
+  overflow: visible; /* Ensure line isn't cut off at edges if it goes slightly out */
+}
+
+.net-worth-chart svg path {
+    stroke: #63b3ed; /* Example line color (lighter blue) */
+    stroke-width: 2;
+    fill: none;
+}
+
+
+/* Chart Labels matching .chart-labels */
+.chart-labels {
+    display: flex;
+    justify-content: space-between; /* Labels spread out */
+    font-size: 0.8em; /* Match font size */
+    color: #a0aec0; /* Match color */
+    margin-top: 5px; /* Match margin */
+    padding: 0 10px; /* Add padding to align better with perceived chart area */
+}
+
+.chart-labels span {
+    text-align: center;
+    flex-grow: 1; /* Ensure labels distribute space evenly */
+}
+
+
+/* Key Takeaway Styles */
+.key-takeaway {
+  margin-top: 20px;
+  padding: 15px; /* Keep similar padding */
+  background-color: #2d3748; /* Background for takeaway (match border color) */
+  border-radius: 6px; /* Keep border radius */
+  font-size: 0.9em; /* Keep font size */
+  line-height: 1.5; /* Keep line height */
+  color: #cbd5e0; /* Text color */
+}
+
+.key-takeaway p {
+    margin: 0;
+}
+
+
+/* Responsive Adjustments - Adopted from example */
+@media (max-width: 680px) {
+    /* The reports layout is linear, grids aren't used the same way. */
+    /* Maybe just reduce padding or font sizes slightly if needed. */
+    :host {
+        padding: 20px;
+    }
+    .report-section {
+        padding: 20px;
+    }
+    .spending-chart .category-name {
+      width: 100px; /* Reduce category name width */
+    }
+}
+
+@media (max-width: 480px) {
+    .report-section {
+        padding: 15px;
+    }
+     .metric-value {
+        font-size: 1.4em;
+    }
+    .spending-chart .category-name {
+      width: 80px; /* Further reduce category name width */
+      margin-right: 5px;
+    }
+     .spending-chart .category-percentage {
+        margin-left: 5px;
+    }
+}
