@@ -1,0 +1,104 @@
+<app-header></app-header>
+<main class="reports-content">
+  <section class="page-overview">
+    <h1>Financial Reports</h1>
+    <p class="subtitle">Analyze your financial health with detailed reports.</p>
+
+  <!-- Income vs. Expenses Section -->
+    <div class="report-section">
+      <h3>Income vs. Expenses</h3>
+      <div class="metrics">
+        <div class="metric-value">{{ incomeExpenseTotal }}</div>
+        <div class="metric-info">Last 12 Months Average <span
+          [ngClass]="getChangeColor(incomeExpenseChange)">{{ incomeExpenseChange }}</span></div>
+      </div>
+      <div class="chart income-expense-chart">
+        <!-- Simulate Bar Chart -->
+        <div class="chart-bars">
+          <div *ngFor="let height of incomeExpenseBarHeights" class="bar" [ngStyle]="{ 'height': height }"></div>
+        </div>
+        <div class="chart-labels">
+          <span *ngFor="let month of incomeExpenseMonths">{{ month }}</span>
+        </div>
+      </div>
+      <div class="key-takeaway">
+        <p>{{ incomeExpenseTakeaway }}</p>
+      </div>
+    </div>
+
+    <!-- Spending by Category Section -->
+    <div class="report-section recent-transactions">
+      <h3>Spending by Category</h3>
+      <div class="metrics">
+        <div class="metric-value">{{ spendingTotal }}</div>
+        <div class="metric-info">Last Month <span [ngClass]="getChangeColor(spendingChange)">{{ spendingChange }}</span>
+        </div>
+      </div>
+      <div class="chart spending-chart">
+        <!-- Simulate Horizontal Bar Chart -->
+        <div class="spending-list">
+          <div *ngFor="let category of spendingCategories" class="spending-item">
+            <span class="category-name">{{ category.name }}</span>
+            <div class="category-bar-container">
+              <div class="category-bar" [ngStyle]="{ 'width': category.width }"></div>
+            </div>
+            <span class="category-percentage">{{ category.percentage }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric-value">{{ spendingTotal }}</div>
+        <div class="metric-info">Last 12 Months <span [ngClass]="getChangeColor(spendingChange)">{{ spendingChange }}</span></div>
+      </div>
+      <div class="chart spending-chart">
+        <!-- Simulate Horizontal Bar Chart -->
+        <div class="spending-list">
+          <div *ngFor="let category of spendingCategories" class="spending-item">
+            <span class="category-name">{{ category.name }}</span>
+            <div class="category-bar-container">
+              <div class="category-bar" [ngStyle]="{ 'width': category.width }"></div>
+            </div>
+            <span class="category-percentage">{{ category.percentage }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="key-takeaway">
+        <p>{{ spendingTakeaway }}</p>
+      </div>
+    </div>
+
+    <!-- Net Worth Trend Section -->
+    <div class="report-section">
+      <h3>Net Worth Trend</h3>
+      <div class="metrics">
+        <div class="metric-value">{{ netWorthTotal }}</div>
+        <div class="metric-info">Last 5 Years <span [ngClass]="getChangeColor(netWorthChange)">{{ netWorthChange }}</span></div>
+      </div>
+      <div class="chart net-worth-chart">
+        <!-- Simulate Line Chart using SVG (basic example) -->
+        <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+          <!-- Path data is just an example to create a wavy line -->
+          <path d="M0 80 C 50 20, 100 90, 150 40 S 250 90, 300 50 C 350 10, 400 70, 400 70" stroke="#007bff" fill="none" stroke-width="2"/>
+        </svg>
+        <div class="chart-labels">
+          <span *ngFor="let year of netWorthYears">{{ year }}</span>
+        </div>
+      </div>
+      <div class="key-takeaway">
+        <p>{{ netWorthTakeaway }}</p>
+      </div>
+    </div>
+
+    <!-- Savings Rate Section -->
+    <div class="report-section">
+      <h3>Savings Rate</h3>
+      <div class="metrics">
+        <div class="metric-value">{{ savingsRate }}%</div>
+        <div class="metric-info">Current Savings Rate <span [ngClass]="getChangeColor(savingsRateChange)">{{ savingsRateChange }}</span></div>
+      </div>
+      <div class="key-takeaway">
+        <p>{{ savingsRateTakeaway }}</p>
+      </div>
+    </div>
+  </section>
+</main>
