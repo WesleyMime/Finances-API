@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,8 @@ public interface IncomeRepository extends GenericRepository<Income>, JpaReposito
 
 	@Query("SELECT sum(i.value) FROM Income i WHERE year(i.date) = :year AND month(i.date) = :month AND i.client = :client")
 	Optional<BigDecimal> totalIncomeMonth(Integer year, Integer month, Client client);
+
+	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) >= ?1 " +
+			"AND (i.date) <= ?2 AND i.client = ?3")
+	List<IncomeDTO> findIncomeFromLastYear(LocalDate from, LocalDate to, Client client);
 }
