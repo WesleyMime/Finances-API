@@ -1,12 +1,12 @@
 // src/app/reports/reports.component.ts
-import { NgClass, NgFor, NgStyle } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "../header/header.component";
 import { ReportsService } from './reports.service';
 
 @Component({
   selector: 'app-reports',
-  imports: [NgFor, NgClass, NgStyle, HeaderComponent],
+  imports: [NgClass, NgStyle, HeaderComponent],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })

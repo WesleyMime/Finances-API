@@ -11,24 +11,30 @@
           [(ngModel)]="transaction.type"
           name="transactionType"
           required
-        >
+          >
           <option value="" disabled selected>Selecione tipo</option>
-          <option *ngFor="let type of transactionTypes" [value]="type">{{ type }}</option>
+          @for (type of transactionTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
         </select>
       </div>
 
-      <div class="form-group" *ngIf="transaction.type=='Despesa'">
-        <label for="category">Categoria*</label>
-        <select
-          id="category"
-          [(ngModel)]="transaction.category"
-          name="category"
-          required
-        >
-          <option value="" selected disabled>Selecione categoria</option>
-          <option *ngFor="let cat of categoryForm" [value]="cat.index">{{ cat.name }}</option>
-        </select>
-      </div>
+      @if (transaction.type=='Despesa') {
+        <div class="form-group">
+          <label for="category">Categoria*</label>
+          <select
+            id="category"
+            [(ngModel)]="transaction.category"
+            name="category"
+            required
+            >
+            <option value="" selected disabled>Selecione categoria</option>
+            @for (cat of categoryForm; track cat) {
+              <option [value]="cat.index">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+      }
 
       <div class="form-group">
         <label for="value">Valor*</label>
@@ -39,7 +45,7 @@
           [(ngModel)]="transaction.value"
           name="value"
           required
-        >
+          >
       </div>
 
       <div class="form-group">
@@ -51,7 +57,7 @@
           [(ngModel)]="transaction.date"
           name="date"
           required
-        >
+          >
       </div>
 
       <div class="form-group">
@@ -66,13 +72,17 @@
         ></textarea>
       </div>
 
-      <p *ngIf="errorMessage" class="server-error">{{ errorMessage }}</p>
+      @if (errorMessage) {
+        <p class="server-error">{{ errorMessage }}</p>
+      }
 
       <div class="form-actions">
         <button type="submit" class="btn primary add-transaction-button">
           Adicionar
         </button>
-        <p *ngIf="sucessMessage" class="server-success">{{ sucessMessage }}</p>
+        @if (sucessMessage) {
+          <p class="server-success">{{ sucessMessage }}</p>
+        }
       </div>
     </form>
   </div>

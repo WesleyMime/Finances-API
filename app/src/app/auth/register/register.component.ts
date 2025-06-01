@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgIf } from '@angular/common';
+
 import { HeaderComponent } from '../../header/header.component';
 import { AuthService } from '../auth.service';
 import { IRegisterUser } from '../user.model';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, HeaderComponent, NgIf],
+  imports: [FormsModule, HeaderComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })

@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -22,7 +22,7 @@ interface HeaderConfig {
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, NgIf, NgFor],
+  imports: [RouterLink],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
