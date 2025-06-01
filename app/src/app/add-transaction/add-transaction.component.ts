@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
-import { NgFor, NgIf } from '@angular/common';
 import { AddTransactionService } from './add-transaction.service';
 import { Transaction } from './transaction';
 
 @Component({
   selector: 'app-add-transaction',
-  imports: [NgFor, NgIf, FormsModule, HeaderComponent],
+  imports: [FormsModule, HeaderComponent],
   templateUrl: './add-transaction.component.html',
   styleUrls: ['./add-transaction.component.css']
 })

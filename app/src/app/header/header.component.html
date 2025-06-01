@@ -4,25 +4,29 @@
     <span class="app-name">&nbsp;Finances App</span>
   </div>
 
-  <nav class="main-nav" *ngIf="showAppNav">
-     <ul>
-      <li *ngFor="let item of appNavItems">
-         <!-- Bind active class based on the item.active property managed in TS -->
-        <a [routerLink]="item.link" [class.active]="item.active">{{ item.label }}</a>
-      </li>
-    </ul>
-  </nav>
+  @if (showAppNav) {
+    <nav class="main-nav">
+      <ul>
+        @for (item of appNavItems; track item) {
+          <li>
+            <!-- Bind active class based on the item.active property managed in TS -->
+            <a [routerLink]="item.link" [class.active]="item.active">{{ item.label }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+  }
 
   <div>
-      <ng-container *ngIf="showLoginAction">
-          <button [routerLink]="['/login']" class="btn primary btn-header">Entrar</button>
-      </ng-container>
-      <ng-container *ngIf="showRegisterAction">
-          <button [routerLink]="['/register']" class="btn primary btn-header">Registrar</button>
-      </ng-container>
+    @if (showLoginAction) {
+      <button [routerLink]="['/login']" class="btn primary btn-header">Entrar</button>
+    }
+    @if (showRegisterAction) {
+      <button [routerLink]="['/register']" class="btn primary btn-header">Registrar</button>
+    }
 
-      <ng-container *ngIf="showProfileActions">
-          <div class="profile-avatar">W</div> <!-- Replace with actual avatar/image -->
-      </ng-container>
+    @if (showProfileActions) {
+      <div class="profile-avatar">W</div> <!-- Replace with actual avatar/image -->
+    }
   </div>
 </header>
