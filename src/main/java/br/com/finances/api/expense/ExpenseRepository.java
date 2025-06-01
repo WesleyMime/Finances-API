@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,7 @@ public interface ExpenseRepository extends GenericRepository<Expense>, JpaReposi
 	@Query("SELECT new br.com.finances.api.expense.ExpenseCategoryDTO(category, SUM(value)) FROM Expense WHERE year(date) = :year AND month(date) = :month AND client = :client GROUP BY category" )
 	List<ExpenseCategoryDTO> totalExpenseByCategory(Integer year, Integer month, Client client);
 
+	@Query("SELECT new br.com.finances.api.expense.ExpenseDTO(i) FROM Expense i WHERE (i.date) >= " +
+			"?1 AND (i.date) <= ?2 AND i.client = ?3")
+	List<ExpenseDTO> findExpenseFromLastYear(LocalDate from, LocalDate to, Client client);
 }
