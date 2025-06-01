@@ -110,3 +110,33 @@ background-color: #5a3ebf;
     color: white;
     cursor: pointer;
 }
+
+@media (max-width: 580px) {
+  .main-nav ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-name {
+    display: none;
+  }
+  .app-header {
+    padding: 15px 20px;
+    min-width: initial;
+    justify-content: space-between;
+    align-content: stretch;
+  }
+  .main-nav ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  .profile-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 1em;
+  }
+}
