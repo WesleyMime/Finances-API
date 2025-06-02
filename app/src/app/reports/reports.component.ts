@@ -4,6 +4,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "../header/header.component";
 import { ReportsService } from './reports.service';
 import { Expense, SummaryLastYear } from './summary-last-year';
+import { SummaryByDate } from './summary-by-date';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-reports',
@@ -14,8 +16,8 @@ import { Expense, SummaryLastYear } from './summary-last-year';
 export class ReportsComponent implements OnInit {
 
   // Data for Month-over-Month Comparison
-  incomeValue = '';
-  expenseValue = '';
+  incomeCurrentMonth = '';
+  expenseCurrentMonth = '';
   incomeValueDifference = '';
   expenseValueDifference = '';
   incomeChangePercentage = '';
@@ -42,6 +44,15 @@ export class ReportsComponent implements OnInit {
     { name: 'Unforeseen', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Others', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
+  spendingCategoriesMonth = [
+    { name: 'Food', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Health', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Transport', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Education', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Leisure', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Unforeseen', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Others', value: 0, valueCurrency: '',  percentage: '0%'},
+  ];
   spendingTakeaway = 'Key Takeaway: The largest portion of your spending is allocated to rent and food, followed by entertainment and transportation. Consider reviewing your spending in these categories to identify potential savings.';
 
   // Data for Net Worth Trend
@@ -52,7 +63,7 @@ export class ReportsComponent implements OnInit {
   // For the line graph simulation, we'll use SVG directly in the template
 
   // Data for Savings Rate
-  savingsRate = '25%';
+  savingsRate = '';
   savingsRateChange = '+3%';
   savingsRateTakeaway = 'Key Takeaway: Your current savings rate is 25%, which is about the recommended average. This indicates a strong ability to save a significant portion of your income.';
 
@@ -60,47 +71,60 @@ export class ReportsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.reportsService.getSummary(new Date()).subscribe({
+    this.getMonthOverMonthComparison();
+    this.reportsService.getSummaryLastYear(new Date()).subscribe({
       // Treat the response as a Report type
       next: (summary: SummaryLastYear) => {
         console.log('Summary data:', summary);
-        this.getMonthOverMonthComparison(summary);
 
         this.incomeExpenseTotal = this.formatCurrency(summary.avgBalanceYear);
         this.getIncomeExpenseBarHeights(summary.finalBalanceEachMonth);
 
         let diffBalancePercent = this.getPercentageChange(
-          summary.finalBalanceEachMonth[11], summary.finalBalanceEachMonth[10]);
+          summary.finalBalanceEachMonth[11], summary.finalBalanceEachMonth[10]) * -1; // Invert the sign
         this.incomeExpensePercentage = this.formatPercentage(diffBalancePercent);
 
-        this.getCategoriesBarWidth(summary.expenses);
+        this.getSpendingByCategoryYear(summary.expenses);
 
         this.netWorthTotal = this.formatCurrency(summary.avgBalanceYear);
         this.savingsRate = summary.percentageSavingsRate;
     },
-    error: (error: Error) => {
-      alert('Um erro aconteceu ao buscar o relatório. Por favor, tente novamente mais tarde.');
-      console.error('Error fetching summary:', error)
-    }
+    error: (this.handleError)
     });
   }
 
-  private getMonthOverMonthComparison(summary: SummaryLastYear) {
-    const incomeCurrentMonth = summary.income[11].value;
-    const expensesCurrentMonth = summary.expenses[11].value;
-    const incomeLastMonth = summary.income[10].value;
-    const expensesLastMonth = summary.expenses[10].value;
+  private async getMonthOverMonthComparison() {
+    let incomeCurrentMonthValue: number = NaN;
+    let expenseCurrentMonthValue: number = NaN;
+    let incomeLastMonthValue: number = NaN;
+    let expenselastMonthValue: number = NaN;
 
-    this.incomeValue = this.formatCurrency(incomeCurrentMonth);
-    this.expenseValue = this.formatCurrency(expensesCurrentMonth);
-    this.incomeValueDifference = this.formatCurrency(incomeCurrentMonth - incomeLastMonth);
-    this.expenseValueDifference = this.formatCurrency(expensesCurrentMonth - expensesLastMonth);
+    let result = firstValueFrom(this.reportsService.getSummaryByDate(new Date()));
+    await result.then((summary: SummaryByDate) => {
+      console.log('Summary data:', new Date(), summary);
+      incomeCurrentMonthValue = summary.totalIncome;
+      expenseCurrentMonthValue = summary.totalExpense;
+      this.incomeCurrentMonth = this.formatCurrency(incomeCurrentMonthValue);
+      this.expenseCurrentMonth = this.formatCurrency(expenseCurrentMonthValue);
 
-    // Percentual change from last month
-    this.incomeChangePercentage = this.formatPercentage(
-      this.getPercentageChange(incomeCurrentMonth, incomeLastMonth));
-    this.expenseChangePercentage = this.formatPercentage(
-      this.getPercentageChange(expensesCurrentMonth, expensesLastMonth));
+      this.getSpendingByCategoryMonth(summary);
+    });
+
+    let date = new Date();
+    date.setMonth(date.getMonth() - 1);
+    result = firstValueFrom(this.reportsService.getSummaryByDate(date));
+    await result.then((summary: SummaryByDate) => {
+      console.log('Summary data: ', date , summary);
+      incomeLastMonthValue = summary.totalIncome;
+      expenselastMonthValue = summary.totalExpense;
+      this.incomeValueDifference = this.formatCurrency(incomeCurrentMonthValue- incomeLastMonthValue)
+      this.expenseValueDifference = this.formatCurrency(expenselastMonthValue - expenseCurrentMonthValue);
+      this.percentualChangeFromLastMonth(
+        incomeCurrentMonthValue, 
+        incomeLastMonthValue, 
+        expenseCurrentMonthValue, 
+        expenselastMonthValue);
+    });
   }
 
   // Helper to determine text color for percentage change
@@ -130,16 +154,30 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  getCategoriesBarWidth(list: Expense[]): void {
+  getSpendingByCategoryMonth(response: SummaryByDate): void {
+    response.totalExpenseByCategory.forEach((item) => {
+      this.spendingCategoriesMonth.map((category) => {
+        if (item.category === category.name) category.value += item.totalValue;
+      })
+    });
+    this.getValuesForLineChart(this.spendingCategoriesMonth);
+  }
+
+  getSpendingByCategoryYear(list: Expense[]): void {
     list.forEach((expense) => {
       this.spendingCategories.map((category) => {
         if (expense.category === category.name) category.value += expense.value;
       })
     });
+    this.getValuesForLineChart(this.spendingCategories);
+  }
+
+  private getValuesForLineChart(list: any[]) {
     let maxValue = 1; // To make the percentage math works when no value
-    this.spendingCategories.forEach((category) => {
+    list.forEach((category) => {
       if (category.value > maxValue) maxValue = category.value;
-      
+    });
+    list.forEach((category) => {
       category.valueCurrency = this.formatCurrency(category.value);
       category.percentage = (100 + this.getPercentageChange(category.value, maxValue)) + '%';
     });
@@ -157,6 +195,25 @@ export class ReportsComponent implements OnInit {
   }
 
   formatPercentage(diffPercent: number): string {
+    if (isNaN(diffPercent)) return '0%';
+    // 2 decimal places for percentage
+    diffPercent = Math.round(diffPercent * 100) / 100;
     return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
+  }
+
+  private percentualChangeFromLastMonth(incomeCurrentMonthValue: number, incomeLastMonthValue: number, 
+      expenseCurrentMonthValue: number, expenselastMonthValue: number) {
+    if (isNaN(incomeCurrentMonthValue) || isNaN(incomeLastMonthValue) || 
+        isNaN(expenseCurrentMonthValue) || isNaN(expenselastMonthValue)) return;
+
+    let incomeChangePercentageValue = this.getPercentageChange(incomeCurrentMonthValue, incomeLastMonthValue);
+    let expenseChangePercentageValue = this.getPercentageChange(expenseCurrentMonthValue, expenselastMonthValue);
+    this.incomeChangePercentage = this.formatPercentage(incomeChangePercentageValue);
+    this.expenseChangePercentage = this.formatPercentage(expenseChangePercentageValue);
+  }
+
+  private handleError(error: Error) {
+    alert('Um erro aconteceu ao buscar o relatório. Por favor, tente novamente mais tarde.');
+    console.error('Error fetching summary:', error)
   }
 }

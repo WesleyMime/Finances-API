@@ -8,14 +8,14 @@
     <div class="cards-grid">
       <div class="card net-worth-card">
         <div class="card-label">Total Income</div>
-        <div class="card-value">{{ incomeValue }}</div>
+        <div class="card-value">{{ incomeCurrentMonth }}</div>
         <div class="metric-info"><span
           [ngClass]="getChangeColorGood(incomeChangePercentage)">{{ incomeChangePercentage }} {{ incomeValueDifference }}</span>
         </div>
       </div>
       <div class="card net-worth-card">
         <div class="card-label">Total Expenses</div>
-        <div class="card-value">{{ expenseValue }}</div>
+        <div class="card-value">{{ expenseCurrentMonth }}</div>
         <div class="metric-info"><span
           [ngClass]="getChangeColorBad(expenseChangePercentage)">{{ expenseChangePercentage }} {{ expenseValueDifference }}</span>
         </div>
@@ -55,7 +55,7 @@
     <div class="chart spending-chart">
       <!-- Simulate Horizontal Bar Chart -->
       <div class="spending-list">
-        @for (category of spendingCategories; track category) {
+        @for (category of spendingCategoriesMonth; track category) {
           <div class="spending-item">
             <span class="category-name">{{ category.name }}</span>
             <div class="category-bar-container">
@@ -70,7 +70,6 @@
     <div class="report-section">
     <div class="metrics">
       <h3>Last 12 Months</h3>
-      <span [ngClass]="getChangeColorBad(spendingChange)">{{ spendingChange }}</span>
     </div>
     <div class="chart spending-chart">
       <!-- Simulate Horizontal Bar Chart -->

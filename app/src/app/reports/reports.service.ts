@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { SummaryLastYear } from './summary-last-year';
+import { SummaryByDate } from './summary-by-date';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +10,19 @@ import { SummaryLastYear } from './summary-last-year';
 export class ReportsService {
 
   private readonly API_URL = 'http://localhost:8080'
-  private readonly SUMMARY_ENDPOINT = '/summary/last-year';
+  private readonly SUMMARY_ENDPOINT = '/summary';
+  private readonly LASTYEAR_ENDPOINT = '/last-year';
 
   constructor(private http: HttpClient) { }
 
-  getSummary(date: Date): Observable<SummaryLastYear | any> {
-    return this.http.get(this.API_URL + this.SUMMARY_ENDPOINT).pipe(
+  getSummaryLastYear(date: Date): Observable<SummaryLastYear | any> {
+    return this.http.get(this.API_URL + this.SUMMARY_ENDPOINT + this.LASTYEAR_ENDPOINT).pipe(
+      catchError(this.handleError)
+    );
+  }
+  getSummaryByDate(date: Date): Observable<SummaryByDate | any> {
+    let fullUrl = this.API_URL + this.SUMMARY_ENDPOINT + "/" + date.getFullYear() + "/" + (date.getMonth());
+    return this.http.get(fullUrl).pipe(
       catchError(this.handleError)
     );
   }
