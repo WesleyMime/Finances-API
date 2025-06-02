@@ -1,0 +1,125 @@
+<app-header></app-header>  
+  <main class="dashboard-content">
+    <section class="dashboard-overview">
+      <h1>Dashboard</h1>
+      <p class="subtitle">Overview of your financial health</p>
+  
+      <div class="summary-cards-grid">
+        <div class="card net-worth-card">
+          <div class="card-label">Net Worth</div>
+          <div class="card-value">{{ netWorth | currency }}</div>
+        </div>
+  
+        <div class="card assets-liabilities-card">
+          <div class="card-row">
+            <div class="card-column">
+              <div class="card-label">Total Assets</div>
+              <div class="card-value">{{ totalAssets | currency }}</div>
+            </div>
+            <div class="card-column">
+              <div class="card-label">Total Liabilities</div>
+              <div class="card-value">{{ totalLiabilities | currency }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="chart-title">Income vs. Expenses</div>
+          <div class="chart-summary">
+            <span class="summary-value" [ngClass]="getAmountClass(incomeExpenseChange)">
+              {{ formatAmount(incomeExpenseChange) | currency }}
+            </span>
+            <span class="summary-percentage amount-positive">+{{ incomeExpensePercentage }}%</span>
+          </div>
+          <!-- Placeholder for Bar Chart -->
+          <div class="chart-placeholder bar-chart">
+              <div class="bar" style="height: 30px;"></div>
+              <div class="bar" style="height: 50px;"></div>
+              <div class="bar" style="height: 80px;"></div>
+              <div class="bar" style="height: 40px;"></div>
+              <div class="bar" style="height: 60px;"></div>
+              <div class="bar" style="height: 70px;"></div>
+          </div>
+          <div class="chart-labels bar-labels">
+            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+          </div>
+          <!-- Chart library needed here -->
+        </div>
+  
+        <div class="card chart-card">
+          <div class="chart-title">Net Worth Trend</div>
+          <div class="chart-summary">
+              <span class="summary-value" [ngClass]="getAmountClass(netWorthTrendChange)">
+                  {{ formatAmount(netWorthTrendChange) | currency }}
+              </span>
+            <span class="summary-percentage amount-positive">+{{ netWorthTrendPercentage }}%</span>
+            <span class="summary-period">Last 12 Months</span>
+          </div>
+           <!-- Placeholder for Line Chart -->
+          <div class="chart-placeholder line-chart">
+             <svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+                  <path d="M 0 50 L 50 70 L 100 30 L 150 80 L 200 20 L 250 60 L 300 40" fill="none" stroke="#9f7aea" stroke-width="2"/>
+             </svg>
+          </div>
+           <div class="chart-labels line-labels">
+              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+              <!-- More labels would go here for 12 months -->
+          </div>
+          <!-- Chart library needed here -->
+        </div>
+      </div>
+  
+      <section class="recent-transactions">
+        <h2>Recent Transactions</h2>
+        <table class="transactions-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th class="amount-header">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of recentTransactions">
+              <td>{{ transaction.date }}</td>
+              <td>{{ transaction.category }}</td>
+              <td>{{ transaction.description }}</td>
+              <td [ngClass]="getAmountClass(transaction.amount)">{{ formatAmount(transaction.amount) | currency }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+    <div>
+  <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+  </main>
