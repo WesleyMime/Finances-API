@@ -2,17 +2,8 @@ export interface SummaryLastYear {
     avgBalanceYear: number;
     percentageSavingsRate: string;
     finalBalanceEachMonth: number[];
-    income: {
-        description: string;
-        value: number;
-        date: Date;
-    }[];
-    expenses: {
-        description: string;
-        value: number;
-        date: Date;
-        category: string;
-    }[];
+    income: Income[];
+    expenses: Expense[];
     // TODO
     netWorthTotal: string;
     netWorthChange: string;
@@ -23,4 +14,17 @@ export interface SummaryLastYear {
     incomeExpenseMonths: string[];
     spendingTotal: string;
     spendingChange: string;
+}
+
+export interface Income {
+    description: string;
+    value: number;
+    date: Date;
+}
+
+export interface Expense {
+    description: string;
+    value: number;
+    date: Date;
+    category: string;
 }

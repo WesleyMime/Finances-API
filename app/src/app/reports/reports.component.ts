@@ -3,7 +3,7 @@ import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "../header/header.component";
 import { ReportsService } from './reports.service';
-import { SummaryLastYear } from './summary-last-year';
+import { Expense, SummaryLastYear } from './summary-last-year';
 
 @Component({
   selector: 'app-reports',
@@ -32,13 +32,15 @@ export class ReportsComponent implements OnInit {
   // Data for Spending by Category
   spendingTotal = '';
   spendingChange = '-2%';
+  categoriesBarWidth = [];
   spendingCategories = [
-    { name: 'Rent', amount: 2500, percentage: '32%', width: '100%' },
-    { name: 'Food', amount: 1500, percentage: '19%', width: '60%' },
-    { name: 'Entertainment', amount: 1000, percentage: '13%', width: '45%' },
-    { name: 'Transportation', amount: 800, percentage: '10%', width: '38%' },
-    { name: 'Utilities', amount: 1000, percentage: '13%', width: '45%' },
-    { name: 'Shopping', amount: 1000, percentage: '13%', width: '45%' },
+    { name: 'Food', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Health', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Transport', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Education', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Leisure', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Unforeseen', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Others', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
   spendingTakeaway = 'Key Takeaway: The largest portion of your spending is allocated to rent and food, followed by entertainment and transportation. Consider reviewing your spending in these categories to identify potential savings.';
 
@@ -70,6 +72,8 @@ export class ReportsComponent implements OnInit {
         let diffBalancePercent = this.getPercentageChange(
           summary.finalBalanceEachMonth[11], summary.finalBalanceEachMonth[10]);
         this.incomeExpensePercentage = this.formatPercentage(diffBalancePercent);
+
+        this.getCategoriesBarWidth(summary.expenses);
 
         this.netWorthTotal = this.formatCurrency(summary.avgBalanceYear);
         this.savingsRate = summary.percentageSavingsRate;
@@ -123,6 +127,21 @@ export class ReportsComponent implements OnInit {
     this.incomeExpenseBarHeights = list.map((balance: number) => {
       // Calculate the percentage height based on the maximum balance
       return (100 + this.getPercentageChange(balance, maxBalance)) + '%';
+    });
+  }
+
+  getCategoriesBarWidth(list: Expense[]): void {
+    list.forEach((expense) => {
+      this.spendingCategories.map((category) => {
+        if (expense.category === category.name) category.value += expense.value;
+      })
+    });
+    let maxValue = 1; // To make the percentage math works when no value
+    this.spendingCategories.forEach((category) => {
+      if (category.value > maxValue) maxValue = category.value;
+      
+      category.valueCurrency = this.formatCurrency(category.value);
+      category.percentage = (100 + this.getPercentageChange(category.value, maxValue)) + '%';
     });
   }
 

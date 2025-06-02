@@ -119,7 +119,6 @@
 .spending-chart .category-name {
   width: 120px; /* Fixed width for category names */
   flex-shrink: 0; /* Prevent shrinking */
-  margin-right: 10px;
   font-size: 0.9em;
   color: #cbd5e0; /* Text color */
 }
@@ -137,8 +136,7 @@
   border-right: 2px solid #a0aec0;
 }
 
-.spending-chart .category-percentage {
-  width: 40px; /* Fixed width for percentage */
+.spending-chart .category-value {
   text-align: right;
   flex-shrink: 0;
   margin-left: 10px;
@@ -233,6 +231,12 @@
     }
     .spending-chart .category-name {
       width: 100px; /* Reduce category name width */
+    }
+    .cards-grid {
+        grid-template-columns: 1fr; /* Stack cards on smaller screens */
+    }
+    .spending-list .spending-item {
+      display: block;
     }
 }
 
