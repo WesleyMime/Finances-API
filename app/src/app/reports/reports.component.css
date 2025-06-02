@@ -90,7 +90,7 @@
   display: flex;
   align-items: flex-end; /* Bars start from the bottom */
   height: 120px; /* Match bar-chart placeholder height */
-  gap: 8px; /* Adjust gap between bars for better visual separation */
+  gap: 8px;
   padding: 0 5px; /* Little padding */
   box-sizing: border-box;
   justify-content: space-around; /* Evenly distribute bars if not using flex-grow */
@@ -163,11 +163,11 @@
 /* Chart Labels matching .chart-labels */
 .chart-labels {
     display: flex;
-    justify-content: space-between; /* Labels spread out */
+    justify-content: space-around; /* Labels spread out */
+    gap: 8px;
     font-size: 0.8em; /* Match font size */
     color: #a0aec0; /* Match color */
     margin-top: 5px; /* Match margin */
-    padding: 0 10px; /* Add padding to align better with perceived chart area */
 }
 
 .chart-labels span {
@@ -241,17 +241,20 @@
 }
 
 @media (max-width: 480px) {
-    .report-section {
-        padding: 15px;
-    }
-     .metric-value {
-        font-size: 1.4em;
-    }
-    .spending-chart .category-name {
-      width: 80px; /* Further reduce category name width */
-      margin-right: 5px;
-    }
-     .spending-chart .category-percentage {
-        margin-left: 5px;
-    }
+  .report-section {
+      padding: 15px;
+  }
+  .metric-value {
+      font-size: 1.4em;
+  }
+  .spending-chart .category-name {
+    width: 80px; /* Further reduce category name width */
+    margin-right: 5px;
+  }
+  .spending-chart .category-percentage {
+      margin-left: 5px;
+  }  
+  .chart-labels {
+      gap: 0px;
+  }
 }
