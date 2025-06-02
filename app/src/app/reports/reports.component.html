@@ -4,6 +4,26 @@
     <h1>Financial Reports</h1>
     <p class="subtitle">Analyze your financial health with detailed reports.</p>
 
+    <div class="summary-cards-grid">
+      <div class="card net-worth-card">
+        <div class="card-label">Net Worth</div>
+        <div class="card-value">{{ totalNetWorth }}</div>
+      </div>
+
+      <div class="card assets-liabilities-card">
+        <div class="card-row">
+          <div class="card-column">
+            <div class="card-label">Total Assets</div>
+            <div class="card-value">{{ totalAssets }}</div>
+          </div>
+          <div class="card-column">
+            <div class="card-label">Total Liabilities</div>
+            <div class="card-value">{{ totalLiabilities }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h3>Month-over-Month Comparison</h3>
     <div class="cards-grid">
       <div class="card net-worth-card">
@@ -91,7 +111,7 @@
   <div class="report-section">
     <h3>Net Worth Trend</h3>
     <div class="metrics">
-      <div class="metric-value">{{ netWorthTotal }}</div>
+      <div class="metric-value">{{ totalNetWorth }}</div>
       <div class="metric-info">Last 5 Years <span [ngClass]="getChangeColorGood(netWorthChange)">{{ netWorthChange }}</span></div>
     </div>
     <div class="chart net-worth-chart">

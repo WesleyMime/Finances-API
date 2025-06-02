@@ -56,7 +56,9 @@ export class ReportsComponent implements OnInit {
   spendingTakeaway = 'Key Takeaway: The largest portion of your spending is allocated to rent and food, followed by entertainment and transportation. Consider reviewing your spending in these categories to identify potential savings.';
 
   // Data for Net Worth Trend
-  netWorthTotal = '$55,000';
+  totalNetWorth = '';
+  totalAssets = '';
+  totalLiabilities = '';
   netWorthChange = '+15%';
   netWorthYears = ['2020', '2021', '2022', '2023'];
   netWorthTakeaway = 'Key Takeaway: Your net worth has shown a steady increase over the past four years, indicating strong financial growth. The most significant jump occurred in 2023, suggesting successful investments or savings strategies.';
@@ -86,7 +88,9 @@ export class ReportsComponent implements OnInit {
 
         this.getSpendingByCategoryYear(summary.expenses);
 
-        this.netWorthTotal = this.formatCurrency(summary.avgBalanceYear);
+        this.totalNetWorth = this.formatCurrency(summary.avgBalanceYear);
+        this.totalAssets = this.formatCurrency(summary.totalIncome);
+        this.totalLiabilities = this.formatCurrency(summary.totalExpense);
         this.savingsRate = summary.percentageSavingsRate;
     },
     error: (this.handleError)

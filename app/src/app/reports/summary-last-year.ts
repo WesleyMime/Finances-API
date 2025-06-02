@@ -1,4 +1,6 @@
 export interface SummaryLastYear {
+    totalIncome: number;
+    totalExpense: number;
     avgBalanceYear: number;
     percentageSavingsRate: string;
     finalBalanceEachMonth: number[];
