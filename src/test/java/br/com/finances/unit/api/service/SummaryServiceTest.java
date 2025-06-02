@@ -173,7 +173,7 @@ public class SummaryServiceTest {
 
         SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(principal);
         assertEquals(new BigDecimal(2083), summary.avgBalanceYear());
-        assertEquals(new BigDecimal(20), summary.percentageSavingsRate());
+        assertEquals(new BigDecimal("65.79"), summary.percentageSavingsRate());
     }
 
     @Test

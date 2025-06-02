@@ -93,10 +93,17 @@ public class SummaryService {
         BigDecimal avgBalanceYear = sumBalanceEachMonth.divide(BigDecimal.valueOf(12),
                 RoundingMode.FLOOR);
 
+        if (totalYearIncome.compareTo(BigDecimal.ZERO) == 0)
+            return new SummaryLastYearDTO(totalYearIncome, totalYearExpense, avgBalanceYear,
+                    BigDecimal.ZERO, finalBalanceEachMonth, incomeFromLastYear,
+                    expenseFromLastYear);
+
         BigDecimal percentageSavingsRate = sumBalanceEachMonth.multiply(BigDecimal.valueOf(100))
-                .divide(totalYearIncome, RoundingMode.FLOOR);
-        return new SummaryLastYearDTO(avgBalanceYear, percentageSavingsRate,
-                finalBalanceEachMonth, incomeFromLastYear, expenseFromLastYear);
+                .divide(totalYearIncome, 2, RoundingMode.HALF_EVEN);
+
+        return new SummaryLastYearDTO(totalYearIncome, totalYearExpense, avgBalanceYear,
+                percentageSavingsRate, finalBalanceEachMonth, incomeFromLastYear,
+                expenseFromLastYear);
     }
 
     private Client getClientByEmail(String email) {
