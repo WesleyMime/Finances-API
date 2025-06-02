@@ -4,13 +4,30 @@
     <h1>Financial Reports</h1>
     <p class="subtitle">Analyze your financial health with detailed reports.</p>
 
+    <h3>Month-over-Month Comparison</h3>
+    <div class="cards-grid">
+      <div class="card net-worth-card">
+        <div class="card-label">Total Income</div>
+        <div class="card-value">{{ incomeValue }}</div>
+        <div class="metric-info"><span
+          [ngClass]="getChangeColorGood(incomeChangePercentage)">{{ incomeChangePercentage }} {{ incomeValueDifference }}</span>
+        </div>
+      </div>
+      <div class="card net-worth-card">
+        <div class="card-label">Total Expenses</div>
+        <div class="card-value">{{ expenseValue }}</div>
+        <div class="metric-info"><span
+          [ngClass]="getChangeColorBad(expenseChangePercentage)">{{ expenseChangePercentage }} {{ expenseValueDifference }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Income vs. Expenses Section -->
     <div class="report-section">
       <h3>Income vs. Expenses</h3>
       <div class="metrics">
         <div class="metric-value">{{ incomeExpenseTotal }}</div>
-        <div class="metric-info">Last 12 Months Average <span
-        [ngClass]="getChangeColor(incomeExpenseChange)">{{ incomeExpenseChange }}</span></div>
+        <div class="metric-info">Last 12 Months Average</div>
       </div>
       <div class="chart income-expense-chart">
         <!-- Simulate Bar Chart -->
@@ -25,9 +42,6 @@
           }
         </div>
       </div>
-      <div class="key-takeaway">
-        <p>{{ incomeExpenseTakeaway }}</p>
-      </div>
     </div>
 
     <!-- Spending by Category Section -->
@@ -35,7 +49,7 @@
       <h3>Spending by Category</h3>
       <div class="metrics">
         <div class="metric-value">{{ spendingTotal }}</div>
-        <div class="metric-info">Last Month <span [ngClass]="getChangeColor(spendingChange)">{{ spendingChange }}</span>
+        <div class="metric-info">Last Month <span [ngClass]="getChangeColorBad(spendingChange)">{{ incomeExpensePercentage }}</span>
       </div>
     </div>
     <div class="chart spending-chart">
@@ -54,7 +68,7 @@
     </div>
     <div class="metrics">
       <div class="metric-value">{{ spendingTotal }}</div>
-      <div class="metric-info">Last 12 Months <span [ngClass]="getChangeColor(spendingChange)">{{ spendingChange }}</span></div>
+      <div class="metric-info">Last 12 Months <span [ngClass]="getChangeColorBad(spendingChange)">{{ spendingChange }}</span></div>
     </div>
     <div class="chart spending-chart">
       <!-- Simulate Horizontal Bar Chart -->
@@ -70,9 +84,6 @@
         }
       </div>
     </div>
-    <div class="key-takeaway">
-      <p>{{ spendingTakeaway }}</p>
-    </div>
   </div>
 
   <!-- Net Worth Trend Section -->
@@ -80,7 +91,7 @@
     <h3>Net Worth Trend</h3>
     <div class="metrics">
       <div class="metric-value">{{ netWorthTotal }}</div>
-      <div class="metric-info">Last 5 Years <span [ngClass]="getChangeColor(netWorthChange)">{{ netWorthChange }}</span></div>
+      <div class="metric-info">Last 5 Years <span [ngClass]="getChangeColorGood(netWorthChange)">{{ netWorthChange }}</span></div>
     </div>
     <div class="chart net-worth-chart">
       <!-- Simulate Line Chart using SVG (basic example) -->
@@ -94,9 +105,6 @@
         }
       </div>
     </div>
-    <div class="key-takeaway">
-      <p>{{ netWorthTakeaway }}</p>
-    </div>
   </div>
 
   <!-- Savings Rate Section -->
@@ -104,10 +112,7 @@
     <h3>Savings Rate</h3>
     <div class="metrics">
       <div class="metric-value">{{ savingsRate }}%</div>
-      <div class="metric-info">Current Savings Rate <span [ngClass]="getChangeColor(savingsRateChange)">{{ savingsRateChange }}</span></div>
-    </div>
-    <div class="key-takeaway">
-      <p>{{ savingsRateTakeaway }}</p>
+      <div class="metric-info">Current Savings Rate <span [ngClass]="getChangeColorGood(savingsRateChange)">{{ savingsRateChange }}</span></div>
     </div>
   </div>
 </section>

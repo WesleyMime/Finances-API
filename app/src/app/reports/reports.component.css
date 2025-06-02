@@ -97,12 +97,10 @@
 }
 
 .income-expense-chart .bar {
-  /* flex-grow: 1; /* Removed flex-grow to use a fixed width like the example */
-  width: 12px; /* Match bar width */
+  flex-grow: 1; /* Removed flex-grow to use a fixed width like the example */
+  width: 50px; /* Match bar width */
   background-color: #6b4ee2; /* Match bar color (purple) */
-  border-top-left-radius: 3px; /* Match border radius */
-  border-top-right-radius: 3px; /* Match border radius */
-  margin: 0 2px; /* Adjust margin if gap isn't enough, or remove if gap is sufficient */
+  border-top: 2px solid #a0aec0; /* Match border color */
 }
 
 
@@ -110,7 +108,7 @@
 .spending-chart .spending-list {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Keep spacing */
+  gap: 25px; /* Keep spacing */
 }
 
 .spending-chart .spending-item {
@@ -128,16 +126,15 @@
 
 .spending-chart .category-bar-container {
   flex-grow: 1; /* Bar container takes remaining space */
-  height: 8px; /* Height of the bar */
-  background-color: #2d3748; /* Background for the bar track (match border color) */
-  border-radius: 4px;
+  height: 25px; /* Height of the bar */
   overflow: hidden;
 }
 
 .spending-chart .category-bar {
   height: 100%;
-  background-color: #4299e1; /* Example bar color (blue-ish) - chose a similar dark theme blue */
-  border-radius: 4px;
+  max-width: 99%;
+  background-color: #6b4ee2;
+  border-right: 2px solid #a0aec0;
 }
 
 .spending-chart .category-percentage {
@@ -194,6 +191,33 @@
 
 .key-takeaway p {
     margin: 0;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.card-label {
+    font-size: 0.9em;
+    color: #a0aec0;
+    margin-bottom: 5px;
+}
+
+.card-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ffffff;
 }
 
 

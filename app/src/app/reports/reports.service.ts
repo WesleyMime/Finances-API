@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
+import { SummaryLastYear } from './summary-last-year';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class ReportsService {
 
   constructor(private http: HttpClient) { }
 
-  getSummary(date: any) {
+  getSummary(date: Date): Observable<SummaryLastYear | any> {
     return this.http.get(this.API_URL + this.SUMMARY_ENDPOINT).pipe(
       catchError(this.handleError)
     );
