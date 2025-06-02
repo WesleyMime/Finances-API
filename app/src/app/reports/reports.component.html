@@ -45,12 +45,12 @@
     </div>
 
     <!-- Spending by Category Section -->
-    <div class="report-section recent-transactions">
-      <h3>Spending by Category</h3>
+    <h3>Spending by Category</h3>
+    <div class="report-section">
       <div class="metrics">
-        <div class="metric-value">{{ spendingTotal }}</div>
-        <div class="metric-info">Last Month <span [ngClass]="getChangeColorBad(spendingChange)">{{ incomeExpensePercentage }}</span>
-      </div>
+        <h3>Last Month</h3>
+        <span
+          [ngClass]="getChangeColorBad(incomeExpensePercentage)">{{ incomeExpensePercentage }}</span>
     </div>
     <div class="chart spending-chart">
       <!-- Simulate Horizontal Bar Chart -->
@@ -59,16 +59,18 @@
           <div class="spending-item">
             <span class="category-name">{{ category.name }}</span>
             <div class="category-bar-container">
-              <div class="category-bar" [ngStyle]="{ 'width': category.width }"></div>
+              <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
             </div>
-            <span class="category-percentage">{{ category.percentage }}</span>
+            <span class="category-value">{{ category.valueCurrency }}</span>
           </div>
         }
       </div>
     </div>
+    </div>
+    <div class="report-section">
     <div class="metrics">
-      <div class="metric-value">{{ spendingTotal }}</div>
-      <div class="metric-info">Last 12 Months <span [ngClass]="getChangeColorBad(spendingChange)">{{ spendingChange }}</span></div>
+      <h3>Last 12 Months</h3>
+      <span [ngClass]="getChangeColorBad(spendingChange)">{{ spendingChange }}</span>
     </div>
     <div class="chart spending-chart">
       <!-- Simulate Horizontal Bar Chart -->
@@ -77,9 +79,9 @@
           <div class="spending-item">
             <span class="category-name">{{ category.name }}</span>
             <div class="category-bar-container">
-              <div class="category-bar" [ngStyle]="{ 'width': category.width }"></div>
+              <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
             </div>
-            <span class="category-percentage">{{ category.percentage }}</span>
+            <span class="category-value">{{ category.valueCurrency }}</span>
           </div>
         }
       </div>
