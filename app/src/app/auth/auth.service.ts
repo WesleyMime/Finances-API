@@ -5,13 +5,14 @@ import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store 
 import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
 import { CookieService } from 'ngx-cookie-service';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/auth';
+  private apiUrl = environment.API_URL + "/auth";
   private loginEndpoint = '/login';
   private registerEndpoint = '/signin';
 

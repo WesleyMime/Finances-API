@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { SummaryLastYear } from './summary-last-year';
 import { SummaryByDate } from './summary-by-date';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReportsService {
 
-  private readonly API_URL = 'http://localhost:8080'
+  private readonly API_URL = environment.API_URL
   private readonly SUMMARY_ENDPOINT = '/summary';
   private readonly LASTYEAR_ENDPOINT = '/last-year';
 

@@ -2,13 +2,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Transaction } from './transaction';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddTransactionService {
 
-  private readonly API_URL = 'http://localhost:8080'
+  private readonly API_URL = environment.API_URL
   private readonly INCOME_ENDPOINT = '/income';
   private readonly EXPENSE_ENDPOINT = '/expense';
 
@@ -16,7 +17,7 @@ export class AddTransactionService {
 
   addIncome(transaction: Transaction) {
     console.log('Adding income transaction:', transaction);
-    
+
     return this.http.post(this.API_URL+this.INCOME_ENDPOINT, transaction).pipe(
       catchError(this.handleError)
     );
@@ -24,7 +25,7 @@ export class AddTransactionService {
 
   addExpense(transaction: Transaction) {
     console.log('Adding expense transaction:', transaction);
-    
+
     return this.http.post(this.API_URL+this.EXPENSE_ENDPOINT, transaction).pipe(
       catchError(this.handleError)
     );
