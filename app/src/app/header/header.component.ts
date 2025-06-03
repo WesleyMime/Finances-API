@@ -37,8 +37,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   appNavItems: NavItem[] = [
     { label: 'Dashboard', link: '/dashboard' },
-    { label: 'Transaction', link: '/add-transaction' },
-    { label: 'Reports', link: '/reports' },
+    { label: 'Transação', link: '/add-transaction' },
+    { label: 'Relatório', link: '/reports' },
   ];
 
   // Define header states for different route patterns.
