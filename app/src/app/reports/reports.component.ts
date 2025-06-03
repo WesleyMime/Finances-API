@@ -29,7 +29,6 @@ export class ReportsComponent implements OnInit {
   incomeExpenseMonths = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
   incomeExpenseBarHeights = [];
-  incomeExpenseTakeaway = 'Key Takeaway: Your income has consistently exceeded your expenses over the past year, resulting in a positive cash flow. However, there was a slight dip in income during the summer months.';
 
   // Data for Spending by Category
   spendingTotal = '';
@@ -53,21 +52,12 @@ export class ReportsComponent implements OnInit {
     { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
-  spendingTakeaway = 'Key Takeaway: The largest portion of your spending is allocated to rent and food, followed by entertainment and transportation. Consider reviewing your spending in these categories to identify potential savings.';
 
   // Data for Net Worth Trend
   totalNetWorth = '';
   totalAssets = '';
   totalLiabilities = '';
-  netWorthChange = '+15%';
-  netWorthYears = ['2020', '2021', '2022', '2023'];
-  netWorthTakeaway = 'Key Takeaway: Your net worth has shown a steady increase over the past four years, indicating strong financial growth. The most significant jump occurred in 2023, suggesting successful investments or savings strategies.';
-  // For the line graph simulation, we'll use SVG directly in the template
-
-  // Data for Savings Rate
   savingsRate = '';
-  savingsRateChange = '+3%';
-  savingsRateTakeaway = 'Key Takeaway: Your current savings rate is 25%, which is about the recommended average. This indicates a strong ability to save a significant portion of your income.';
 
   reportsService = inject(ReportsService);
   constructor() { }
@@ -189,12 +179,10 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  // Helper to format currency
   formatCurrency(value: number): string {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
-  // Helper to format percentage change
   getPercentageChange(num1: number, num2: number): number {
     let difference = num1 - num2;
     return difference * 100 / num2;

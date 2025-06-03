@@ -10,7 +10,7 @@ export interface ILoginUser {
   password: string;
 }
   
-  export interface ILoginResponse {
-    token: string;
-    type: string;
-  }
+export interface ILoginResponse {
+  token: string;
+  type: string;
+}
