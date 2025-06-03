@@ -1,40 +1,39 @@
 <app-header></app-header>
 <main class="reports-content">
   <section class="page-overview">
-    <h1>Financial Reports</h1>
-    <p class="subtitle">Analyze your financial health with detailed reports.</p>
+    <h1>Relatórios Financeiros</h1>
+    <p class="subtitle">Analise sua saúde financeira com relatórios detalhados.</p>
 
-    <div class="summary-cards-grid">
-      <div class="card net-worth-card">
-        <div class="card-label">Net Worth</div>
+    <div class="report-section">
+      <div class="net-worth-card">
+        <div class="card-label">Patrimônio líquido</div>
         <div class="card-value">{{ totalNetWorth }}</div>
       </div>
-
-      <div class="card assets-liabilities-card">
-        <div class="card-row">
-          <div class="card-column">
-            <div class="card-label">Total Assets</div>
-            <div class="card-value">{{ totalAssets }}</div>
-          </div>
-          <div class="card-column">
-            <div class="card-label">Total Liabilities</div>
-            <div class="card-value">{{ totalLiabilities }}</div>
-          </div>
+    </div>
+    <div class="cards-grid">
+      <div class="card net-worth-card">
+        <div class="card-label">Total de Ativos</div>
+        <div class="card-value">{{ totalAssets }}</div>
+      </div>
+      <div class="card net-worth-card">
+        <div class="card-column">
+          <div class="card-label">Total de Passivos</div>
+          <div class="card-value">{{ totalLiabilities }}</div>
         </div>
       </div>
     </div>
 
-    <h3>Month-over-Month Comparison</h3>
+    <h3>Comparação mensal</h3>
     <div class="cards-grid">
       <div class="card net-worth-card">
-        <div class="card-label">Total Income</div>
+        <div class="card-label">Renda Total</div>
         <div class="card-value">{{ incomeCurrentMonth }}</div>
         <div class="metric-info"><span
           [ngClass]="getChangeColorGood(incomeChangePercentage)">{{ incomeChangePercentage }} {{ incomeValueDifference }}</span>
         </div>
       </div>
       <div class="card net-worth-card">
-        <div class="card-label">Total Expenses</div>
+        <div class="card-label">Despesa Total</div>
         <div class="card-value">{{ expenseCurrentMonth }}</div>
         <div class="metric-info"><span
           [ngClass]="getChangeColorBad(expenseChangePercentage)">{{ expenseChangePercentage }} {{ expenseValueDifference }}</span>
@@ -43,14 +42,13 @@
     </div>
 
     <!-- Income vs. Expenses Section -->
-    <div class="report-section">
-      <h3>Income vs. Expenses</h3>
+    <div class="graphic-section">
+      <h3>Renda vs. Despesas</h3>
       <div class="metrics">
         <div class="metric-value">{{ incomeExpenseTotal }}</div>
-        <div class="metric-info">Last 12 Months Average</div>
+        <div class="metric-info">Média dos últimos 12 meses.</div>
       </div>
       <div class="chart income-expense-chart">
-        <!-- Simulate Bar Chart -->
         <div class="chart-bars">
           @for (height of incomeExpenseBarHeights; track height) {
             <div class="bar" [ngStyle]="{ 'height': height }"></div>
@@ -65,10 +63,10 @@
     </div>
 
     <!-- Spending by Category Section -->
-    <h3>Spending by Category</h3>
-    <div class="report-section">
+    <h3>Gastos por Categoria</h3>
+    <div class="graphic-section">
       <div class="metrics">
-        <h3>Last Month</h3>
+        <h3>Último mês</h3>
         <span
           [ngClass]="getChangeColorBad(incomeExpensePercentage)">{{ incomeExpensePercentage }}</span>
     </div>
@@ -77,7 +75,7 @@
       <div class="spending-list">
         @for (category of spendingCategoriesMonth; track category) {
           <div class="spending-item">
-            <span class="category-name">{{ category.name }}</span>
+            <span class="category-name">{{ category.namePtBr }}</span>
             <div class="category-bar-container">
               <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
             </div>
@@ -87,42 +85,20 @@
       </div>
     </div>
     </div>
-    <div class="report-section">
+    <div class="graphic-section">
     <div class="metrics">
-      <h3>Last 12 Months</h3>
+      <h3>Últimos 12 meses</h3>
     </div>
     <div class="chart spending-chart">
-      <!-- Simulate Horizontal Bar Chart -->
       <div class="spending-list">
         @for (category of spendingCategories; track category) {
           <div class="spending-item">
-            <span class="category-name">{{ category.name }}</span>
+            <span class="category-name">{{ category.namePtBr }}</span>
             <div class="category-bar-container">
               <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
             </div>
             <span class="category-value">{{ category.valueCurrency }}</span>
           </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Net Worth Trend Section -->
-  <div class="report-section">
-    <h3>Net Worth Trend</h3>
-    <div class="metrics">
-      <div class="metric-value">{{ totalNetWorth }}</div>
-      <div class="metric-info">Last 5 Years <span [ngClass]="getChangeColorGood(netWorthChange)">{{ netWorthChange }}</span></div>
-    </div>
-    <div class="chart net-worth-chart">
-      <!-- Simulate Line Chart using SVG (basic example) -->
-      <svg viewBox="0 0 400 100" preserveAspectRatio="none">
-        <!-- Path data is just an example to create a wavy line -->
-        <path d="M0 80 C 50 20, 100 90, 150 40 S 250 90, 300 50 C 350 10, 400 70, 400 70" stroke="#007bff" fill="none" stroke-width="2"/>
-      </svg>
-      <div class="chart-labels">
-        @for (year of netWorthYears; track year) {
-          <span>{{ year }}</span>
         }
       </div>
     </div>
@@ -130,10 +106,9 @@
 
   <!-- Savings Rate Section -->
   <div class="report-section">
-    <h3>Savings Rate</h3>
+    <h3>Taxa de Poupança</h3>
     <div class="metrics">
       <div class="metric-value">{{ savingsRate }}%</div>
-      <div class="metric-info">Current Savings Rate <span [ngClass]="getChangeColorGood(savingsRateChange)">{{ savingsRateChange }}</span></div>
     </div>
   </div>
 </section>

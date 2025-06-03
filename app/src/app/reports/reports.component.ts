@@ -26,7 +26,7 @@ export class ReportsComponent implements OnInit {
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
   incomeExpensePercentage = '';
-  incomeExpenseMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  incomeExpenseMonths = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
   incomeExpenseBarHeights = [];
   incomeExpenseTakeaway = 'Key Takeaway: Your income has consistently exceeded your expenses over the past year, resulting in a positive cash flow. However, there was a slight dip in income during the summer months.';
@@ -36,22 +36,22 @@ export class ReportsComponent implements OnInit {
   spendingChange = '-2%';
   categoriesBarWidth = [];
   spendingCategories = [
-    { name: 'Food', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Health', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Transport', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Education', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Leisure', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Unforeseen', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Others', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
   spendingCategoriesMonth = [
-    { name: 'Food', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Health', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Transport', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Education', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Leisure', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Unforeseen', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Others', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
+    { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
   spendingTakeaway = 'Key Takeaway: The largest portion of your spending is allocated to rent and food, followed by entertainment and transportation. Consider reviewing your spending in these categories to identify potential savings.';
 
