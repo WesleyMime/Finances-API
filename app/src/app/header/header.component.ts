@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { ProfileMenuComponent } from "./profile-menu/profile-menu.component";
 
 interface NavItem {
   label: string;
@@ -22,7 +23,7 @@ interface HeaderConfig {
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, ProfileMenuComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })

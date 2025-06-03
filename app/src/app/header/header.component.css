@@ -97,20 +97,6 @@ background-color: #5a3ebf;
   font-weight: bold;
 }
 
-.profile-avatar {
-    width: 32px;
-    height: 32px;
-    background-color: #6b4ee2;
-    border-radius: 50%; /* Circular avatar */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-}
-
 @media (max-width: 580px) {
   .main-nav ul {
     flex-direction: column;
@@ -133,10 +119,5 @@ background-color: #5a3ebf;
     flex-direction: column;
     align-items: center;
     gap: 15px;
-  }
-  .profile-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 1em;
   }
 }
