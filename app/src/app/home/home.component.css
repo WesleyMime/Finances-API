@@ -5,7 +5,7 @@
   align-items: center;
   padding: 40px 20px;
   min-height: calc(100vh - 60px); /* fill viewport height minus header height */
-  box-sizing: border-box; /* Include padding in height calculation */
+  box-sizing: border-box;
   justify-content: center;
 }
 
@@ -55,7 +55,7 @@
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
-  gap: 20px; /* Space between cards */
+  gap: 20px;
   margin-bottom: 30px;
 }
 
@@ -73,7 +73,6 @@
 .feature-icon {
   font-size: 2em;
   margin-bottom: 15px;
-  color: #9f7aea;
 }
 
 .feature-text {
