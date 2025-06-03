@@ -60,15 +60,14 @@ public class SummaryService {
         return ResponseEntity.ok(summary);
     }
 
-    public SummaryLastYearDTO getSummaryOfLastYear(Principal principal) {
+    public SummaryLastYearDTO getSummaryOfLastYear(Principal principal, LocalDate date) {
         Client client = getClientByEmail(principal.getName());
 
-        LocalDate now = LocalDate.now();
-        LocalDate from = LocalDate.of(now.getYear() - 1, now.getMonthValue(), 1);
+        LocalDate from = LocalDate.of(date.getYear() - 1, date.getMonthValue(), 1);
         List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeFromLastYear(from,
-                now.minusMonths(1), client);
+                date.minusMonths(1), client);
         List<ExpenseDTO> expenseFromLastYear = expenseRepository.findExpenseFromLastYear(from,
-                now.minusMonths(1), client);
+                date.minusMonths(1), client);
 
         List<BigDecimal> finalBalanceEachMonth = new ArrayList<>();
         BigDecimal sumBalanceEachMonth = BigDecimal.ZERO, totalYearIncome = BigDecimal.ZERO,

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/summary")
@@ -24,6 +25,6 @@ public class SummaryController {
 
 	@GetMapping("/last-year")
 	public ResponseEntity<SummaryLastYearDTO> getSummaryOfLastYear(Principal principal) {
-		return ResponseEntity.ok(summaryService.getSummaryOfLastYear(principal));
+		return ResponseEntity.ok(summaryService.getSummaryOfLastYear(principal, LocalDate.now()));
 	}
 }

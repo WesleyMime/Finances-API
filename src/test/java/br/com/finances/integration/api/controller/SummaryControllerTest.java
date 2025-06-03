@@ -77,7 +77,6 @@ public class SummaryControllerTest {
 				.andExpect(status().isBadRequest());
 
 	}
-
 	@Test
 	void shouldReturnSummaryForPast12Months() throws Exception {
 		populateDB();
@@ -87,6 +86,8 @@ public class SummaryControllerTest {
 				.andExpectAll(
 						status().is2xxSuccessful(),
 						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalYearIncome", is(120000.0)),
+						jsonPath("$.totalYearExpense", is(33000.0)),
 						jsonPath("$.finalBalanceEachMonth", contains(
 								10000.00, 9500.00, 9000.00, 8500.00, 8000.00, 7500.00, 7000.00,
 								6500.00, 6000.00, 5500.00, 5000.00, 4500.00)),
