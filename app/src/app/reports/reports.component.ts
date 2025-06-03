@@ -88,9 +88,11 @@ export class ReportsComponent implements OnInit {
 
         this.getSpendingByCategoryYear(summary.expenses);
 
-        this.totalNetWorth = this.formatCurrency(summary.avgBalanceYear);
-        this.totalAssets = this.formatCurrency(summary.totalIncome);
-        this.totalLiabilities = this.formatCurrency(summary.totalExpense);
+        const totalYearIncome = summary.totalYearIncome;
+        const totalYearExpense = summary.totalYearExpense;
+        this.totalNetWorth = this.formatCurrency(totalYearIncome - totalYearExpense);
+        this.totalAssets = this.formatCurrency(totalYearIncome);
+        this.totalLiabilities = this.formatCurrency(totalYearExpense);
         this.savingsRate = summary.percentageSavingsRate;
     },
     error: (this.handleError)

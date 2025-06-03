@@ -8,10 +8,10 @@ import { RegisterComponent } from './auth/register/register.component';
 import { ReportsComponent } from './reports/reports.component';
 
 export const routes: Routes = [
-    {path: "", component: HomeComponent},
-    {path: "register", component: RegisterComponent},
-    {path: "login", component: LoginComponent},
-    {path: "add-transaction", component: AddTransactionComponent, canActivate: [authGuard]},
-    {path: "dashboard", component: ReportsComponent, canActivate: [authGuard]},
-    {path: "reports", component: ReportsComponent, canActivate: [authGuard]},
+    {path: "", component: HomeComponent, title: "Finances APP"},
+    {path: "register", component: RegisterComponent, title: "Finances APP"},
+    {path: "login", component: LoginComponent, title: "Finances APP"},
+    {path: "add-transaction", component: AddTransactionComponent, title: "Adicionar Transação", canActivate: [authGuard]},
+    {path: "dashboard", redirectTo: "reports", },
+    {path: "reports", component: ReportsComponent, title: "Relatório", canActivate: [authGuard]},
 ];
