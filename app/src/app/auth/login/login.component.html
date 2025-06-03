@@ -43,15 +43,6 @@
             required
             #passwordInput="ngModel"
             >
-          @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
-            <div class="validation-error">
-              @if (passwordInput.errors?.['required']) {
-                <div>
-                  Senha é obrigatória.
-                </div>
-              }
-            </div>
-          }
           <span class="password-toggle-icon" (click)="togglePasswordVisibility()">
             @if (passwordVisible) {
               <div>
@@ -64,6 +55,15 @@
               </div>
             }
           </span>
+          @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+          <div class="validation-error">
+            @if (passwordInput.errors?.['required']) {
+            <div>
+              Senha é obrigatória.
+            </div>
+            }
+          </div>
+          }
         </div>
       </div>
 
