@@ -1,21 +1,11 @@
 export interface SummaryLastYear {
-    totalIncome: number;
-    totalExpense: number;
+    totalYearIncome: number;
+    totalYearExpense: number;
     avgBalanceYear: number;
     percentageSavingsRate: string;
     finalBalanceEachMonth: number[];
     income: Income[];
     expenses: Expense[];
-    // TODO
-    netWorthTotal: string;
-    netWorthChange: string;
-    netWorthYears: string[];
-    savingsRateChange: string;
-    incomeExpenseChange: string;
-    incomeExpensePercentage: string;
-    incomeExpenseMonths: string[];
-    spendingTotal: string;
-    spendingChange: string;
 }
 
 export interface Income {
