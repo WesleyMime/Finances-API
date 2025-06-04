@@ -22,7 +22,7 @@ export class ReportsService {
     );
   }
   getSummaryByDate(date: Date): Observable<SummaryByDate | any> {
-    let fullUrl = this.API_URL + this.SUMMARY_ENDPOINT + "/" + date.getFullYear() + "/" + (date.getMonth());
+    let fullUrl = this.API_URL + this.SUMMARY_ENDPOINT + "/" + date.getFullYear() + "/" + (date.getMonth() +1);
     return this.http.get(fullUrl).pipe(
       catchError(this.handleError)
     );

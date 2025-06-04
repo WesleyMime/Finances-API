@@ -42,7 +42,7 @@ export class AddTransactionComponent {
     {index: 4, name: 'Education'},
     {index: 5, name: 'Leisure'},
     {index: 6, name: 'Unforeseen'},
-    {index: 7, name: 'Other'}
+    {index: 7, name: 'Others'}
   ];
 
   transactionService = inject(AddTransactionService);

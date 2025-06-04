@@ -57,6 +57,9 @@ export class ReportsComponent implements OnInit {
   totalNetWorth = '';
   totalAssets = '';
   totalLiabilities = '';
+  totalNetWorthValue = 0;
+  totalAssetsValue = 0;
+  totalLiabilitiesValue = 0;
   savingsRate = '';
 
   reportsService = inject(ReportsService);
@@ -77,12 +80,8 @@ export class ReportsComponent implements OnInit {
         this.incomeExpensePercentage = this.formatPercentage(diffBalancePercent);
 
         this.getSpendingByCategoryYear(summary.expenses);
-
-        const totalYearIncome = summary.totalYearIncome;
-        const totalYearExpense = summary.totalYearExpense;
-        this.totalNetWorth = this.formatCurrency(totalYearIncome - totalYearExpense);
-        this.totalAssets = this.formatCurrency(totalYearIncome);
-        this.totalLiabilities = this.formatCurrency(totalYearExpense);
+        
+        this.updateNetWorth(summary.totalYearIncome, summary.totalYearExpense);
         this.savingsRate = summary.percentageSavingsRate;
     },
     error: (this.handleError)
@@ -103,24 +102,43 @@ export class ReportsComponent implements OnInit {
       this.incomeCurrentMonth = this.formatCurrency(incomeCurrentMonthValue);
       this.expenseCurrentMonth = this.formatCurrency(expenseCurrentMonthValue);
 
+      this.updateNetWorth(incomeCurrentMonthValue, expenseCurrentMonthValue);
       this.getSpendingByCategoryMonth(summary);
     });
 
     let date = new Date();
     date.setMonth(date.getMonth() - 1);
+    
     result = firstValueFrom(this.reportsService.getSummaryByDate(date));
     await result.then((summary: SummaryByDate) => {
       console.log('Summary data: ', date , summary);
       incomeLastMonthValue = summary.totalIncome;
       expenselastMonthValue = summary.totalExpense;
-      this.incomeValueDifference = this.formatCurrency(incomeCurrentMonthValue- incomeLastMonthValue)
-      this.expenseValueDifference = this.formatCurrency(expenselastMonthValue - expenseCurrentMonthValue);
+      var incomeValueDifference = incomeCurrentMonthValue - incomeLastMonthValue;
+      if (incomeValueDifference > 0 && incomeLastMonthValue != 0)
+        this.incomeValueDifference = this.formatCurrency(incomeValueDifference);
+
+      var expenseValueDifference = (expenselastMonthValue - expenseCurrentMonthValue) * -1; // To not show a negative number
+      if (expenseValueDifference > 0 && expenselastMonthValue != 0)
+        this.expenseValueDifference = this.formatCurrency(expenseValueDifference);
+
       this.percentualChangeFromLastMonth(
         incomeCurrentMonthValue, 
         incomeLastMonthValue, 
         expenseCurrentMonthValue, 
         expenselastMonthValue);
     });
+  }
+
+  private updateNetWorth(incomeValue: number, expenseValue: number) {
+    this.totalNetWorthValue += incomeValue - expenseValue;
+    this.totalNetWorth = this.formatCurrency(this.totalNetWorthValue);
+
+    this.totalAssetsValue += incomeValue;
+    this.totalAssets = this.formatCurrency(this.totalAssetsValue);
+
+    this.totalLiabilitiesValue += expenseValue;
+    this.totalLiabilities = this.formatCurrency(this.totalLiabilitiesValue);
   }
 
   // Helper to determine text color for percentage change
@@ -189,7 +207,7 @@ export class ReportsComponent implements OnInit {
   }
 
   formatPercentage(diffPercent: number): string {
-    if (isNaN(diffPercent)) return '0%';
+    if (!isFinite(diffPercent)) return '0%';
     // 2 decimal places for percentage
     diffPercent = Math.round(diffPercent * 100) / 100;
     return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
