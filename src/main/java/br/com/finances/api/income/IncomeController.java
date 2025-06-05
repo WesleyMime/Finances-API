@@ -47,6 +47,12 @@ public class IncomeController {
 			@Valid @RequestBody IncomeForm incomeForm) {
 		return incomeService.post(incomeForm);
 	}
+
+	@PostMapping("/list")
+	public ResponseEntity<List<IncomeDTO>> postIncomeList(
+			@Valid @RequestBody List<IncomeForm> incomeForms) {
+		return incomeService.postList(incomeForms);
+	}
 	
 	@PutMapping("{id}")
 	public ResponseEntity<IncomeDTO> putIncome(

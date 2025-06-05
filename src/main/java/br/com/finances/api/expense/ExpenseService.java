@@ -40,6 +40,11 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 		return genericServiceImpl.post(form);
 	}
 
+	@Override
+	public ResponseEntity<List<ExpenseDTO>> postList(List<ExpenseForm> forms) {
+		return genericServiceImpl.postList(forms);
+	}
+
 	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm expenseForm) {
 		return put(id, expenseForm, this::update);
 	}

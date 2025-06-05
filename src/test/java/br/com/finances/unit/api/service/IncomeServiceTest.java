@@ -1,15 +1,10 @@
 package br.com.finances.unit.api.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.income.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,16 +12,15 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.com.finances.SecurityContextFactory;
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientRepository;
-import br.com.finances.api.income.Income;
-import br.com.finances.api.income.IncomeDTO;
-import br.com.finances.api.income.IncomeDtoMapper;
-import br.com.finances.api.income.IncomeForm;
-import br.com.finances.api.income.IncomeFormMapper;
-import br.com.finances.api.income.IncomeRepository;
-import br.com.finances.api.income.IncomeService;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 class IncomeServiceTest {
 
@@ -132,6 +126,31 @@ class IncomeServiceTest {
 	@Test
 	void shouldPostIncome() {
 		ResponseEntity<IncomeDTO> post = incomeService.post(FORM);
+		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+	}
+
+	@Test
+	void shouldPostIncomeList() {
+		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM));
+		Assertions.assertNotNull(post.getBody());
+		List<IncomeDTO> body = post.getBody();
+		IncomeDTO first = body.getFirst();
+		assertEquals(1, body.size());
+		assertEquals(first.getDescription(), FORM.getDescription());
+		assertEquals(first.getDate(), FORM.getDate());
+		assertEquals(first.getValue(), FORM.getValue());
+		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+	}
+
+	@Test
+	void shouldNotPostIncomeListTwice() {
+		when(incomeRepository.findByDescriptionAndMonth(DESCRIPTION, DATE.getMonthValue(), CLIENT))
+				.thenReturn(Optional.of(INCOME));
+
+		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM, FORM));
+		Assertions.assertNotNull(post.getBody());
+		List<IncomeDTO> body = post.getBody();
+		assertEquals(0, body.size());
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
 	

@@ -6,6 +6,7 @@ import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.income.Income;
 import br.com.finances.api.income.IncomeForm;
 import br.com.finances.api.income.IncomeRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +50,7 @@ class IncomeControllerTest {
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static Client CLIENT = SecurityContextFactory.setClient();
 	private static Long ID;
+    private static final String ENDPOINT = "/income";
 		
 		
 	@BeforeAll
@@ -69,7 +77,7 @@ class IncomeControllerTest {
 	@Test
 	void shouldReturnAllIncome() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income"))
+                        .get(ENDPOINT))
 		.andExpect(MockMvcResultMatchers
 				.content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(MockMvcResultMatchers
@@ -151,7 +159,7 @@ class IncomeControllerTest {
 	@Test
 	void shouldPostIncome() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/income")
+                        .post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm("New Description", VALUE, DATE).toString()))
 		.andExpect(MockMvcResultMatchers
@@ -161,7 +169,7 @@ class IncomeControllerTest {
 	@Test
 	void shouldNotPostSameIncomeTwice() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/income")
+                        .post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
 		.andExpect(MockMvcResultMatchers
@@ -171,7 +179,7 @@ class IncomeControllerTest {
 	@Test
 	void shouldNotPostIncome() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders
-				.post("/income")
+                        .post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{" +
 						"description"+
@@ -181,8 +189,55 @@ class IncomeControllerTest {
 		.andExpect(MockMvcResultMatchers
 				.status().isBadRequest());
 	}
-	
-	
+
+    @Test
+    void shouldPostExpenseList() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(ENDPOINT + "/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(List.of(
+                                new IncomeForm("Income1", VALUE, DATE).toString(),
+                                new IncomeForm("Income2", VALUE, DATE).toString()
+                        ).toString()))
+                .andExpectAll(
+                        jsonPath("[0].description", is("Income1")),
+                        jsonPath("[0].value", is(1500)),
+                        jsonPath("[0].date", is(DATE.toString())),
+                        jsonPath("[1].description", is("Income2")),
+                        jsonPath("[1].value", is(1500)),
+                        jsonPath("[1].date", is(DATE.toString())),
+                        status().isCreated())
+                .andDo(print());
+    }
+
+    @Test
+    void shouldNotPostExpenseListTwice() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(ENDPOINT + "/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(List.of(
+                                new IncomeForm("Income3", VALUE, DATE).toString(),
+                                new IncomeForm("Income3", VALUE, DATE).toString()
+                        ).toString()))
+                .andExpectAll(
+                        jsonPath("$", Matchers.hasSize(1)),
+                        jsonPath("[0].description", is("Income3")),
+                        jsonPath("[0].value", is(1500)),
+                        jsonPath("[0].date", is(DATE.toString())),
+                        status().isCreated())
+                .andDo(print());
+    }
+
+    @Test
+    void shouldNotPostExpenseList() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(ENDPOINT + "/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new IncomeForm("Different income", VALUE, DATE).toString()))
+                .andExpect(
+                        status().isBadRequest())
+                .andDo(print());
+    }
 
 	//UPDATE
 	

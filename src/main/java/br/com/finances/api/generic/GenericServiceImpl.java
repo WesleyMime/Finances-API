@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -81,6 +82,24 @@ public class GenericServiceImpl
 		
 		S dto = dtoMapper.map(save);
 		return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+	}
+
+	public ResponseEntity<List<S>> postList(List<U> forms) {
+		Client client = getClient();
+		List<S> dtoList = new ArrayList<>();
+		for (U form : forms) {
+			T model = formMapper.map(form);
+			try {
+				checkIfAlreadyExists(model);
+			} catch (FlowAlreadyExistsException e) {
+				continue;
+			}
+			model.setClient(client);
+
+			T save = repository.save(model);
+			dtoList.add(dtoMapper.map(save));
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
 	}
 
 	public ResponseEntity<S> put(String id, U form, BiFunction<T, U, T> function) {

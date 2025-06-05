@@ -11,6 +11,8 @@ public interface GenericService<T extends GenericModel, S extends GenericDTO, U 
     ResponseEntity<S> getOne(String id);
     ResponseEntity<List<S>> getByDate(String yearString, String monthString);
     ResponseEntity<S> post(U form);
+
+    ResponseEntity<List<S>> postList(List<U> forms);
     ResponseEntity<S> put(String id, U form, BiFunction<T, U, T> function);
     ResponseEntity<S> delete(String id);
 }

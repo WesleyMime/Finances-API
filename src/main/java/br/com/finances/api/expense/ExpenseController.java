@@ -46,6 +46,12 @@ public class ExpenseController {
 			@Valid @RequestBody ExpenseForm expenseForm) {
 		return expenseService.post(expenseForm);
 	}
+
+	@PostMapping("/list")
+	public ResponseEntity<List<ExpenseDTO>> postExpenseList(
+			@Valid @RequestBody List<ExpenseForm> expenseForms) {
+		return expenseService.postList(expenseForms);
+	}
 	
 	@PutMapping("{id}")
 	public ResponseEntity<ExpenseDTO> putExpense(
