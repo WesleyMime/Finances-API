@@ -26,9 +26,9 @@ export class ReportsComponent implements OnInit {
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
   incomeExpensePercentage = '';
-  incomeExpenseMonths = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
+  incomeExpenseMonths: string[] = [];
   incomeExpenseBarHeights = [];
+  currentYear = 0;
 
   // Data for Spending by Category
   spendingTotal = '';
@@ -66,12 +66,16 @@ export class ReportsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.getMonthOverMonthComparison();
-    this.reportsService.getSummaryLastYear(new Date()).subscribe({
+    var currentDate = new Date();
+    this.getIncomeExpenseMonths(currentDate);
+    
+    this.getMonthOverMonthComparison(currentDate);
+    this.reportsService.getSummaryLastYear(currentDate).subscribe({
       // Treat the response as a Report type
       next: (summary: SummaryLastYear) => {
         console.log('Summary data:', summary);
 
+        this.currentYear = currentDate.getFullYear();
         this.incomeExpenseTotal = this.formatCurrency(summary.avgBalanceYear);
         this.getIncomeExpenseBarHeights(summary.finalBalanceEachMonth);
 
@@ -88,15 +92,28 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  private async getMonthOverMonthComparison() {
+  private getIncomeExpenseMonths(currentDate: Date) {
+    var month = currentDate.getMonth();
+    var months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    var finalMonths = [];
+
+    var j = 0;
+    for (let i: number = month; j < 12; i++) {
+      j++;
+      finalMonths.push(months[i % 12]);
+    }
+    this.incomeExpenseMonths = finalMonths;
+  }
+
+  private async getMonthOverMonthComparison(currentDate: Date) {
     let incomeCurrentMonthValue: number = NaN;
     let expenseCurrentMonthValue: number = NaN;
     let incomeLastMonthValue: number = NaN;
     let expenselastMonthValue: number = NaN;
 
-    let result = firstValueFrom(this.reportsService.getSummaryByDate(new Date()));
+    let result = firstValueFrom(this.reportsService.getSummaryByDate(currentDate));
     await result.then((summary: SummaryByDate) => {
-      console.log('Summary data:', new Date(), summary);
+      console.log('Summary data:', currentDate, summary);
       incomeCurrentMonthValue = summary.totalIncome;
       expenseCurrentMonthValue = summary.totalExpense;
       this.incomeCurrentMonth = this.formatCurrency(incomeCurrentMonthValue);
@@ -106,7 +123,7 @@ export class ReportsComponent implements OnInit {
       this.getSpendingByCategoryMonth(summary);
     });
 
-    let date = new Date();
+    let date = currentDate;
     date.setMonth(date.getMonth() - 1);
     
     result = firstValueFrom(this.reportsService.getSummaryByDate(date));
