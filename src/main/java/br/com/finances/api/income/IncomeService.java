@@ -40,6 +40,11 @@ public class IncomeService implements GenericService<Income, IncomeDTO, IncomeFo
 		return genericServiceImpl.post(form);
 	}
 
+	@Override
+	public ResponseEntity<List<IncomeDTO>> postList(List<IncomeForm> forms) {
+		return genericServiceImpl.postList(forms);
+	}
+
 	public ResponseEntity<IncomeDTO> put(String id, IncomeForm incomeForm) {
 		return put(id, incomeForm, this::update);
 	}
