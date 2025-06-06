@@ -10,17 +10,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/income")
 public class IncomeController {
-	
-	@SuppressWarnings("unused")
-	@Autowired
-	private IncomeRepository incomeRepository;
-	
+
 	@Autowired
 	private IncomeService incomeService;
-	
-	public IncomeController(IncomeService incomeService, IncomeRepository incomeRepository) {
+
+	public IncomeController(IncomeService incomeService) {
 		this.incomeService = incomeService;
-		this.incomeRepository = incomeRepository;
 	}
 	
 	@GetMapping
