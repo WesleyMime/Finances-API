@@ -1,5 +1,11 @@
 services:
 
+  front-end:
+    build: ./app/
+    restart: always
+    ports:
+      - "4200:4200"
+
   api:
     build: .
     restart: always
@@ -26,3 +32,8 @@ services:
       POSTGRES_PASSWORD: finances-api
     ports:
       - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
