@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.time.LocalDate;
 
 @RestController
@@ -19,12 +18,12 @@ public class SummaryController {
 	
 	@GetMapping("/{year}/{month}")
 	public ResponseEntity<SummaryDTO> getSummaryByDate(
-			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month, Principal principal) {
-		return summaryService.getSummaryByDate(year, month, principal);
+			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month) {
+		return summaryService.getSummaryByDate(year, month);
 	}
 
 	@GetMapping("/last-year")
-	public ResponseEntity<SummaryLastYearDTO> getSummaryOfLastYear(Principal principal) {
-		return ResponseEntity.ok(summaryService.getSummaryOfLastYear(principal, LocalDate.now()));
+	public ResponseEntity<SummaryLastYearDTO> getSummaryOfLastYear() {
+		return ResponseEntity.ok(summaryService.getSummaryOfLastYear(LocalDate.now()));
 	}
 }

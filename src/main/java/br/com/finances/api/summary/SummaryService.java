@@ -8,14 +8,15 @@ import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.IncomeDTO;
 import br.com.finances.api.income.IncomeRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SummaryService {
@@ -33,11 +34,10 @@ public class SummaryService {
         this.clientRepository = clientRepository;
     }
 
-    public ResponseEntity<SummaryDTO> getSummaryByDate(String yearString, String monthString,
-                                                       Principal principal) {
+    public ResponseEntity<SummaryDTO> getSummaryByDate(String yearString, String monthString) {
         Integer year;
         Integer month;
-        Client client = getClientByEmail(principal.getName());
+        Client client = getClient();
 
         try {
             year = Integer.parseInt(yearString);
@@ -60,8 +60,8 @@ public class SummaryService {
         return ResponseEntity.ok(summary);
     }
 
-    public SummaryLastYearDTO getSummaryOfLastYear(Principal principal, LocalDate date) {
-        Client client = getClientByEmail(principal.getName());
+    public SummaryLastYearDTO getSummaryOfLastYear(LocalDate date) {
+        Client client = getClient();
 
         LocalDate from = LocalDate.of(date.getYear() - 1, date.getMonthValue(), 1);
         List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeFromLastYear(from,
@@ -105,7 +105,9 @@ public class SummaryService {
                 expenseFromLastYear);
     }
 
-    private Client getClientByEmail(String email) {
-        return clientRepository.findByEmail(email).get();
+    private Client getClient() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Client> client = clientRepository.findByEmail(email);
+        return client.orElse(null);
     }
 }

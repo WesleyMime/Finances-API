@@ -11,15 +11,10 @@ import java.util.List;
 @RequestMapping("/expense")
 public class ExpenseController {
 	
-	@SuppressWarnings("unused")
-	@Autowired
-	private ExpenseRepository expenseRepository;
-	
 	@Autowired
 	private ExpenseService expenseService;
-	
-	public ExpenseController(ExpenseRepository expenseRepository, ExpenseService expenseService) {
-		this.expenseRepository = expenseRepository;
+
+	public ExpenseController(ExpenseService expenseService) {
 		this.expenseService = expenseService;
 	}
 	
