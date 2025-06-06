@@ -7,8 +7,7 @@ import br.com.finances.api.income.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,34 +23,32 @@ import static org.mockito.Mockito.when;
 
 class IncomeServiceTest {
 
-	@Mock
-	private IncomeRepository incomeRepository;
-	@Mock
-	private ClientRepository clientRepository;
-	
-	private IncomeDtoMapper dtoMapper = new IncomeDtoMapper();
+	private final IncomeRepository incomeRepository;
+	private final ClientRepository clientRepository;
+	private final IncomeService incomeService;
 
-	private IncomeFormMapper formMapper = new IncomeFormMapper();
-	
- 	private IncomeService incomeService;
-	
+	public IncomeServiceTest() {
+		this.incomeRepository = Mockito.mock(IncomeRepository.class);
+		this.clientRepository = Mockito.mock(ClientRepository.class);
+		IncomeDtoMapper dtoMapper = new IncomeDtoMapper();
+		IncomeFormMapper formMapper = new IncomeFormMapper();
+		this.incomeService = new IncomeService(incomeRepository, clientRepository, dtoMapper,
+				formMapper);
+	}
+
 	private static final String DESCRIPTION = "description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
-	private static final LocalDate DATE = LocalDate.of(2022, 01, 01);
+	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static final Client CLIENT = SecurityContextFactory.setClient();
-	
+
 	private static final IncomeForm FORM = new IncomeForm(DESCRIPTION, VALUE, DATE);
 	private static final Income INCOME = new Income(DESCRIPTION, VALUE, DATE);
-	
+
+
 	@BeforeEach
 	void beforeEach() {
-		MockitoAnnotations.openMocks(this);
-		
-		this.incomeService = new IncomeService(incomeRepository, clientRepository, dtoMapper, formMapper);
-		
 		when(clientRepository.findByEmail(anyString()))
 		.thenReturn(Optional.of(CLIENT));
-		
 		when(incomeRepository.save(any()))
 		.thenReturn(INCOME);
 	}
@@ -62,16 +59,18 @@ class IncomeServiceTest {
 	void shouldReturnAllIncome() {
 		when(incomeRepository.findByClient(CLIENT))
 		.thenReturn(List.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);	
-		assertEquals(DESCRIPTION, all.getBody().get(0).getDescription());
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);
+		Assertions.assertNotNull(all.getBody());
+		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
 		when(incomeRepository.findByDescriptionAndClient(any(), any()))
 		.thenReturn(Optional.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);		
-		assertEquals(DESCRIPTION, all.getBody().get(0).getDescription());
+		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);
+		Assertions.assertNotNull(all.getBody());
+		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
 	}
 	
 	@Test
@@ -159,7 +158,7 @@ class IncomeServiceTest {
 	void shouldUpdateIncome() {
 		when(incomeRepository.findByIdAndClient(any(), any()))
 		.thenReturn(Optional.of(INCOME));
-		when(incomeRepository.getById(any()))
+		when(incomeRepository.getReferenceById(any()))
 		.thenReturn(INCOME);
 		ResponseEntity<IncomeDTO> newIncome = incomeService.put("1", FORM);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
