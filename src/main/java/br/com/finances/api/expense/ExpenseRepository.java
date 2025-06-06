@@ -13,10 +13,12 @@ import java.util.Optional;
 
 @Repository
 public interface ExpenseRepository extends GenericRepository<Expense>, JpaRepository<Expense, Long> {
-	
-	@Query("SELECT e FROM Expense e WHERE e.description = ?1 AND EXTRACT(month FROM e.date) = ?2 AND e.client = ?3")
+
+	@Query("SELECT e FROM Expense e WHERE e.description = ?1 AND EXTRACT(year FROM e.date) = ?2 " +
+			"AND EXTRACT(month FROM e.date) = ?3 AND e.client = ?4")
 	// Extract: Get Month from LocalDate
-	Optional<Expense> findByDescriptionAndMonth(String description, Integer month, Client client);
+	Optional<Expense> findByDescriptionAndDate(String description, Integer year, Integer month,
+											   Client client);
 	
 	@Query("SELECT e FROM Expense e WHERE EXTRACT(year from e.date) = ?1 AND EXTRACT(month FROM e.date) = ?2 AND e.client = ?3")
 	List<Expense> findByYearAndMonth(Integer year, Integer month, Client client);

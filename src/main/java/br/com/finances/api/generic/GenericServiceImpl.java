@@ -33,11 +33,11 @@ public class GenericServiceImpl
 		Client client = getClient();
 
 		if (description != null) {
-			Optional<T> optional = repository.findByDescriptionAndClient(description, client);
-			if (optional.isEmpty()) return ResponseEntity.notFound().build();
+			List<T> list = repository.findByDescriptionAndClient(description, client);
+			if (list.isEmpty()) return ResponseEntity.notFound().build();
 
-			S dto = dtoMapper.map(optional.get());
-			return ResponseEntity.ok(List.of(dto));
+			List<S> listDto = list.stream().map(dtoMapper::map).toList();
+			return ResponseEntity.ok(listDto);
 		}
 		List<S> listDto = repository.findByClient(client).stream().map(dtoMapper::map).toList();
 		return ResponseEntity.ok(listDto);
@@ -143,10 +143,12 @@ public class GenericServiceImpl
 
 	private void checkIfAlreadyExists(GenericModel model) {
 		String description = model.getDescription();
-		Integer monthNumber = model.getDate().getMonthValue();
+		Integer year = model.getDate().getYear();
+		Integer month = model.getDate().getMonthValue();
 		Client client = getClient();
 
-		Optional<T> sameValue = repository.findByDescriptionAndMonth(description, monthNumber, client);
+		Optional<T> sameValue = repository.findByDescriptionAndDate(description, year, month,
+				client);
 		if (sameValue.isPresent()) {
 			throw new FlowAlreadyExistsException();
 		}

@@ -208,6 +208,12 @@ class IncomeControllerTest {
                         jsonPath("[1].date", is(DATE.toString())),
                         status().isCreated())
                 .andDo(print());
+		LocalDate date = LocalDate.of(2023, 1, 1);
+		mockMvc.perform(MockMvcRequestBuilders
+						.post(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new IncomeForm("Income1", VALUE, date).toString()))
+				.andExpect(status().isCreated());
     }
 
     @Test

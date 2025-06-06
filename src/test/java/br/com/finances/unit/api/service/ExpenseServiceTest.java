@@ -65,7 +65,7 @@ class ExpenseServiceTest {
 	@Test
 	void shouldReturnExpenseByDescription() {
 		when(expenseRepository.findByDescriptionAndClient(DESCRIPTION, CLIENT))
-		.thenReturn(Optional.of(EXPENSE));
+				.thenReturn(List.of(EXPENSE));
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(DESCRIPTION);
 		Assertions.assertNotNull(all.getBody());
 		assertEquals(EXPENSE.getDescription(), all.getBody().getFirst().getDescription());
@@ -128,8 +128,13 @@ class ExpenseServiceTest {
 	void shouldPostExpense() {
 		when(expenseRepository.save(any()))
 		.thenReturn(EXPENSE);
-		ResponseEntity<ExpenseDTO> post = expenseService.post(FORM);
-		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+		ResponseEntity<ExpenseDTO> post1 = expenseService.post(FORM);
+		assertEquals(HttpStatus.CREATED, post1.getStatusCode());
+
+		ExpenseForm form = new ExpenseForm(DESCRIPTION, VALUE, LocalDate.of(2023, 1, 1),
+				Category.Others);
+		ResponseEntity<ExpenseDTO> post2 = expenseService.post(form);
+		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
 	
 	//UPDATE

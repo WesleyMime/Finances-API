@@ -67,7 +67,7 @@ class IncomeServiceTest {
 	@Test
 	void shouldReturnIncomeByDescription() {
 		when(incomeRepository.findByDescriptionAndClient(any(), any()))
-		.thenReturn(Optional.of(INCOME));
+				.thenReturn(List.of(INCOME));
 		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);
 		Assertions.assertNotNull(all.getBody());
 		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
@@ -124,8 +124,12 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldPostIncome() {
-		ResponseEntity<IncomeDTO> post = incomeService.post(FORM);
-		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+		ResponseEntity<IncomeDTO> post1 = incomeService.post(FORM);
+		assertEquals(HttpStatus.CREATED, post1.getStatusCode());
+
+		IncomeForm form = new IncomeForm(DESCRIPTION, VALUE, LocalDate.of(2023, 1, 1));
+		ResponseEntity<IncomeDTO> post2 = incomeService.post(form);
+		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
 
 	@Test
@@ -143,7 +147,8 @@ class IncomeServiceTest {
 
 	@Test
 	void shouldNotPostIncomeListTwice() {
-		when(incomeRepository.findByDescriptionAndMonth(DESCRIPTION, DATE.getMonthValue(), CLIENT))
+		when(incomeRepository.findByDescriptionAndDate(DESCRIPTION, DATE.getYear(),
+				DATE.getMonthValue(), CLIENT))
 				.thenReturn(Optional.of(INCOME));
 
 		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM, FORM));

@@ -153,6 +153,13 @@ class ExpenseControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm("Different expense", VALUE, DATE, Category.Home).toString()))
 				.andExpect(status().isCreated());
+		LocalDate date = LocalDate.of(2023, 1, 1);
+		mockMvc.perform(MockMvcRequestBuilders
+						.post(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ExpenseForm("Different expense", VALUE, date,
+								Category.Home).toString()))
+				.andExpect(status().isCreated());
 	}
 	
 	@Test

@@ -9,11 +9,12 @@ public interface GenericRepository<T> {
 
 	List<T> findByClient(Client client);
 
-	Optional<T> findByDescriptionAndClient(String description, Client client);
+	List<T> findByDescriptionAndClient(String description, Client client);
 
 	Optional<T> findByIdAndClient(Long id, Client client);
 
-	Optional<T> findByDescriptionAndMonth(String description, Integer month, Client client);
+	Optional<T> findByDescriptionAndDate(String description, Integer year, Integer month,
+										 Client client);
 
 	List<T> findByYearAndMonth(Integer year, Integer month, Client client);
 
