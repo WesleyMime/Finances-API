@@ -25,7 +25,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
 
   onSubmit() {
-    console.log('Login attempted with:', this.credentials.email, this.credentials.password);
+    console.log('Login attempted with:', this.credentials.email);
     this.errorMessage = null;
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
@@ -47,5 +47,10 @@ export class LoginComponent {
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  contaDemo() {
+    this.credentials = {email: 'test@email.com', password: 'teste'};
+    this.onSubmit();    
   }
 }
