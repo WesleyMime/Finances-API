@@ -43,15 +43,15 @@
 
     <!-- Income vs. Expenses Section -->
     <div class="graphic-section">
-      <h3>Renda vs. Despesas</h3>
+      <h3>Saldo Financeiro</h3>
       <div class="metrics">
         <div class="metric-value">{{ incomeExpenseTotal }}</div>
-        <div class="metric-info">Média dos últimos 12 meses. {{ currentYear -1}} - {{ currentYear }}</div>
+        <div class="metric-info">Média dos últimos 12 meses.</div>
       </div>
       <div class="chart income-expense-chart">
         <div class="chart-bars">
-          @for (height of incomeExpenseBarHeights; track height) {
-            <div class="bar" [ngStyle]="{ 'height': height }"></div>
+          @for (bar of incomeExpenseBarHeights; track bar) {
+            <div class="bar" [ngStyle]="{ 'height': bar.height}" title="{{ bar.value }}"></div>
           }
         </div>
         <div class="chart-labels">
@@ -60,6 +60,7 @@
           }
         </div>
       </div>
+      <div class="metric-info">{{ currentYear -1}} - {{ currentYear }}</div>
     </div>
 
     <!-- Spending by Category Section -->
@@ -67,6 +68,7 @@
     <div class="graphic-section">
       <div class="metrics">
         <h3>Último mês</h3>
+        <div class="metric-info">{{ currentMonth }}</div>
         <span
           [ngClass]="getChangeColorBad(incomeExpensePercentage)">{{ incomeExpensePercentage }}</span>
     </div>

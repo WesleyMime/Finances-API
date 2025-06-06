@@ -26,8 +26,9 @@ export class ReportsComponent implements OnInit {
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
   incomeExpensePercentage = '';
+  currentMonth = '';
   incomeExpenseMonths: string[] = [];
-  incomeExpenseBarHeights = [];
+  incomeExpenseBarHeights = [{height: '', value: ''}];
   currentYear = 0;
 
   // Data for Spending by Category
@@ -52,6 +53,9 @@ export class ReportsComponent implements OnInit {
     { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
   ];
+
+  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
 
   // Data for Net Worth Trend
   totalNetWorth = '';
@@ -82,6 +86,7 @@ export class ReportsComponent implements OnInit {
         let diffBalancePercent = this.getPercentageChange(
           summary.finalBalanceEachMonth[11], summary.finalBalanceEachMonth[10]) * -1; // Invert the sign
         this.incomeExpensePercentage = this.formatPercentage(diffBalancePercent);
+        this.currentMonth = this.months[currentDate.getMonth()];
 
         this.getSpendingByCategoryYear(summary.expenses);
         
@@ -94,13 +99,12 @@ export class ReportsComponent implements OnInit {
 
   private getIncomeExpenseMonths(currentDate: Date) {
     var month = currentDate.getMonth();
-    var months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     var finalMonths = [];
 
     var j = 0;
     for (let i: number = month; j < 12; i++) {
       j++;
-      finalMonths.push(months[i % 12]);
+      finalMonths.push(this.months[i % 12]);
     }
     this.incomeExpenseMonths = finalMonths;
   }
@@ -132,11 +136,11 @@ export class ReportsComponent implements OnInit {
       incomeLastMonthValue = summary.totalIncome;
       expenselastMonthValue = summary.totalExpense;
       var incomeValueDifference = incomeCurrentMonthValue - incomeLastMonthValue;
-      if (incomeValueDifference > 0 && incomeLastMonthValue != 0)
+      if (incomeValueDifference != 0 && incomeLastMonthValue != 0)
         this.incomeValueDifference = this.formatCurrency(incomeValueDifference);
 
       var expenseValueDifference = (expenselastMonthValue - expenseCurrentMonthValue) * -1; // To not show a negative number
-      if (expenseValueDifference > 0 && expenselastMonthValue != 0)
+      if (expenseValueDifference != 0 && expenselastMonthValue != 0)
         this.expenseValueDifference = this.formatCurrency(expenseValueDifference);
 
       this.percentualChangeFromLastMonth(
@@ -178,10 +182,13 @@ export class ReportsComponent implements OnInit {
 
   // Get the biggest value and consider it 100%, and then calculate the percentage for each month
   getIncomeExpenseBarHeights(list: any): void {
+    this.incomeExpenseBarHeights = [];
     let maxBalance = Math.max(...list);
-    this.incomeExpenseBarHeights = list.map((balance: number) => {
-      // Calculate the percentage height based on the maximum balance
-      return (100 + this.getPercentageChange(balance, maxBalance)) + '%';
+    list.map((balance: number) => {
+      var balanceCurrency = this.formatCurrency(balance);
+      // Calculate the percentage height based on the maximum balances
+      var percentage = (100 + this.getPercentageChange(balance, maxBalance)) + '%';
+      this.incomeExpenseBarHeights.push({height: percentage, value: balanceCurrency});
     });
   }
 
