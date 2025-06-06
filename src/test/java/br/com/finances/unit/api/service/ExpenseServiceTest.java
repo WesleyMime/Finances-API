@@ -1,54 +1,43 @@
 package br.com.finances.unit.api.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import br.com.finances.SecurityContextFactory;
+import br.com.finances.api.client.Client;
+import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.expense.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import br.com.finances.SecurityContextFactory;
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientRepository;
-import br.com.finances.api.expense.Category;
-import br.com.finances.api.expense.Expense;
-import br.com.finances.api.expense.ExpenseDTO;
-import br.com.finances.api.expense.ExpenseDtoMapper;
-import br.com.finances.api.expense.ExpenseForm;
-import br.com.finances.api.expense.ExpenseFormMapper;
-import br.com.finances.api.expense.ExpenseRepository;
-import br.com.finances.api.expense.ExpenseService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 class ExpenseServiceTest {
 
-	@Mock
-	private ExpenseRepository expenseRepository;
-	@Mock
-	private ClientRepository clientRepository;
-	
-	private ExpenseDtoMapper dtoMapper = new ExpenseDtoMapper();
-	
-	private ExpenseFormMapper formMapper = new ExpenseFormMapper();
-	@Mock
-	private Principal principal;	
-	
-	private ExpenseService expenseService;
-	
+	private final ExpenseRepository expenseRepository;
+	private final ClientRepository clientRepository;
+	private final ExpenseService expenseService;
+
+	public ExpenseServiceTest() {
+		this.expenseRepository = Mockito.mock(ExpenseRepository.class);
+		this.clientRepository = Mockito.mock(ClientRepository.class);
+		ExpenseDtoMapper dtoMapper = new ExpenseDtoMapper();
+		ExpenseFormMapper formMapper = new ExpenseFormMapper();
+		this.expenseService = new ExpenseService(expenseRepository, clientRepository, dtoMapper,
+				formMapper);
+	}
+
 	private static final String DESCRIPTION = "Description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
-	private static final LocalDate DATE = LocalDate.of(2022, 01, 01);
+	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static final Client CLIENT = SecurityContextFactory.setClient();
 	
 	private static final Expense EXPENSE = new Expense(DESCRIPTION, VALUE, DATE, Category.Others);
@@ -56,14 +45,8 @@ class ExpenseServiceTest {
 	
 	@BeforeEach
 	void beforeEach() {
-		MockitoAnnotations.openMocks(this);
-		SecurityContextFactory.setClient();
-		
-		this.expenseService = new ExpenseService(expenseRepository, clientRepository, dtoMapper, formMapper);
-		
 		when(clientRepository.findByEmail(anyString()))
-		.thenReturn(Optional.of(CLIENT));		
-
+				.thenReturn(Optional.of(CLIENT));
 		when(expenseRepository.save(any()))
 		.thenReturn(EXPENSE);
 	}
@@ -75,7 +58,8 @@ class ExpenseServiceTest {
 		when(expenseRepository.findByClient(CLIENT))
 		.thenReturn(List.of(EXPENSE));
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(null);
-		assertEquals(EXPENSE.getDescription(), all.getBody().get(0).getDescription());
+		Assertions.assertNotNull(all.getBody());
+		assertEquals(EXPENSE.getDescription(), all.getBody().getFirst().getDescription());
 	}
 	
 	@Test
@@ -83,7 +67,8 @@ class ExpenseServiceTest {
 		when(expenseRepository.findByDescriptionAndClient(DESCRIPTION, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(DESCRIPTION);
-		assertEquals(EXPENSE.getDescription(),  all.getBody().get(0).getDescription());
+		Assertions.assertNotNull(all.getBody());
+		assertEquals(EXPENSE.getDescription(), all.getBody().getFirst().getDescription());
 	}
 	
 	@Test
@@ -94,7 +79,7 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldReturnExpenseById() {
-		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		when(expenseRepository.findByIdAndClient(1L, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<ExpenseDTO> income = expenseService.getOne("1");
 		assertEquals(HttpStatus.OK, income.getStatusCode());;
@@ -150,9 +135,9 @@ class ExpenseServiceTest {
 	//UPDATE
 	@Test
 	void shouldUpdateExpense() {
-		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		when(expenseRepository.findByIdAndClient(1L, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
-		when(expenseRepository.getById(any()))
+		when(expenseRepository.getReferenceById(any()))
 		.thenReturn(EXPENSE);
 		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", FORM);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
@@ -174,7 +159,7 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldDeleteExpense() {
-		when(expenseRepository.findByIdAndClient(1l, CLIENT))
+		when(expenseRepository.findByIdAndClient(1L, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<?> delete = expenseService.delete("1");
 		assertEquals(HttpStatus.OK, delete.getStatusCode());
