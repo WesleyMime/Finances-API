@@ -28,7 +28,8 @@ For better management of activities, trello was used.
 
 ## Key Features
 
-- **CRUD operations** for financial records (incomes and expenses).
+- **CRUD operations** for financial records (income and expenses).
+- Frontend developed using **Angular** for a dynamic and responsive user experience.
 - Secure access control using **JWT authentication**.
 - Persistent data storage with **PostgreSQL**.
 - Containerized for easy deployment using **Docker**.
@@ -36,15 +37,17 @@ For better management of activities, trello was used.
 
 ## Technologies
 
-![java] ![spring] ![postgresql] ![docker] ![google] ![cloudflare]
+![java] ![spring] ![postgresql] ![docker] ![angular] ![typescript] ![google] ![cloudflare]
 
 ## Deploy
 
-The Spring Boot API is running on a Google Cloud Virtual Machine, with DNS and HTTPS from Cloudflare.
+The Angular app is running on GitHub Pages and the Spring Boot API is running on a Google Cloud
+Virtual Machine, with DNS and HTTPS from Cloudflare.
 
-The link to access is:
+The links to access are:
 
-- Spring Boot API https://marujo.site
+- Angular application https://marujo.site
+- Spring Boot API https://finances.marujo.site
 
 ## Run locally
 
@@ -70,15 +73,18 @@ docker compose up
 
 ## Usage
 
-Once the application is running, you can use Postman or any other API client to interact with the API.
+Once the application is running, you can use the Angular app or use an API client like Postman
+to interact with the API.
 
-The link to access is:
+The links to access are:
 
-- http://localhost
+- Angular application http://localhost
+- Spring Boot API http://localhost:8080
 
 ## Documentation
 
-The documentation made in Postman can be accessed by this [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) and is the most practical way to use this API.
+The documentation made in Postman can be accessed by
+this [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv).
 
 ## License
 
@@ -99,5 +105,9 @@ Distributed under the MIT license. See `LICENSE.txt` for more information.
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
 [postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
 [docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
+
+[angular]: https://img.shields.io/badge/Angular-%23DD0031.svg?logo=angular&logoColor=white&style=for-the-badge
+
+[typescript]: https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff&style=for-the-badge
 [google]: https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white&style=for-the-badge
 [cloudflare]: https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white&style=for-the-badge
