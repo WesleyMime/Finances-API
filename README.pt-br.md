@@ -28,6 +28,8 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 ## Características principais
 
 - **Operações CRUD** para registros financeiros (renda e despesas).
+- Frontend desenvolvido utilizando **Angular** para uma experiência de usuário dinâmica e
+  responsíva.
 - Controle de acesso seguro usando **autenticação JWT**.
 - Armazenamento de dados persistente com **PostgreSQL**.
 - Contêinerzado para facilitar a implantação usando **Docker**.
@@ -35,15 +37,17 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 
 ## Tecnologias
 
-![java] ![spring] ![postgresql] ![docker] ![google] ![cloudflare]
+![java] ![spring] ![postgresql] ![docker] ![angular] ![typescript] ![google] ![cloudflare]
 
 ## Deploy
 
-A API Spring Boot stá rodando numa Máquina Virtual do Google Cloud, com DNS e HTTPS da Cloudflare.
+A aplicação Angular está rodando no GitHub Pages e a API Spring Boot stá rodando numa Máquina
+Virtual do Google Cloud, com DNS e HTTPS da Cloudflare.
 
-O link para o acesso é:
+Os links para acesso são:
 
-- API Spring Boot https://marujo.site
+- Aplicação Angular https://marujo.site
+- API Spring Boot https://finances.marujo.site
 
 ## Rode localmente
 
@@ -69,16 +73,18 @@ docker compose up
 
 ## Uso
 
-Depois que o aplicativo estiver em execução, você pode usar o Postman ou qualquer outro API client para interagir com a
-API.
+Depois que o aplicativo estiver em execução, você pode usar a aplicação Angular ou usar um
+API cliente como o Postman para interagir com a API.
 
-O link para acesso é:
+Os links para acesso são:
 
-- http://localhost
+- Aplicação Angular http://localhost
+- API Spring Boot http://localhost:8080
 
 ## Documentação
 
-A documentação feita no Postman pode ser acessada por esse [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv) e é o jeito mais prático de se usar esta API.
+A documentação feita no Postman pode ser acessada por
+esse [link](https://documenter.getpostman.com/view/19203694/UVeGs6cv).
 
 ## Licença
 
@@ -99,5 +105,9 @@ Distribuído sob a licença do MIT. Consulte `LICENSE.txt` para obter mais infor
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
 [postgresql]: https://img.shields.io/badge/postgresql-4169E1?logo=postgresql&logoColor=white&style=for-the-badge
 [docker]: https://img.shields.io/badge/docker-2496ED?logo=docker&logoColor=white&style=for-the-badge
+
+[angular]: https://img.shields.io/badge/Angular-%23DD0031.svg?logo=angular&logoColor=white&style=for-the-badge
+
+[typescript]: https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff&style=for-the-badge
 [google]: https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white&style=for-the-badge
 [cloudflare]: https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white&style=for-the-badge
