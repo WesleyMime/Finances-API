@@ -19,9 +19,11 @@
 
   <div>
     @if (showLoginAction) {
+      <button class="btn secondary btn-header" (click)="contaDemo()">Conta Demo</button>
       <button [routerLink]="['/login']" class="btn primary btn-header">Entrar</button>
     }
     @if (showRegisterAction) {
+      <button class="btn secondary btn-header" (click)="contaDemo()">Conta Demo</button>
       <button [routerLink]="['/register']" class="btn primary btn-header">Registrar</button>
     }
 
