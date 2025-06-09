@@ -1,9 +1,10 @@
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { ProfileMenuComponent } from "./profile-menu/profile-menu.component";
+import { AuthService } from '../auth/auth.service';
 
 interface NavItem {
   label: string;
@@ -103,6 +104,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router) { }
 
+  authService = inject(AuthService);
+
   ngOnInit(): void {
     // Listen for router events to determine the current page
     this.router.events.pipe(
@@ -155,5 +158,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
                activeItem.active = true;
            }
       }
+  }
+
+  contaDemo() {
+    var credentials = {email: 'test@email.com', password: 'test', name: '', confirmPassword: ''};
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log('Login successful', response);
+        this.router.navigate(['/dashboard']);
+      }
+    });   
   }
 }
