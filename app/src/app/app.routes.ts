@@ -6,6 +6,7 @@ import { authGuard } from './auth/auth.guard';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { ReportsComponent } from './reports/reports.component';
+import { SearchTransactionsComponent } from './search-transactions/search-transactions.component';
 
 export const routes: Routes = [
     {path: "", component: HomeComponent, title: "Finances APP"},
@@ -14,4 +15,5 @@ export const routes: Routes = [
     {path: "add-transaction", component: AddTransactionComponent, title: "Adicionar Transação", canActivate: [authGuard]},
     {path: "dashboard", redirectTo: "reports", },
     {path: "reports", component: ReportsComponent, title: "Relatório", canActivate: [authGuard]},
+    {path: "search", component: SearchTransactionsComponent, title: "Pesquisar", canActivate: [authGuard]}
 ];

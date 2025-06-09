@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     { label: 'Dashboard', link: '/dashboard' },
     { label: 'Transação', link: '/add-transaction' },
     { label: 'Relatório', link: '/reports' },
+    { label: 'Pesquisar', link: '/search' }
   ];
 
   // Define header states for different route patterns.
@@ -70,6 +71,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
         showProfileActions: true,
         activeNavGroup: 'app',
         activeNavLink: '/reports',
+      },
+      {
+        routePattern: '/search',
+        showAppNav: true,
+        showLoginAction: false,
+        showRegisterAction: false,
+        showProfileActions: true,
+        activeNavGroup: 'app',
+        activeNavLink: '/search',
       },
       {
         routePattern: '/login',
