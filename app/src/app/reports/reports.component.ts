@@ -38,6 +38,7 @@ export class ReportsComponent implements OnInit {
   spendingCategories = [
     { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
     { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Home', namePtBr: 'Casa', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
     { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
@@ -47,6 +48,7 @@ export class ReportsComponent implements OnInit {
   spendingCategoriesMonth = [
     { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
     { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
+    { name: 'Home', namePtBr: 'Casa', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
     { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
     { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
