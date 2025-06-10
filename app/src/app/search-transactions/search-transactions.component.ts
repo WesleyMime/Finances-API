@@ -1,72 +1,120 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
-import { DatePipe } from '@angular/common';
-
-// Interface for transaction data (optional but good practice)
-interface Transaction {
-  date: string;
-  type: 'Income' | 'Expense';
-  category: string;
-  amount: number;
-  notes: string;
-  description?: string; // Add a description field for searching
-}
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { Transaction } from '../add-transaction/transaction';
+import { Category } from '../category';
+import { SearchService } from './search.service';
 
 @Component({
   selector: 'app-search-transactions',
-  imports: [FormsModule, HeaderComponent, DatePipe],
+  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe],
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
-export class SearchTransactionsComponent implements OnInit {
+export class SearchTransactionsComponent  {
 
-  date: string = '';
-  description: string = '';
+  date: string | null = null;
+  description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
 
-  // Mock data - add a description field
-  allTransactions: Transaction[] = [
-    { date: '2024-03-15', type: 'Expense', category: 'Groceries', amount: -120.50, notes: 'Weekly grocery shopping', description: 'Shopping at local market' },
-    { date: '2024-03-16', type: 'Income', category: 'Salary', amount: 3500.00, notes: 'Monthly paycheck', description: 'Company monthly salary deposit' },
-    { date: '2024-03-17', type: 'Expense', category: 'Dining', amount: -45.75, notes: 'Dinner with friends', description: 'Dinner at Italian restaurant' },
-    { date: '2024-03-18', type: 'Expense', category: 'Utilities', amount: -200.00, notes: 'Electricity bill', description: 'Monthly electricity payment' },
-    { date: '2024-03-19', type: 'Income', category: 'Freelance', amount: 500.00, notes: 'Freelance project payment', description: 'Web design project payment' },
-    { date: '2024-02-20', type: 'Expense', category: 'Transport', amount: -15.00, notes: 'Bus fare', description: 'Daily commute expense' },
-     { date: '2024-01-20', type: 'Expense', category: 'Dining', amount: -30.00, notes: 'Lunch', description: 'Lunch meeting downtown' },
-    { date: '2024-03-21', type: 'Income', category: 'Interest', amount: 5.50, notes: 'Savings account interest', description: 'Monthly interest from savings' },
+  categoryEnum: Category[] = [
+    {name: 'Food', namePtBr: 'Alimentação'},
+    {name: 'Health', namePtBr: 'Saúde'},
+    {name: 'Home', namePtBr: 'Casa'},
+    {name: 'Transport', namePtBr: 'Transporte'},
+    {name: 'Education', namePtBr: 'Educação'},
+    {name: 'Leisure', namePtBr: 'Lazer'},
+    {name: 'Unforeseen', namePtBr: 'Imprevísto'},
+    {name: 'Others', namePtBr: 'Outros'}
   ];
 
   searchResults: Transaction[] = [];
+  searchService = inject(SearchService);
 
   constructor() { }
 
-  ngOnInit(): void {
-    // Optionally display all transactions initially or load them here
-    this.searchResults = [...this.allTransactions]; // Display all initially
+  onSearch(): void {
+    this.searchResults = [];
+    if (this.date) {
+      if (this.selectedType == 'Both' || this.selectedType == 'Income') {
+        var date = this.formatDate(this.date);
+        this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
+          .subscribe({
+            next: (result: Transaction[]) => {
+              result.forEach((transaction) => {
+                transaction.type = "Receita";
+              })
+              var filteredResults = this.filterResults(result);
+              this.searchResults.push(...filteredResults);
+            }
+          });
+      }
+      
+      if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
+        var date = this.formatDate(this.date);
+        this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
+          .subscribe({
+            next: (result: Transaction[]) => {
+              result.forEach((transaction) => {
+                transaction.type = "Despesa";
+                var result = this.categoryEnum.find(category => category.name == transaction.category);
+                transaction.category = result?.namePtBr || "Outros";
+                transaction.value = transaction.value * -1;
+              })
+              var filteredResults = this.filterResults(result);
+              this.searchResults.push(...filteredResults);
+            }
+          });
+      }
+      return;
+    }
+    if (this.description) {
+      if (this.selectedType == 'Both' || this.selectedType == 'Income') {
+        this.searchService.searchIncomeByDescription(this.description)
+          .subscribe({
+            next: (result: Transaction[]) => {
+              result.forEach((transaction) => {
+                transaction.type = "Receita";
+              })
+              this.searchResults.push(...result);
+            }
+          });
+      }
+
+      if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
+        this.searchService.searchExpenseByDescription(this.description)
+          .subscribe({
+            next: (result: Transaction[]) => {
+              result.forEach((transaction) => {
+                transaction.type = "Despesa";
+                var result = this.categoryEnum.find(category => category.name == transaction.category);
+                transaction.category = result?.namePtBr || "Outros";
+                transaction.value = transaction.value * -1;
+              })
+              this.searchResults.push(...result);
+            }
+          });
+      }
+    }
   }
 
-  onSearch(): void {
-    let filteredResults = [...this.allTransactions]; // Start with all transactions
-
-    // Filter by Start Date if provided
-    if (this.date) {
-      // Simple date string comparison for demonstration.
-      // For robust date filtering, convert to Date objects and compare timestamps.
-      filteredResults = filteredResults.filter(t => t.date >= this.date);
-    }
-
-    // Filter by Description if provided (case-insensitive substring match)
+  private filterResults(transactions: Transaction[]): Transaction[] {
+    debugger
     if (this.description) {
-      const lowerDescription = this.description.toLowerCase();
-      filteredResults = filteredResults.filter(t =>
-        t.description && t.description.toLowerCase().includes(lowerDescription)
-      );
+      var filteredResults = transactions.filter((transaction) => {
+        return transaction.description.includes(this.description?this.description:'');
+      });
+      return filteredResults;
     }
-    if (this.selectedType !== 'Both') {
-      filteredResults = filteredResults.filter(t => t.type === this.selectedType);
-    }
+    return transactions;
+  }
 
-    this.searchResults = filteredResults;
+  private formatDate(date: string): Date {
+    var dateSplit = date.split("-");
+    // new Date using html type month returns day 1 at 00:00, 
+    // but because of GMT -3 it goes to day 31/30 21:00,
+    // So i'm parsing the string eg 2025-01.
+    return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
   }
 }

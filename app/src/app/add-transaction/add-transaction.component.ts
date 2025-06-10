@@ -14,7 +14,7 @@ export class AddTransactionComponent {
   transaction: Transaction = {
     type: '',
     category: '',
-    value: null,
+    value: 0,
     date: '',
     description: ''
   }
@@ -93,7 +93,7 @@ export class AddTransactionComponent {
   resetForm() {
     this.transaction.type = '';
     this.transaction.category = '';
-    this.transaction.value = null;
+    this.transaction.value = 0;
     this.transaction.date = '';
     this.transaction.description = '';
     this.errorMessage = null;
