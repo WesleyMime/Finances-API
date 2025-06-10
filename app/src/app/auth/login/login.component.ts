@@ -48,9 +48,4 @@ export class LoginComponent {
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
   }
-
-  contaDemo() {
-    this.credentials = {email: 'test@email.com', password: 'teste'};
-    this.onSubmit();    
-  }
 }

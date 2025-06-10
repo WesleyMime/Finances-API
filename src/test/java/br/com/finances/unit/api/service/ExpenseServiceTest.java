@@ -64,7 +64,7 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldReturnExpenseByDescription() {
-		when(expenseRepository.findByDescriptionAndClient(DESCRIPTION, CLIENT))
+		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(DESCRIPTION, CLIENT))
 				.thenReturn(List.of(EXPENSE));
 		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(DESCRIPTION);
 		Assertions.assertNotNull(all.getBody());
@@ -82,7 +82,7 @@ class ExpenseServiceTest {
 		when(expenseRepository.findByIdAndClient(1L, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
 		ResponseEntity<ExpenseDTO> income = expenseService.getOne("1");
-		assertEquals(HttpStatus.OK, income.getStatusCode());;
+		assertEquals(HttpStatus.OK, income.getStatusCode());
 	}
 	
 	@Test

@@ -19,8 +19,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,9 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,124 +74,101 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldReturnAllIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-                        .get(ENDPOINT))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+		mockMvc.perform(get(ENDPOINT))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income?description=Description"))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+		mockMvc.perform(get("/income?description=Description"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+		mockMvc.perform(get("/income?description=description"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+		mockMvc.perform(get("/income?description=cript"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void shouldNotFindIncomeByDescription() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income?description=a"))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
+		mockMvc.perform(get("/income?description=a"))
+				.andExpect(status().isNotFound());
 	}	
 	
 	@Test
-	void shouldReturnIncomeById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/" + ID))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+	void shouldReturnIncomeById() throws Exception {
+		mockMvc.perform(get("/income/" + ID))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void shouldNotFindIncomeById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/87678767876"))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
+	void shouldNotFindIncomeById() throws Exception {
+		mockMvc.perform(get("/income/87678767876"))
+				.andExpect(status().isNotFound());
 	}
 	
 	@Test
-	void shouldNotReturnIncomeById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/a"))
-		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+	void shouldNotReturnIncomeById() throws Exception {
+		mockMvc.perform(get("/income/a"))
+				.andExpect(status().isBadRequest());
 	}	
 	
 	@Test
-	void shouldFindIncomeByDate() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/2022/01"))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+	void shouldFindIncomeByDate() throws Exception {
+		mockMvc.perform(get("/income/2022/01"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void shouldNotFindIncomeByDate() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/1000/01"))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
+	void shouldNotFindIncomeByDate() throws Exception {
+		mockMvc.perform(get("/income/1000/01"))
+				.andExpect(status().isNotFound());
 	}
 		
 	@Test
-	void shouldNotReturnIncomeByDate() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/income/a/a"))
-		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+	void shouldNotReturnIncomeByDate() throws Exception {
+		mockMvc.perform(get("/income/a/a"))
+				.andExpect(status().isBadRequest());
 	}
 	
 	//POST
 	
 	@Test
 	void shouldPostIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm("New Description", VALUE, DATE).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isCreated());
+				.andExpect(status().isCreated());
 	}
 	
 	@Test
 	void shouldNotPostSameIncomeTwice() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isConflict());
+				.andExpect(status().isConflict());
 	}
 	
 	@Test
 	void shouldNotPostIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{" +
 						"description"+
 						":"+
 						"valueDescription"
 						+ "}"))
-		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.andExpect(status().isBadRequest());
 	}
 
     @Test
     void shouldPostExpenseList() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(List.of(
                                 new IncomeForm("Income1", VALUE, DATE).toString(),
@@ -209,8 +184,7 @@ class IncomeControllerTest {
                         status().isCreated())
                 .andDo(print());
 		LocalDate date = LocalDate.of(2023, 1, 1);
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new IncomeForm("Income1", VALUE, date).toString()))
 				.andExpect(status().isCreated());
@@ -218,8 +192,7 @@ class IncomeControllerTest {
 
     @Test
     void shouldNotPostExpenseListTwice() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(List.of(
                                 new IncomeForm("Income3", VALUE, DATE).toString(),
@@ -236,8 +209,7 @@ class IncomeControllerTest {
 
     @Test
     void shouldNotPostExpenseList() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new IncomeForm("Different income", VALUE, DATE).toString()))
                 .andExpect(
@@ -249,60 +221,48 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldUpdateIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.put("/income/" + ID)
+		mockMvc.perform(put("/income/" + ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE.plusDays(5)).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void shouldNotFindIncomeToUpdate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.put("/income/1000000")
+		mockMvc.perform(put("/income/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
+				.andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void shouldNotUpdateIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.put("/income/a")
+		mockMvc.perform(put("/income/a")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+				.andExpect(status().isBadRequest());
 	}
 	
 	//DELETE
 	
 	@Test
 	void shouldDeleteIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.delete("/income/" + ID))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+		mockMvc.perform(delete("/income/" + ID))
+				.andExpect(status().isOk());
 		
 	}
 	
 	@Test
 	void shouldNotFindIncomeToDelete() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.delete("/income/100000000000"))
-		.andExpect(MockMvcResultMatchers
-				.status().isNotFound());
+		mockMvc.perform(delete("/income/100000000000"))
+				.andExpect(status().isNotFound());
 		
 	}
 	
 	@Test
 	void shouldNotDeleteIncome() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.delete("/income/a"))
-		.andExpect(MockMvcResultMatchers
-				.status().isBadRequest());
+		mockMvc.perform(delete("/income/a"))
+				.andExpect(status().isBadRequest());
 		
 	}
 	

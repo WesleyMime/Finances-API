@@ -13,8 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,90 +32,73 @@ public class AuthControllerTest {
 	private static final String INVALID = "";
 	
 	@BeforeAll
-	void beforAll() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+	void beforAll() throws Exception {
+		mockMvc.perform(post("/auth/signin")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new SignForm("BeforeAll", "BeforeAll@email.com", "beforeAll").toString()));
 	}
 	
 	@Test
 	void shouldCreateNewClient() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+		mockMvc.perform(post("/auth/signin")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new SignForm(NAME, EMAIL, PASSWORD).toString()))
-		.andExpect(MockMvcResultMatchers
-				.status().isCreated());
+				.andExpect(status().isCreated());
 	}
 	
 	@Test
 	void shouldAuthenticate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/login")
+		mockMvc.perform(post("/auth/login")
 				.content(new LoginForm("BeforeAll@email.com", "beforeAll").toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isOk());
+				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void shouldNotAuthenticate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/login")
+		mockMvc.perform(post("/auth/login")
 				.content(new LoginForm(EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isUnprocessableEntity());
+				.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
 	void shouldNotFindEmailToAuthenticate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/login")
+		mockMvc.perform(post("/auth/login")
 				.content(new LoginForm(INVALID, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isUnprocessableEntity());
+				.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
 	void shouldNotRegisterClientWithSameEmail() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+		mockMvc.perform(post("/auth/signin")
 				.content(new SignForm(NAME, EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isConflict());
+				.andExpect(status().isConflict());
 	}
 	
 	@Test
 	void shouldNotRegisterClientWithEmailNotWellFormed() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+		mockMvc.perform(post("/auth/signin")
 				.content(new SignForm(NAME, INVALID, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isUnprocessableEntity());
+				.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
 	void shouldNotRegisterClientWithoutName() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+		mockMvc.perform(post("/auth/signin")
 				.content(new SignForm(INVALID, EMAIL, PASSWORD).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isUnprocessableEntity());
+				.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
 	void shouldNotRegisterClientWithoutPassword() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-				.post("/auth/signin")
+		mockMvc.perform(post("/auth/signin")
 				.content(new SignForm(NAME, EMAIL, INVALID).toString())
 				.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(MockMvcResultMatchers
-				.status().isUnprocessableEntity());
+				.andExpect(status().isUnprocessableEntity());
 	}
 }

@@ -171,7 +171,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   contaDemo() {
-    var credentials = {email: 'test@email.com', password: 'test', name: '', confirmPassword: ''};
+    var credentials = {email: 'test@email.com', password: 'teste', name: '', confirmPassword: ''};
     this.authService.login(credentials).subscribe({
       next: (response) => {
         console.log('Login successful', response);

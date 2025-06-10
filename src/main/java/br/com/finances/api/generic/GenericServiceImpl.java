@@ -33,7 +33,8 @@ public class GenericServiceImpl
 		Client client = getClient();
 
 		if (description != null) {
-			List<T> list = repository.findByDescriptionAndClient(description, client);
+			List<T> list = repository.findByDescriptionContainingIgnoreCaseAndClient(description,
+					client);
 			if (list.isEmpty()) return ResponseEntity.notFound().build();
 
 			List<S> listDto = list.stream().map(dtoMapper::map).toList();

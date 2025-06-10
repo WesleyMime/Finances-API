@@ -9,6 +9,8 @@ public interface GenericRepository<T> {
 
 	List<T> findByClient(Client client);
 
+	List<T> findByDescriptionContainingIgnoreCaseAndClient(String description, Client client);
+
 	List<T> findByDescriptionAndClient(String description, Client client);
 
 	Optional<T> findByIdAndClient(Long id, Client client);

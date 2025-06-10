@@ -50,14 +50,4 @@ export class RegisterComponent {
       }
     });
   }
-
-  contaDemo() {
-    this.credentials = {email: 'test@email.com', password: 'teste', name: '', confirmPassword: ''};
-    this.authService.login(this.credentials).subscribe({
-      next: (response) => {
-        console.log('Login successful', response);
-        this.router.navigate(['/dashboard']);
-      }
-    });   
-  }
 }

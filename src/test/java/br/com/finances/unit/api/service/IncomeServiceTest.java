@@ -66,7 +66,7 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
-		when(incomeRepository.findByDescriptionAndClient(any(), any()))
+		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(any(), any()))
 				.thenReturn(List.of(INCOME));
 		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);
 		Assertions.assertNotNull(all.getBody());

@@ -20,8 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,9 +27,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,71 +74,63 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldReturnAllExpenses() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get(ENDPOINT))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void shouldReturnExpenseByDescription() throws Exception {			
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "?description=Description"))
+	void shouldReturnExpenseByDescription() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "?description=Description"))
+				.andExpect(status().isOk());
+		mockMvc.perform(get(ENDPOINT + "?description=description"))
+				.andExpect(status().isOk());
+		mockMvc.perform(get(ENDPOINT + "?description=cript"))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void shouldNotFindExpenseByDescription() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "?description=a"))
+	void shouldNotFindExpenseByDescription() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "?description=a"))
 				.andExpect(status().isNotFound());
 	}
 	
 	@Test
-	void shouldReturnExpenseById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/" + ID))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
+	void shouldReturnExpenseById() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "/" + ID))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
-	void shouldNotReturnExpenseById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/a"))
+	void shouldNotReturnExpenseById() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "/a"))
 				.andExpect(status().isBadRequest());
 	}
 	
 	@Test
-	void shouldNotFindExpenseById() throws Exception {		
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/45745774"))
+	void shouldNotFindExpenseById() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "/45745774"))
 				.andExpect(status().isNotFound());
 	}
 	
 	@Test
 	void shouldReturnExpenseByDate() throws Exception {
-		
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/" + DATE.getYear() + "/" + DATE.getMonthValue()))
-		.andExpect(MockMvcResultMatchers
-				.content().contentType(MediaType.APPLICATION_JSON))
+
+		mockMvc.perform(get(ENDPOINT + "/" + DATE.getYear() + "/" + DATE.getMonthValue()))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 	
 	@Test
 	void shouldNotReturnExpenseByDate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/aa/aa"))
+		mockMvc.perform(get(ENDPOINT + "/aa/aa"))
 				.andExpect(status().isBadRequest());
 	}
 	
 	@Test
 	void shouldNotFindExpenseByDate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.get(ENDPOINT + "/1000/01"))
+		mockMvc.perform(get(ENDPOINT + "/1000/01"))
 				.andExpect(status().isNotFound());
 	}
 	
@@ -148,14 +138,12 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldPostExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm("Different expense", VALUE, DATE, Category.Home).toString()))
 				.andExpect(status().isCreated());
 		LocalDate date = LocalDate.of(2023, 1, 1);
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, date,
 								Category.Home).toString()))
@@ -164,8 +152,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldNotPostExpenseTwice() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Home).toString()))
 				.andExpect(status().isConflict());
@@ -173,8 +160,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldNotPostExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT)
+		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{" +
 						"description"+
@@ -186,8 +172,7 @@ class ExpenseControllerTest {
 
 	@Test
 	void shouldPostExpenseList() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
 								new ExpenseForm("Expense1", VALUE, DATE, Category.Home).toString(),
@@ -208,8 +193,7 @@ class ExpenseControllerTest {
 
 	@Test
 	void shouldNotPostExpenseListTwice() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
 								new ExpenseForm("Expense3", VALUE, DATE, Category.Home).toString(),
@@ -227,8 +211,7 @@ class ExpenseControllerTest {
 
 	@Test
 	void shouldNotPostExpenseList() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.post(ENDPOINT + "/list")
+		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, DATE,
 								Category.Home).toString()))
@@ -241,8 +224,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldUpdateExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.put(ENDPOINT + "/" + ID)
+		mockMvc.perform(put(ENDPOINT + "/" + ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Leisure).toString()))
 				.andExpect(status().isOk());
@@ -250,8 +232,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldNotFindExpenseToUpdate() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.put(ENDPOINT + "/1000000")
+		mockMvc.perform(put(ENDPOINT + "/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Education).toString()))
 				.andExpect(status().isNotFound());
@@ -259,8 +240,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldNotUpdateExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.put(ENDPOINT + "/a")
+		mockMvc.perform(put(ENDPOINT + "/a")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ExpenseForm(null, null, null, null).toString()))
 				.andExpect(status().isBadRequest());
@@ -270,24 +250,21 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldDeleteExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.delete(ENDPOINT + "/" + ID))
+		mockMvc.perform(delete(ENDPOINT + "/" + ID))
 				.andExpect(status().isOk());
 		
 	}
 	
 	@Test
 	void shouldNotFindExpenseToDelete() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.delete(ENDPOINT + "/100000000000"))
+		mockMvc.perform(delete(ENDPOINT + "/100000000000"))
 				.andExpect(status().isNotFound());
 		
 	}
 	
 	@Test
 	void shouldNotDeleteExpense() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders
-						.delete(ENDPOINT + "/a"))
+		mockMvc.perform(delete(ENDPOINT + "/a"))
 				.andExpect(status().isBadRequest());
 		
 	}
