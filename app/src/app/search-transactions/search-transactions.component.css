@@ -1,6 +1,5 @@
-/* Overall container for dark theme */
 .search-transactions-content {
-    min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+    min-height: calc(100vh - 60px);
     padding: 30px;
     max-width: 1200px;
     margin: 0 auto;
@@ -25,7 +24,7 @@
 }
 .header p {
     font-size: 1em;
-    color: #cbd5e0; /* Lighter text for subtitle */
+    color: #cbd5e0;
     margin-bottom: 30px;
 }
 
@@ -35,14 +34,14 @@
     gap: 20px;
     align-items: center;
     margin-bottom: 30px;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    flex-wrap: wrap;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    flex: 1; /* Allow form groups to grow */
-    min-width: 200px; /* Minimum width before wrapping */
+    flex: 1;
+    min-width: 200px;
 }
 
 .form-group label {
@@ -55,9 +54,9 @@
 .form-group input[type="text"] {
     padding: 10px;
     border-radius: 4px;
-    color: #f0f0f0; /* Light input text */
+    color: #f0f0f0;
     font-size: 1em;
-    outline: none; /* Remove default outline */
+    outline: none;
     transition: border-color 0.2s ease-in-out;
 }
 
@@ -67,63 +66,60 @@
 }
 
 .form-group select {
-    padding: 10px; /* Match input padding */
-    border-radius: 4px; /* Match input border-radius */
-    color: #f0f0f0; /* Light text */
-    font-size: 1em; /* Match input font size */
-    outline: none; /* Remove default outline */
+    padding: 10px;
+    border-radius: 4px;
+    color: #f0f0f0;
+    font-size: 1em;
+    outline: none;
     transition: border-color 0.2s ease-in-out;
-    cursor: pointer; /* Indicate it's interactive */
-    /* Optional: remove default arrow appearance */
+    cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 }
 
 .form-group select:focus {
-     border-color: #5a5a5a; /* Match input focus border */
-     box-shadow: 0 0 5px rgba(90, 90, 90, 0.5); /* Match input focus shadow */
+     border-color: #5a5a5a;
+     box-shadow: 0 0 5px rgba(90, 90, 90, 0.5);
 }
 
 .search-button {
     margin-top: 3px;
     padding: 10px 20px;
-    background-color: #6a5acd; /* Purple-ish color */
+    background-color: #6a5acd;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.3s ease;
-    min-width: 100px; /* Give button a minimum width */
+    min-width: 100px;
 }
 
 .search-button:hover {
-    background-color: #5a4ac0; /* Darker purple on hover */
+    background-color: #5a4ac0;
 }
 
 
-/* Add this CSS to your component's CSS file (e.g., search.component.css) */
-
 .search-results {
-    margin-top: 20px; /* Space above the results section */
+    margin-top: 20px;
 }
 
 .search-results h2 {
-    font-size: 1.8rem; /* Slightly larger title */
+    font-size: 1.8rem;
     margin-bottom: 15px;
-    color: #e0e0e0; /* Light grey for title */
+    color: #e0e0e0;
 }
 
 .card {
-    border-radius: 8px; /* Rounded corners */
-    background-color: #1a202c; /* Darker background for the card */
+    border-radius: 8px;
+    background-color: #1a202c;
     padding: 20px;
 }
 
 .card .list {
-    border-radius: 0px; /* Rounded corners */
-    background-color: #1a202c; /* Darker background for the card */
+    border-radius: 0px;
+    background-color: #1a202c;
     border-bottom: 1px solid #2d3748;
     margin-bottom: 1px;
 }
@@ -131,11 +127,11 @@
 /* Style for the list container */
 .spending-list,
 .spending-header {
-    display: grid; /* Use CSS Grid for layout */
+    display: grid;
     /* Define columns: Date, Type, Category, Amount, Description, Edit, Remove */
-    grid-template-columns: 81px 65px 75px 100px 1fr 60px 90px;
-    gap: 15px; /* Space between grid items */
-    padding: 10px 0; /* Vertical padding for rows */
+    grid-template-columns: 81px 65px 90px 110px 1fr 60px 90px;
+    gap: 15px;
+    padding: 10px 0;
     justify-items: start;
 }
 
@@ -144,11 +140,10 @@
     border-bottom: none;
 }
 
-/* Style for the header row */
 .spending-header {
     font-weight: bold;
-    color: #ffffff; /* White text for header */
-    margin-bottom: 2px; /* Space after the header */
+    color: #ffffff;
+    margin-bottom: 2px;
 }
 
 .spending-header:nth-child(4) {
@@ -156,17 +151,13 @@
 }
 
 
-/* Style for individual data items */
 .spending-item {
-    /* Basic styling for text */
-    word-break: break-word; /* Break long words */
-    overflow: hidden; /* Hide overflowing text */
-    text-overflow: ellipsis; /* Add ellipsis for truncated text */
-    /* white-space: nowrap; /* Optional: Prevent wrapping for single-line truncation */
+    word-break: break-word; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Specific alignment for Amount (usually right-aligned) */
-.spending-item:nth-child(1) { /* The 4th item is the amount */
+.spending-item:nth-child(1) { /* The 1th item is the date */
     text-align: center;
 }
 .spending-item:nth-child(4) { /* The 4th item is the amount */
@@ -181,22 +172,21 @@
 }
 
 .spending-btn .edit { 
-    color: #81c784; /* Greenish color for Edit */
+    color: #81c784;
 }
 
 .spending-btn .remove {
-    color: #e57373; /* Greenish color for Edit */
+    color: #e57373;
 }
 
-.spending-btn .edit:hover { /* Edit hover */
+.spending-btn .edit:hover {
     color: #a5d6a7;
 }
 
-.spending-btn .remove:hover { /* Remove hover */
+.spending-btn .remove:hover {
     color: #ef9a9a;
 }
 
-/* Style for no results message */
 .no-results {
     text-align: center;
     padding: 20px;
@@ -204,12 +194,11 @@
     font-style: italic;
 }
 
-/* --- Optional: Refine layout on smaller screens --- */
 @media (max-width: 768px) {
     
-    .spending-btn { /* Edit */
+    .spending-btn {
         display: flex;
-        color: #81c784; /* Greenish color for Edit */
+        color: #81c784;
         justify-content: space-between;
     }
     .spending-list,
@@ -218,12 +207,12 @@
     }
 
     .card {
-        background-color: #1a202c; /* Darker background for the card */
+        background-color: #1a202c;
         border-radius: 8px; /* Rounded corners */
     }
 
     .card .list {
-        background-color: #1a202c; /* Darker background for the card */
+        background-color: #1a202c;
         border-bottom: 1px solid #2d3748;
         border-radius: 0px; /* Rounded corners */
         gap: 20px;

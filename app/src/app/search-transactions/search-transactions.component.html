@@ -2,16 +2,14 @@
 <main class="search-transactions-content">
   <section class="page-overview">
       <h1>Pesquisar Transações</h1>
-      <p class="subtitle">Filtre transações por data e descrição para encontrar receitas e despesas específicas.</p>
+      <p class="subtitle">Filtre transações por data e/ou descrição para encontrar receitas e despesas específicas.</p>
   
-    <!-- Search Form -->
     <div class="search-form">
       <div class="form-group">
         <label for="date">Data</label>
         <input type="month" id="date" [(ngModel)]="date">
       </div>
   
-      <!-- New Description Field -->
       <div class="form-group">
         <label for="description">Descrição</label>
         <input type="text" id="description" [(ngModel)]="description" placeholder="Descrição">
@@ -29,7 +27,6 @@
       <button class="search-button" (click)="onSearch()">Pesquisar</button>
     </div>
   
-    <!-- Search Results -->
     <div class="search-results">
       <div class="card">
         <div class="card list">
@@ -47,12 +44,12 @@
               <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
               <div class="spending-item">{{ transaction.type }}</div>
               <div class="spending-item">{{ transaction.category }}</div>
-              <div class="spending-item">{{ transaction.amount }}</div>
+              <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
               <div class="spending-item">{{ transaction.description }}</div>
-              <div class="spending-btn">
+              <!-- <div class="spending-btn">
                 <a class="edit">EDITAR</a>
                 <a class="remove">REMOVER</a>
-              </div>
+              </div> -->
             </div>
           </div>
         }
