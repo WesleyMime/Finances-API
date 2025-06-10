@@ -100,7 +100,6 @@ export class SearchTransactionsComponent  {
   }
 
   private filterResults(transactions: Transaction[]): Transaction[] {
-    debugger
     if (this.description) {
       var filteredResults = transactions.filter((transaction) => {
         return transaction.description.includes(this.description?this.description:'');
