@@ -24,42 +24,44 @@
         </select>
       </div>
   
-      <button class="search-button" (click)="onSearch()">Pesquisar</button>
+      <button class="btn primary search" (click)="onSearch()">Pesquisar</button>
     </div>
+    
+    @if (open) {
+      <app-remove-transaction></app-remove-transaction>
+    }
   
-    <div class="search-results">
-      <div class="card">
-        <div class="card list">
-          <div class="spending-header">
-              <div>Data</div>
-              <div>Tipo</div>
-              <div>Categoria</div>
-              <div style="text-align: right;">Valor</div>
-              <div>Descrição</div>
-          </div>
+    <div class="card gray-background">
+      <div class="list">
+        <div class="spending-header">
+            <div>Data</div>
+            <div>Tipo</div>
+            <div>Categoria</div>
+            <div style="text-align: right;">Valor</div>
+            <div>Descrição</div>
         </div>
-        @for (transaction of searchResults; track transaction) {
-          <div class="card list">
-            <div class="spending-list">
-              <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
-              <div class="spending-item">{{ transaction.type }}</div>
-              <div class="spending-item">{{ transaction.category }}</div>
-              <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
-              <div class="spending-item">{{ transaction.description }}</div>
-              <!-- <div class="spending-btn">
-                <a class="edit">EDITAR</a>
-                <a class="remove">REMOVER</a>
-              </div> -->
+      </div>
+      @for (transaction of searchResults; track transaction) {
+        <div class="list">
+          <div class="spending-list">
+            <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
+            <div class="spending-item">{{ transaction.type }}</div>
+            <div class="spending-item">{{ transaction.category }}</div>
+            <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
+            <div class="spending-item">{{ transaction.description }}</div>
+            <div class="spending-btn">
+              <a class="edit">EDITAR</a>
+              <a class="remove" (click)="openComponent()">REMOVER</a>
             </div>
           </div>
-        }
+        </div>
+      }
 
-        @if (searchResults.length === 0) {
-          <div class="no-results">
-              Nenhuma transação encontrada.
-          </div>
-        }
-      </div>
+      @if (searchResults.length === 0) {
+        <div class="no-results">
+            Nenhuma transação encontrada.
+        </div>
+      }
     </div>
   </section>
 </main>
