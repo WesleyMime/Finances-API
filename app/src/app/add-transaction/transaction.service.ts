@@ -7,7 +7,7 @@ import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class AddTransactionService {
+export class TransactionService {
 
   private readonly API_URL = environment.API_URL
   private readonly INCOME_ENDPOINT = '/income';
@@ -27,6 +27,24 @@ export class AddTransactionService {
     console.log('Adding expense transaction:', transaction);
 
     return this.http.post(this.API_URL+this.EXPENSE_ENDPOINT, transaction).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  deleteIncome(id: number) {
+    console.log('Deleting income:', id);
+    
+    let fullUrl = this.API_URL+this.INCOME_ENDPOINT + "/" + id;
+    return this.http.delete(fullUrl).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  deleteExpense(id: number) {
+    console.log('Deleting expense:', id);
+
+    let fullUrl = this.API_URL+this.EXPENSE_ENDPOINT + "/" + id;
+    return this.http.delete(fullUrl).pipe(
       catchError(this.handleError)
     );
   }

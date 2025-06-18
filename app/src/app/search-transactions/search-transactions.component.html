@@ -26,11 +26,6 @@
   
       <button class="btn primary search" (click)="onSearch()">Pesquisar</button>
     </div>
-    
-    @if (open) {
-      <app-remove-transaction></app-remove-transaction>
-    }
-  
     <div class="card gray-background">
       <div class="list">
         <div class="spending-header">
@@ -41,7 +36,7 @@
             <div>Descrição</div>
         </div>
       </div>
-      @for (transaction of searchResults; track transaction) {
+      @for (transaction of searchResultsIncome; track transaction.id) {
         <div class="list">
           <div class="spending-list">
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
@@ -49,15 +44,46 @@
             <div class="spending-item">{{ transaction.category }}</div>
             <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
             <div class="spending-item">{{ transaction.description }}</div>
-            <div class="spending-btn">
-              <a class="edit">EDITAR</a>
-              <a class="remove" (click)="openComponent()">REMOVER</a>
-            </div>
+            @if (transaction !== transactionPendingRemoval) {
+              <div class="spending-btn">
+                <a class="edit">EDITAR</a>
+                <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
+              </div>
+            }
           </div>
+          @if (transaction === transactionPendingRemoval) {
+            <app-remove-transaction
+              (cancelled)="handleCancelRemoval()"
+              (confirmed)="handleConfirmRemoval(transaction)"
+            ></app-remove-transaction>
+          }
+        </div>
+      }
+      @for (transaction of searchResultsExpenses; track transaction.id) {
+        <div class="list">
+          <div class="spending-list">
+            <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
+            <div class="spending-item">{{ transaction.type }}</div>
+            <div class="spending-item">{{ transaction.category }}</div>
+            <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
+            <div class="spending-item">{{ transaction.description }}</div>
+            @if (transaction !== transactionPendingRemoval) {
+              <div class="spending-btn">
+                <a class="edit">EDITAR</a>
+                <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
+              </div>
+            }
+          </div>
+          @if (transaction === transactionPendingRemoval) {
+            <app-remove-transaction
+              (cancelled)="handleCancelRemoval()"
+              (confirmed)="handleConfirmRemoval(transaction)"
+            ></app-remove-transaction>
+          }
         </div>
       }
 
-      @if (searchResults.length === 0) {
+      @if (searchResultsIncome.length === 0 && searchResultsExpenses.length === 0) {
         <div class="no-results">
             Nenhuma transação encontrada.
         </div>

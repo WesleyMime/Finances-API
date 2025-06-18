@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
-import { AddTransactionService } from './add-transaction.service';
+import { TransactionService } from './transaction.service';
 import { Transaction } from './transaction';
 
 @Component({
@@ -45,7 +45,7 @@ export class AddTransactionComponent {
     {index: 7, name: 'Others'}
   ];
 
-  transactionService = inject(AddTransactionService);
+  transactionService = inject(TransactionService);
 
   onSubmit() {
     if (!this.transaction.type || !this.transaction.value ||
