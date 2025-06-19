@@ -1,7 +1,7 @@
 <app-header></app-header>
 <main class="form-container">
   <div class="add-transaction-box">
-    <h2>Adicionar Transação</h2>
+    <h2>{{ isEditMode ? 'Atualizar' : 'Adicionar' }} Transação</h2>
 
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -12,9 +12,13 @@
           name="transactionType"
           required
           >
-          <option value="" disabled selected>Selecione tipo</option>
-          @for (type of transactionTypes; track type) {
-            <option [value]="type">{{ type }}</option>
+          @if (!isEditMode) {
+            <option value="" disabled selected>Selecione tipo</option>
+            @for (type of transactionTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          } @else {
+            <option value="{{ transaction.type }}" disabled selected>{{ transaction.type }}</option>
           }
         </select>
       </div>
@@ -28,7 +32,11 @@
             name="category"
             required
             >
-            <option value="" selected disabled>Selecione categoria</option>
+            @if (!isEditMode) {
+              <option value="" selected disabled>Selecione categoria</option>
+            } @else {
+              <option value="{{ transaction.category }}" selected disabled>{{ transaction.category }}</option>
+            } 
             @for (cat of categoryForm; track cat) {
               <option [value]="cat.index">{{ cat.name }}</option>
             }
@@ -75,11 +83,8 @@
       @if (errorMessage) {
         <p class="server-error">{{ errorMessage }}</p>
       }
-
       <div class="form-actions">
-        <button type="submit" class="btn primary">
-          Adicionar
-        </button>
+        <button type="submit" class="btn primary">{{ isEditMode ? 'Atualizar' : 'Adicionar' }} Transação</button>
         @if (sucessMessage) {
           <p class="server-success">{{ sucessMessage }}</p>
         }

@@ -13,6 +13,7 @@ export const routes: Routes = [
     {path: "register", component: RegisterComponent, title: "Finances APP"},
     {path: "login", component: LoginComponent, title: "Finances APP"},
     {path: "add-transaction", component: AddTransactionComponent, title: "Adicionar Transação", canActivate: [authGuard]},
+    {path: 'transactions/edit', component: AddTransactionComponent, title: "Editar Transação", canActivate: [authGuard]},
     {path: "dashboard", redirectTo: "reports", },
     {path: "reports", component: ReportsComponent, title: "Relatório", canActivate: [authGuard]},
     {path: "search", component: SearchTransactionsComponent, title: "Pesquisar", canActivate: [authGuard]}

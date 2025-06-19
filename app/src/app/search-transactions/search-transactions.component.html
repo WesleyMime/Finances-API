@@ -46,7 +46,7 @@
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {
               <div class="spending-btn">
-                <a class="edit">EDITAR</a>
+                <a class="edit" (click)="editTransaction(transaction)">EDITAR</a>
                 <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
               </div>
             }
@@ -69,7 +69,7 @@
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {
               <div class="spending-btn">
-                <a class="edit">EDITAR</a>
+                <a [routerLink]="['/transactions/edit', transaction.id]" (click)="editTransaction(transaction)" class="edit">EDITAR</a>
                 <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
               </div>
             }

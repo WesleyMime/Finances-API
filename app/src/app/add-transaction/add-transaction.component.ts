@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
 import { TransactionService } from './transaction.service';
 import { Transaction } from './transaction';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-transaction',
@@ -10,7 +11,8 @@ import { Transaction } from './transaction';
   templateUrl: './add-transaction.component.html',
   styleUrls: ['./add-transaction.component.css']
 })
-export class AddTransactionComponent {
+export class AddTransactionComponent implements OnInit {
+  isEditMode = false;
   transaction: Transaction = {
     type: '',
     category: '',
@@ -47,31 +49,79 @@ export class AddTransactionComponent {
 
   transactionService = inject(TransactionService);
 
+  constructor(
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    const transaction = window.history.state.transaction;
+    if (transaction) {
+      this.transaction = transaction;
+      this.isEditMode = true;
+    }
+  }
+
   onSubmit() {
     if (!this.transaction.type || !this.transaction.value ||
       !this.transaction.date || !this.transaction.description) {
-      this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
+        this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
+        return;
+    }
+    if (this.transaction.value < 1) {
+      this.errorMessage = 'Por favor, digite um número maior que zero.'
       return;
     }
-    this.errorMessage = null;
-
-    if (this.transaction.type == this.transactionTypes[0]) { // Receita
-      this.transactionService.addIncome(this.transaction).subscribe({
-        next: (response) => {
-          this.sucessMessage = 'Receita adicionada com sucesso!';
-          console.log('Income added successfully:', response);
-          this.resetForm();
-        },
-        error: (error) => {
-          console.error('Error adding income:', error);
-          this.errorMessage = error;
-          this.sucessMessage = null;
+      this.errorMessage = null;
+      
+      if (this.transaction.type == this.transactionTypes[0]) { // Receita
+        if (this.isEditMode) {
+          this.transactionService.updateIncome(this.transaction).subscribe({
+            next: async (response) => {
+              this.sucessMessage = 'Receita editada com sucesso!';
+              console.log('Income edited successfully:', response);
+              await this.sleep(1);
+              this.router.navigateByUrl("/search")
+            },
+            error: (error) => {
+              console.error('Error editing income:', error);
+              this.errorMessage = error;
+              this.sucessMessage = null;
+            }
+          });
+          return;
         }
-      });
-      return;
-    }
-    else if (this.transaction.type == this.transactionTypes[1]) { // Despesa
-      this.transaction.category = this.categoryEnum.at(Number.parseInt(this.transaction.category))?.name || 'Other';
+        this.transactionService.addIncome(this.transaction).subscribe({
+          next: (response) => {
+            this.sucessMessage = 'Receita adicionada com sucesso!';
+            console.log('Income added successfully:', response);
+            this.resetForm();
+          },
+          error: (error) => {
+            console.error('Error adding income:', error);
+            this.errorMessage = error;
+            this.sucessMessage = null;
+          }
+        });
+        return;
+      }
+      else if (this.transaction.type == this.transactionTypes[1]) { // Despesa
+        this.transaction.category = this.categoryEnum.at(Number.parseInt(this.transaction.category))?.name || 'Other';
+        if (this.isEditMode) {
+          this.transactionService.updateExpense(this.transaction).subscribe({
+            next: async (response) => {
+              this.sucessMessage = 'Despesa editada com sucesso!';
+              console.log('Expense edited successfully:', response);
+              await this.sleep(1);
+              this.router.navigateByUrl("/dashboard")
+          },
+          error: (error) => {
+            console.error('Error editing expense:', error);
+            this.errorMessage = error;
+            this.sucessMessage = null;
+          }
+        });
+        return;
+      }
       this.transactionService.addExpense(this.transaction).subscribe({
         next: (response) => {
           this.sucessMessage = 'Despesa adicionada com sucesso!';
@@ -97,5 +147,9 @@ export class AddTransactionComponent {
     this.transaction.date = '';
     this.transaction.description = '';
     this.errorMessage = null;
+  }
+
+  sleep(seconds: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 }

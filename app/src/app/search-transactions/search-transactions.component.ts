@@ -7,10 +7,11 @@ import { Category } from '../category';
 import { SearchService } from './search.service';
 import { RemoveTransactionComponent } from "./remove-transaction/remove-transaction.component";
 import { TransactionService } from '../add-transaction/transaction.service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-search-transactions',
-  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent],
+  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent, RouterLink],
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
@@ -19,7 +20,7 @@ export class SearchTransactionsComponent  {
   date: string | null = null;
   description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
-
+  
   categoryEnum: Category[] = [
     {name: 'Food', namePtBr: 'Alimentação'},
     {name: 'Health', namePtBr: 'Saúde'},
@@ -30,16 +31,18 @@ export class SearchTransactionsComponent  {
     {name: 'Unforeseen', namePtBr: 'Imprevísto'},
     {name: 'Others', namePtBr: 'Outros'}
   ];
-
+  
   searchResultsIncome: Transaction[] = [];
   searchResultsExpenses: Transaction[] = [];
   searchService = inject(SearchService);
   transactionService = inject(TransactionService);
-
+  
   transactionPendingRemoval: Transaction | null = null;
-
-  constructor() { }
-
+  router: Router;
+  constructor(router: Router) {
+    this.router = router;
+  }
+  
   onSearch(): void {
     this.searchResultsIncome = [];
     this.searchResultsExpenses = [];
@@ -47,21 +50,21 @@ export class SearchTransactionsComponent  {
       if (this.selectedType == 'Both' || this.selectedType == 'Income') {
         var date = this.formatDate(this.date);
         this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
-          .subscribe({
-            next: (result: Transaction[]) => {
-              result.forEach((transaction) => {
-                transaction.type = "Receita";
-              })
-              var filteredResults = this.filterResults(result);
-              this.searchResultsIncome.push(...filteredResults);
-            }
-          });
+        .subscribe({
+          next: (result: Transaction[]) => {
+            result.forEach((transaction) => {
+              transaction.type = "Receita";
+            })
+            var filteredResults = this.filterResults(result);
+            this.searchResultsIncome.push(...filteredResults);
+          }
+        });
       }
       
       if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
         var date = this.formatDate(this.date);
         this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
-          .subscribe({
+        .subscribe({
             next: (result: Transaction[]) => {
               result.forEach((transaction) => {
                 transaction.type = "Despesa";
@@ -73,12 +76,12 @@ export class SearchTransactionsComponent  {
               this.searchResultsExpenses.push(...filteredResults);
             }
           });
+        }
+        return;
       }
-      return;
-    }
-    if (this.description) {
-      if (this.selectedType == 'Both' || this.selectedType == 'Income') {
-        this.searchService.searchIncomeByDescription(this.description)
+      if (this.description) {
+        if (this.selectedType == 'Both' || this.selectedType == 'Income') {
+          this.searchService.searchIncomeByDescription(this.description)
           .subscribe({
             next: (result: Transaction[]) => {
               result.forEach((transaction) => {
@@ -87,10 +90,10 @@ export class SearchTransactionsComponent  {
               this.searchResultsIncome.push(...result);
             }
           });
-      }
-
-      if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
-        this.searchService.searchExpenseByDescription(this.description)
+        }
+        
+        if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
+          this.searchService.searchExpenseByDescription(this.description)
           .subscribe({
             next: (result: Transaction[]) => {
               result.forEach((transaction) => {
@@ -102,38 +105,45 @@ export class SearchTransactionsComponent  {
               this.searchResultsExpenses.push(...result);
             }
           });
+        }
       }
+      this.transactionPendingRemoval = null;
     }
-    this.transactionPendingRemoval = null;
-  }
-
-  private filterResults(transactions: Transaction[]): Transaction[] {
-    if (this.description) {
-      var filteredResults = transactions.filter((transaction) => {
-        return transaction.description.toLocaleLowerCase()
+    
+    private filterResults(transactions: Transaction[]): Transaction[] {
+      if (this.description) {
+        var filteredResults = transactions.filter((transaction) => {
+          return transaction.description.toLocaleLowerCase()
           .includes(this.description ? this.description : ''.toLocaleLowerCase());
-      });
-      return filteredResults;
+        });
+        return filteredResults;
+      }
+      return transactions;
     }
-    return transactions;
+    
+    private formatDate(date: string): Date {
+      var dateSplit = date.split("-");
+      // new Date using html type month returns day 1 at 00:00, 
+      // but because of GMT -3 it goes to day 31/30 21:00,
+      // So i'm parsing the string eg 2025-01.
+      return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
+    }
+    
+  editTransaction(transaction: Transaction) {
+    if (transaction.value < 0) {
+      transaction.value = transaction.value * -1;
+    }
+    this.router.navigate(['/transactions/edit'], { state: { transaction: transaction } });
   }
-
-  private formatDate(date: string): Date {
-    var dateSplit = date.split("-");
-    // new Date using html type month returns day 1 at 00:00, 
-    // but because of GMT -3 it goes to day 31/30 21:00,
-    // So i'm parsing the string eg 2025-01.
-    return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
-  }
-
+  
   removeTransaction(transaction: Transaction): void {
     this.transactionPendingRemoval = transaction;
   }
-
+  
   handleCancelRemoval(): void {
     this.transactionPendingRemoval = null;
   }
-
+  
   handleConfirmRemoval(transaction: Transaction): void {
     var id = transaction.id? transaction.id : NaN;
     let type = transaction.type;
