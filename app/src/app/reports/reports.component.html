@@ -4,18 +4,16 @@
     <h1>Relatórios Financeiros</h1>
     <p class="subtitle">Analise sua saúde financeira com relatórios detalhados.</p>
 
-    <div class="report-section">
-      <div class="net-worth-card">
-        <div class="card-label">Patrimônio líquido</div>
-        <div class="card-value">{{ totalNetWorth }}</div>
-      </div>
+    <div class="card gray-background net-worth-card">
+      <div class="card-label">Patrimônio líquido</div>
+      <div class="card-value">{{ totalNetWorth }}</div>
     </div>
     <div class="cards-grid">
-      <div class="card net-worth-card">
+      <div class="card gray-background net-worth-card">
         <div class="card-label">Total de Ativos</div>
         <div class="card-value">{{ totalAssets }}</div>
       </div>
-      <div class="card net-worth-card">
+      <div class="card gray-background net-worth-card">
         <div class="card-column">
           <div class="card-label">Total de Passivos</div>
           <div class="card-value">{{ totalLiabilities }}</div>
@@ -25,14 +23,14 @@
 
     <h3>Comparação mensal</h3>
     <div class="cards-grid">
-      <div class="card net-worth-card">
+      <div class="card gray-background net-worth-card">
         <div class="card-label">Renda Total</div>
         <div class="card-value">{{ incomeCurrentMonth }}</div>
         <div class="metric-info"><span
           [ngClass]="getChangeColorGood(incomeChangePercentage)">{{ incomeChangePercentage }} {{ incomeValueDifference }}</span>
         </div>
       </div>
-      <div class="card net-worth-card">
+      <div class="card gray-background net-worth-card">
         <div class="card-label">Despesa Total</div>
         <div class="card-value">{{ expenseCurrentMonth }}</div>
         <div class="metric-info"><span
@@ -42,7 +40,7 @@
     </div>
 
     <!-- Income vs. Expenses Section -->
-    <div class="graphic-section">
+    <div class="card">
       <h3>Saldo Financeiro</h3>
       <div class="metrics">
         <div class="metric-value">{{ incomeExpenseTotal }}</div>
@@ -55,7 +53,7 @@
           }
         </div>
         <div class="chart-labels">
-          @for (month of incomeExpenseMonths; track month) {
+          @for (month of monthOrderincomeExpenseComparison; track month) {
             <span>{{ month }}</span>
           }
         </div>
@@ -65,53 +63,50 @@
 
     <!-- Spending by Category Section -->
     <h3>Gastos por Categoria</h3>
-    <div class="graphic-section">
+    <div class="card">
       <div class="metrics">
         <h3>Último mês</h3>
-        <div class="metric-info">{{ currentMonth }}</div>
+        <div class="metric-info">{{ lastMonth }}</div>
         <span
           [ngClass]="getChangeColorBad(incomeExpensePercentage)">{{ incomeExpensePercentage }}</span>
-    </div>
-    <div class="chart spending-chart">
-      <!-- Simulate Horizontal Bar Chart -->
-      <div class="spending-list">
-        @for (category of spendingCategoriesMonth; track category) {
-          <div class="spending-item">
-            <span class="category-name">{{ category.namePtBr }}</span>
-            <div class="category-bar-container">
-              <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
+      </div>
+      <div class="chart spending-chart">
+        <div class="spending-list">
+          @for (category of spendingCategoriesMonth; track category) {
+            <div class="spending-item">
+              <span class="category-name">{{ category.namePtBr }}</span>
+              <div class="category-bar-container">
+                <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
+              </div>
+              <span class="category-value">{{ category.valueCurrency }}</span>
             </div>
-            <span class="category-value">{{ category.valueCurrency }}</span>
-          </div>
-        }
+          }
+        </div>
       </div>
     </div>
-    </div>
-    <div class="graphic-section">
-    <div class="metrics">
-      <h3>Últimos 12 meses</h3>
-    </div>
-    <div class="chart spending-chart">
-      <div class="spending-list">
-        @for (category of spendingCategories; track category) {
-          <div class="spending-item">
-            <span class="category-name">{{ category.namePtBr }}</span>
-            <div class="category-bar-container">
-              <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
+    <div class="card">
+      <div class="metrics">
+        <h3>Últimos 12 meses</h3>
+      </div>
+      <div class="chart spending-chart">
+        <div class="spending-list">
+          @for (category of spendingCategories; track category) {
+            <div class="spending-item">
+              <span class="category-name">{{ category.namePtBr }}</span>
+              <div class="category-bar-container">
+                <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
+              </div>
+              <span class="category-value">{{ category.valueCurrency }}</span>
             </div>
-            <span class="category-value">{{ category.valueCurrency }}</span>
-          </div>
-        }
+          }
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Savings Rate Section -->
-  <div class="report-section">
-    <h3>Taxa de Poupança</h3>
-    <div class="metrics">
-      <div class="metric-value">{{ savingsRate }}%</div>
+    <!-- Savings Rate Section -->
+    <div class="card gray-background">
+      <div class="card-label">Taxa de Poupança</div>
+      <div class="card-value">{{ savingsRate }}%</div>
     </div>
-  </div>
-</section>
+  </section>
 </main>

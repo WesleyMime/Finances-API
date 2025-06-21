@@ -1,0 +1,38 @@
+.remove-confirmation {
+  text-align: center;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+  
+.confirmation-question {
+  line-height: 1.4;
+}
+
+.confirmation-options {
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+}
+  
+.option-btn {
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.cancel { 
+    color: #81c784;
+}
+
+.confirm {
+    color: #e57373;
+}
+
+.cancel:hover {
+    color: #a5d6a7;
+}
+
+.confirm:hover {
+    color: #ef9a9a;
+}
