@@ -1,4 +1,3 @@
-// src/app/reports/reports.component.ts
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "../header/header.component";
@@ -6,6 +5,7 @@ import { ReportsService } from './reports.service';
 import { Expense, SummaryLastYear } from './summary-last-year';
 import { SummaryByDate } from './summary-by-date';
 import { firstValueFrom } from 'rxjs';
+import { categoriesEnum } from '../category';
 
 @Component({
   selector: 'app-reports',
@@ -15,6 +15,14 @@ import { firstValueFrom } from 'rxjs';
 })
 export class ReportsComponent implements OnInit {
 
+  // Data for Net Worth Trend
+  totalNetWorth = '';
+  totalAssets = '';
+  totalLiabilities = '';
+  totalNetWorthValue = 0;
+  totalAssetsValue = 0;
+  totalLiabilitiesValue = 0;
+
   // Data for Month-over-Month Comparison
   incomeCurrentMonth = '';
   expenseCurrentMonth = '';
@@ -23,49 +31,22 @@ export class ReportsComponent implements OnInit {
   incomeChangePercentage = '';
   expenseChangePercentage = '';
 
+  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
   incomeExpensePercentage = '';
   currentMonth = '';
-  incomeExpenseMonths: string[] = [];
+  monthOrderincomeExpenseComparison: string[] = [];
   incomeExpenseBarHeights = [{height: '', value: ''}];
   currentYear = 0;
 
   // Data for Spending by Category
   spendingTotal = '';
-  spendingChange = '-2%';
   categoriesBarWidth = [];
-  spendingCategories = [
-    { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Home', namePtBr: 'Casa', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
-  ];
-  spendingCategoriesMonth = [
-    { name: 'Food', namePtBr: 'Alimentação', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Health', namePtBr: 'Saúde', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Home', namePtBr: 'Casa', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Transport', namePtBr: 'Transporte', value: 0, valueCurrency: '', percentage: '0%'},
-    { name: 'Education', namePtBr: 'Educação', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Leisure', namePtBr: 'Lazer', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Unforeseen', namePtBr: 'Imprevísto', value: 0, valueCurrency: '',  percentage: '0%'},
-    { name: 'Others', namePtBr: 'Outros', value: 0, valueCurrency: '',  percentage: '0%'},
-  ];
+  spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
+  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
 
-  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
-
-  // Data for Net Worth Trend
-  totalNetWorth = '';
-  totalAssets = '';
-  totalLiabilities = '';
-  totalNetWorthValue = 0;
-  totalAssetsValue = 0;
-  totalLiabilitiesValue = 0;
   savingsRate = '';
 
   reportsService = inject(ReportsService);
@@ -73,7 +54,7 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     var currentDate = new Date();
-    this.getIncomeExpenseMonths(currentDate);
+    this.getMonthOrderForIncomeExpenseComparison(currentDate);
     
     this.getMonthOverMonthComparison(currentDate);
     this.reportsService.getSummaryLastYear(currentDate).subscribe({
@@ -99,16 +80,16 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  private getIncomeExpenseMonths(currentDate: Date) {
+  private getMonthOrderForIncomeExpenseComparison(currentDate: Date) {
     var month = currentDate.getMonth();
-    var finalMonths = [];
+    var result = [];
 
     var j = 0;
     for (let i: number = month; j < 12; i++) {
       j++;
-      finalMonths.push(this.months[i % 12]);
+      result.push(this.months[i % 12]);
     }
-    this.incomeExpenseMonths = finalMonths;
+    this.monthOrderincomeExpenseComparison = result;
   }
 
   private async getMonthOverMonthComparison(currentDate: Date) {
@@ -126,22 +107,22 @@ export class ReportsComponent implements OnInit {
       this.expenseCurrentMonth = this.formatCurrency(expenseCurrentMonthValue);
 
       this.updateNetWorth(incomeCurrentMonthValue, expenseCurrentMonthValue);
-      this.getSpendingByCategoryMonth(summary);
     });
-
+    
     let date = currentDate;
     date.setMonth(date.getMonth() - 1);
     
     result = firstValueFrom(this.reportsService.getSummaryByDate(date));
     await result.then((summary: SummaryByDate) => {
+      this.getSpendingByCategoryMonth(summary);
       console.log('Summary data: ', date , summary);
       incomeLastMonthValue = summary.totalIncome;
       expenselastMonthValue = summary.totalExpense;
-      var incomeValueDifference = incomeCurrentMonthValue - incomeLastMonthValue;
+      let incomeValueDifference = incomeCurrentMonthValue - incomeLastMonthValue;
       if (incomeValueDifference != 0 && incomeLastMonthValue != 0)
         this.incomeValueDifference = this.formatCurrency(incomeValueDifference);
 
-      var expenseValueDifference = (expenselastMonthValue - expenseCurrentMonthValue) * -1; // To not show a negative number
+      let expenseValueDifference = (expenselastMonthValue - expenseCurrentMonthValue) * -1; // To not show a negative number
       if (expenseValueDifference != 0 && expenselastMonthValue != 0)
         this.expenseValueDifference = this.formatCurrency(expenseValueDifference);
 

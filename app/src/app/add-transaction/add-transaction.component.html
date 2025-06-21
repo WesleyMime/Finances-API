@@ -36,9 +36,9 @@
               <option value="" selected disabled>Selecione categoria</option>
             } @else {
               <option value="{{ transaction.category }}" selected disabled>{{ transaction.category }}</option>
-            } 
-            @for (cat of categoryForm; track cat) {
-              <option [value]="cat.index">{{ cat.name }}</option>
+            }
+            @for (cat of categories; track cat) {
+            <option [value]="cat.name ">{{ cat.namePtBr }}</option>
             }
           </select>
         </div>

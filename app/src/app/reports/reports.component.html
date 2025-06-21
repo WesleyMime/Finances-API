@@ -53,7 +53,7 @@
           }
         </div>
         <div class="chart-labels">
-          @for (month of incomeExpenseMonths; track month) {
+          @for (month of monthOrderincomeExpenseComparison; track month) {
             <span>{{ month }}</span>
           }
         </div>
@@ -71,7 +71,6 @@
           [ngClass]="getChangeColorBad(incomeExpensePercentage)">{{ incomeExpensePercentage }}</span>
       </div>
       <div class="chart spending-chart">
-        <!-- Simulate Horizontal Bar Chart -->
         <div class="spending-list">
           @for (category of spendingCategoriesMonth; track category) {
             <div class="spending-item">

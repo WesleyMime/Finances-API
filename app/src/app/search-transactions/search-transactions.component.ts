@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Transaction } from '../add-transaction/transaction';
-import { Category } from '../category';
+import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
 import { SearchService } from './search.service';
 import { RemoveTransactionComponent } from "./remove-transaction/remove-transaction.component";
 import { TransactionService } from '../add-transaction/transaction.service';
@@ -21,16 +21,7 @@ export class SearchTransactionsComponent  {
   description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
   
-  categoryEnum: Category[] = [
-    {name: 'Food', namePtBr: 'Alimentação'},
-    {name: 'Health', namePtBr: 'Saúde'},
-    {name: 'Home', namePtBr: 'Casa'},
-    {name: 'Transport', namePtBr: 'Transporte'},
-    {name: 'Education', namePtBr: 'Educação'},
-    {name: 'Leisure', namePtBr: 'Lazer'},
-    {name: 'Unforeseen', namePtBr: 'Imprevísto'},
-    {name: 'Others', namePtBr: 'Outros'}
-  ];
+  categories = categoriesEnum;
   
   searchResultsIncome: Transaction[] = [];
   searchResultsExpenses: Transaction[] = [];
@@ -47,87 +38,99 @@ export class SearchTransactionsComponent  {
     this.searchResultsIncome = [];
     this.searchResultsExpenses = [];
     if (this.date) {
-      if (this.selectedType == 'Both' || this.selectedType == 'Income') {
-        var date = this.formatDate(this.date);
-        this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
-        .subscribe({
-          next: (result: Transaction[]) => {
-            result.forEach((transaction) => {
-              transaction.type = "Receita";
-            })
-            var filteredResults = this.filterResults(result);
-            this.searchResultsIncome.push(...filteredResults);
-          }
-        });
+      var date = this.formatDate(this.date);
+      if (this.incomeIsSelected()) {
+        this.searchIncomeByDate(date);
+      }
+      if (this.expenseIsSelected()) {
+        this.searchExpenseByDate(date);
+      }
+      return;
+    }
+    if (this.description) {
+      if (this.incomeIsSelected()) {
+        this.searchIncomeByDescription(this.description);
       }
       
-      if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
-        var date = this.formatDate(this.date);
-        this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
-        .subscribe({
-            next: (result: Transaction[]) => {
-              result.forEach((transaction) => {
-                transaction.type = "Despesa";
-                var result = this.categoryEnum.filter(category => category.name == transaction.category);
-                transaction.category = result[0].namePtBr;
-                transaction.value = transaction.value * -1;
-              })
-              var filteredResults = this.filterResults(result);
-              this.searchResultsExpenses.push(...filteredResults);
-            }
-          });
-        }
-        return;
+      if (this.expenseIsSelected()) {
+        this.searchExpenseByDescription(this.description);
       }
-      if (this.description) {
-        if (this.selectedType == 'Both' || this.selectedType == 'Income') {
-          this.searchService.searchIncomeByDescription(this.description)
-          .subscribe({
-            next: (result: Transaction[]) => {
-              result.forEach((transaction) => {
-                transaction.type = "Receita";
-              })
-              this.searchResultsIncome.push(...result);
-            }
-          });
-        }
-        
-        if (this.selectedType == 'Both' || this.selectedType == 'Expense') {
-          this.searchService.searchExpenseByDescription(this.description)
-          .subscribe({
-            next: (result: Transaction[]) => {
-              result.forEach((transaction) => {
-                transaction.type = "Despesa";
-                var result = this.categoryEnum.filter(category => category.name == transaction.category);
-                transaction.category = result[0].namePtBr;
-                transaction.value = transaction.value * -1;
-              })
-              this.searchResultsExpenses.push(...result);
-            }
-          });
-        }
-      }
-      this.transactionPendingRemoval = null;
     }
+    this.transactionPendingRemoval = null;
+  }    
     
-    private filterResults(transactions: Transaction[]): Transaction[] {
-      if (this.description) {
-        var filteredResults = transactions.filter((transaction) => {
-          return transaction.description.toLocaleLowerCase()
-          .includes(this.description ? this.description : ''.toLocaleLowerCase());
+  private searchIncomeByDescription(description: string) {
+    this.searchService.searchIncomeByDescription(description)
+    .subscribe({
+      next: (result: Transaction[]) => {
+        result.forEach((transaction) => {
+          transaction.type = "Receita";
         });
-        return filteredResults;
+        this.searchResultsIncome.push(...result);
       }
-      return transactions;
-    }
+    });
+  }
     
-    private formatDate(date: string): Date {
-      var dateSplit = date.split("-");
-      // new Date using html type month returns day 1 at 00:00, 
-      // but because of GMT -3 it goes to day 31/30 21:00,
-      // So i'm parsing the string eg 2025-01.
-      return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
+  private searchIncomeByDate(date: Date) {
+    this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
+      .subscribe({
+        next: (result: Transaction[]) => {
+          result.forEach((transaction) => {
+            transaction.type = "Receita";
+          });
+          var filteredResults = this.filterByDescription(result);
+          this.searchResultsIncome.push(...filteredResults);
+        }
+      });
+  }
+    
+  private searchExpenseByDescription(description: string) {
+    this.searchService.searchExpenseByDescription(description)
+      .subscribe({
+        next: (result: Transaction[]) => {
+          result.forEach((transaction) => {
+            transaction.type = "Despesa";
+          transaction.category = getCategoryNameInPortuguese(transaction.category);
+            transaction.value = transaction.value * -1;
+          });
+          this.searchResultsExpenses.push(...result);
+        }
+      });
+  }
+
+  private searchExpenseByDate(date: Date) {
+  this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
+    .subscribe({
+      next: (result: Transaction[]) => {
+        result.forEach((transaction) => {
+          transaction.type = "Despesa";
+          transaction.category = getCategoryNameInPortuguese(transaction.category);
+          transaction.value = transaction.value * -1;
+        });
+        var filteredResults = this.filterByDescription(result);
+        this.searchResultsExpenses.push(...filteredResults);
+      }
+    });
+  }
+
+  private filterByDescription(transactions: Transaction[]): Transaction[] {
+    if (this.description) {
+      var filteredResults = transactions.filter((transaction) => {
+        return transaction.description.toLocaleLowerCase()
+        .includes(this.description ? this.description : ''.toLocaleLowerCase());
+      });
+      return filteredResults;
     }
+    return transactions;
+  }
+    
+  private formatDate(date: string): Date {
+    var dateSplit = date.split("-");
+    // new Date using html type month returns day 1 at 00:00, 
+    // but because of GMT -3 it goes to day 31/30 21:00,
+    // So i'm parsing the string eg 2025-01.
+    return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
+  }
     
   editTransaction(transaction: Transaction) {
     if (transaction.value < 0) {
@@ -170,5 +173,13 @@ export class SearchTransactionsComponent  {
       });
     }
     this.transactionPendingRemoval = null;
+  }
+
+  incomeIsSelected() {
+    return this.selectedType == 'Both' || this.selectedType == 'Income';
+  }
+
+  expenseIsSelected() {
+    return this.selectedType == 'Both' || this.selectedType == 'Expense'
   }
 }
