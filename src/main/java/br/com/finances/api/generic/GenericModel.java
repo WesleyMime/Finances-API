@@ -17,8 +17,8 @@ public abstract class GenericModel{
 	private BigDecimal value;
 	
 	private LocalDate date;
-	
-	@ManyToOne()
+
+    @ManyToOne()
 	private Client client;
 	
 	public GenericModel() {
