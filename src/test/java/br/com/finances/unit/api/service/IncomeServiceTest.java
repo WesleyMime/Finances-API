@@ -134,6 +134,8 @@ class IncomeServiceTest {
 
 	@Test
 	void shouldPostIncomeList() {
+		when(incomeRepository.saveList(any())).thenReturn(List.of(INCOME));
+
 		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM));
 		Assertions.assertNotNull(post.getBody());
 		List<IncomeDTO> body = post.getBody();

@@ -136,6 +136,35 @@ class ExpenseServiceTest {
 		ResponseEntity<ExpenseDTO> post2 = expenseService.post(form);
 		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
+
+	@Test
+	void shouldPostExpenseList() {
+		when(expenseRepository.saveList(any())).thenReturn(List.of(EXPENSE));
+
+		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM));
+		Assertions.assertNotNull(post.getBody());
+		List<ExpenseDTO> body = post.getBody();
+		ExpenseDTO first = body.getFirst();
+		assertEquals(1, body.size());
+		assertEquals(first.getDescription(), FORM.getDescription());
+		assertEquals(first.getDate(), FORM.getDate());
+		assertEquals(first.getValue(), FORM.getValue());
+		assertEquals(first.getCategory(), FORM.getCategory());
+		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+	}
+
+	@Test
+	void shouldNotPostExpenseListTwice() {
+		when(expenseRepository.findByDescriptionAndDate(DESCRIPTION, DATE.getYear(),
+				DATE.getMonthValue(), CLIENT))
+				.thenReturn(Optional.of(EXPENSE));
+
+		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM, FORM));
+		Assertions.assertNotNull(post.getBody());
+		List<ExpenseDTO> body = post.getBody();
+		assertEquals(0, body.size());
+		assertEquals(HttpStatus.CREATED, post.getStatusCode());
+	}
 	
 	//UPDATE
 	@Test

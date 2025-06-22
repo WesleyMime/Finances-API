@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,17 +48,14 @@ class ClientControllerTest {
     @Autowired
     private IncomeService incomeService;
 
-    private static Client CLIENT = SecurityContextFactory.setClient();
+    private static final Client CLIENT = SecurityContextFactory.setClient();
     private static final ClientDTO CLIENT_DTO = new ClientDTO(CLIENT);
     private static final String ENDPOINT = "/client";
 
     @BeforeAll
     void beforeAll() {
-        Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
-        if (findByEmail.isEmpty())
-            clientRepository.save(CLIENT);
-        else
-            CLIENT = findByEmail.get();
+        clientRepository.deleteAll();
+        clientRepository.save(CLIENT);
     }
 
     @BeforeEach

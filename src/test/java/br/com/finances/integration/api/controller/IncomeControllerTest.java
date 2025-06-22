@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -174,15 +174,13 @@ class IncomeControllerTest {
                                 new IncomeForm("Income1", VALUE, DATE).toString(),
                                 new IncomeForm("Income2", VALUE, DATE).toString()
                         ).toString()))
-                .andExpectAll(
-                        jsonPath("[0].description", is("Income1")),
-                        jsonPath("[0].value", is(1500)),
-                        jsonPath("[0].date", is(DATE.toString())),
-                        jsonPath("[1].description", is("Income2")),
-                        jsonPath("[1].value", is(1500)),
-                        jsonPath("[1].date", is(DATE.toString())),
-                        status().isCreated())
-                .andDo(print());
+				.andExpectAll(
+						jsonPath("[*].id", notNullValue()),
+						jsonPath("[*].description", containsInAnyOrder("Income1", "Income2")),
+						jsonPath("[*].value", contains(1500, 1500)),
+						jsonPath("[*].date", contains(DATE.toString(), DATE.toString())),
+						status().isCreated())
+				.andDo(print());
 		LocalDate date = LocalDate.of(2023, 1, 1);
 		mockMvc.perform(post(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -200,6 +198,7 @@ class IncomeControllerTest {
                         ).toString()))
                 .andExpectAll(
                         jsonPath("$", Matchers.hasSize(1)),
+						jsonPath("[0].id", notNullValue()),
                         jsonPath("[0].description", is("Income3")),
                         jsonPath("[0].value", is(1500)),
                         jsonPath("[0].date", is(DATE.toString())),

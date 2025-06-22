@@ -7,9 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 public class GenericServiceImpl
@@ -87,7 +88,7 @@ public class GenericServiceImpl
 
 	public ResponseEntity<List<S>> postList(List<U> forms) {
 		Client client = getClient();
-		List<S> dtoList = new ArrayList<>();
+		Set<T> toAddList = new HashSet<>();
 		for (U form : forms) {
 			T model = formMapper.map(form);
 			try {
@@ -96,10 +97,10 @@ public class GenericServiceImpl
 				continue;
 			}
 			model.setClient(client);
-
-			T save = repository.save(model);
-			dtoList.add(dtoMapper.map(save));
+			toAddList.add(model);
 		}
+		repository.saveList(toAddList);
+		List<S> dtoList = toAddList.stream().map(dtoMapper::map).toList();
 		return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
 	}
 
