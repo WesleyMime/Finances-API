@@ -1,14 +1,11 @@
 package br.com.finances.api.client;
 
-import br.com.finances.api.expense.Expense;
 import br.com.finances.api.expense.ExpenseRepository;
-import br.com.finances.api.income.Income;
 import br.com.finances.api.income.IncomeRepository;
 import br.com.finances.config.auth.SignForm;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,14 +45,6 @@ public class ClientService {
         if (clientOptional.isEmpty()) return Optional.empty();
 
         Client client = clientOptional.get();
-        List<Income> incomeList = incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(
-                "", client);
-        List<Expense> expenseList =
-                expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(
-                "", client);
-        incomeRepository.deleteAll(incomeList);
-        expenseRepository.deleteAll(expenseList);
-
         repository.deleteById(client.getId());
         return clientOptional.map(ClientDTO::new);
     }

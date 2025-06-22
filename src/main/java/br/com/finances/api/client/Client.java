@@ -1,5 +1,7 @@
 package br.com.finances.api.client;
 
+import br.com.finances.api.expense.Expense;
+import br.com.finances.api.income.Income;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,16 +16,22 @@ public class Client implements UserDetails{
 
 	@Serial
 	private static final long serialVersionUID = 7569357973771317490L;
-	
+
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String name;
 	private String email;
 	private String password;
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Authority> authorities = new ArrayList<>();
-	
+
+	@OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE)
+	private List<Income> incomeList;
+
+	@OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE)
+	private List<Expense> expenseList;
+
 	public Client() {
 	}
 
@@ -38,11 +46,11 @@ public class Client implements UserDetails{
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -67,6 +75,22 @@ public class Client implements UserDetails{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public List<Income> getIncomeList() {
+		return incomeList;
+	}
+
+	public void setIncomeList(List<Income> incomeList) {
+		this.incomeList = incomeList;
+	}
+
+	public List<Expense> getExpenseList() {
+		return expenseList;
+	}
+
+	public void setExpenseList(List<Expense> expenseList) {
+		this.expenseList = expenseList;
 	}
 
 	@Override
