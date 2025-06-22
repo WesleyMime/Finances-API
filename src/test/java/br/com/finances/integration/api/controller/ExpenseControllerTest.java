@@ -26,7 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -179,14 +179,12 @@ class ExpenseControllerTest {
 								new ExpenseForm("Expense2", VALUE, DATE, Category.Leisure).toString()
 						).toString()))
 				.andExpectAll(
-						jsonPath("[0].description", is("Expense1")),
-						jsonPath("[0].value", is(1500)),
-						jsonPath("[0].date", is(DATE.toString())),
-						jsonPath("[0].category", is(Category.Home.toString())),
-						jsonPath("[1].description", is("Expense2")),
-						jsonPath("[1].value", is(1500)),
-						jsonPath("[1].date", is(DATE.toString())),
-						jsonPath("[1].category", is(Category.Leisure.toString())),
+						jsonPath("[*].id", notNullValue()),
+						jsonPath("[*].description", containsInAnyOrder("Expense1", "Expense2")),
+						jsonPath("[*].value", contains(1500, 1500)),
+						jsonPath("[*].date", contains(DATE.toString(), DATE.toString())),
+						jsonPath("[*].category", containsInAnyOrder(Category.Home.toString(),
+								Category.Leisure.toString())),
 						status().isCreated())
 				.andDo(print());
 	}
@@ -201,6 +199,7 @@ class ExpenseControllerTest {
 						).toString()))
 				.andExpectAll(
 						jsonPath("$", Matchers.hasSize(1)),
+						jsonPath("[0].id", notNullValue()),
 						jsonPath("[0].description", is("Expense3")),
 						jsonPath("[0].value", is(1500)),
 						jsonPath("[0].date", is(DATE.toString())),

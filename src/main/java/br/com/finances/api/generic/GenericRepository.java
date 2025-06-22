@@ -4,14 +4,13 @@ import br.com.finances.api.client.Client;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface GenericRepository<T> {
 
 	List<T> findByClient(Client client);
 
 	List<T> findByDescriptionContainingIgnoreCaseAndClient(String description, Client client);
-
-	List<T> findByDescriptionAndClient(String description, Client client);
 
 	Optional<T> findByIdAndClient(Long id, Client client);
 
@@ -23,4 +22,6 @@ public interface GenericRepository<T> {
 	void deleteById(long l);
 
 	T save(T updated);
+
+	List<T> saveList(Set<T> toAddList);
 }

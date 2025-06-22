@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ExpenseRepository extends GenericRepository<Expense>, JpaRepository<Expense, Long> {
@@ -32,4 +33,8 @@ public interface ExpenseRepository extends GenericRepository<Expense>, JpaReposi
 	@Query("SELECT new br.com.finances.api.expense.ExpenseDTO(i) FROM Expense i WHERE (i.date) >= " +
 			"?1 AND (i.date) <= ?2 AND i.client = ?3")
 	List<ExpenseDTO> findExpenseFromLastYear(LocalDate from, LocalDate to, Client client);
+
+	default List<Expense> saveList(Set<Expense> toAddList) {
+		return saveAll(toAddList);
+	}
 }

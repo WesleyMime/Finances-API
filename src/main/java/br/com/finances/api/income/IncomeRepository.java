@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface IncomeRepository extends GenericRepository<Income>, JpaRepository<Income, Long> {
@@ -27,4 +28,8 @@ public interface IncomeRepository extends GenericRepository<Income>, JpaReposito
 	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) >= ?1 " +
 			"AND (i.date) <= ?2 AND i.client = ?3")
 	List<IncomeDTO> findIncomeFromLastYear(LocalDate from, LocalDate to, Client client);
+
+	default List<Income> saveList(Set<Income> toAddList) {
+		return saveAll(toAddList);
+	}
 }
