@@ -6,6 +6,9 @@
    @if (isOpen) {
     <div class="profile-dropdown-menu">
         <ul>
+          @if (client) {
+            <li style="cursor: default">Olá, {{ client.name }}</li>
+          }
           <li (click)="selectOption('Logout')">Sair</li>
         </ul>
     </div>
