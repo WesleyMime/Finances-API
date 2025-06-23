@@ -5,11 +5,12 @@
 [![pt-br][pt-br-shield]][pt-br-url]
 [![project_license][license-shield]][license-url]
 [![last-commit][commit-shield]][commit-url]
+![workflow][workflow-shield]
 [![deploy][deploy-status]][deploy-url]
 
 </div>
 
-![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
+![Captura de tela Front-End](https://github.com/user-attachments/assets/ff6f1904-bded-40a7-89dc-5d37dd4f9f43)
 
 ## Description
 
@@ -48,6 +49,8 @@ The links to access are:
 
 - Angular application https://marujo.site
 - Spring Boot API https://finances.marujo.site
+
+![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
 
 ## Run locally
 
@@ -98,6 +101,8 @@ Distributed under the MIT license. See `LICENSE.txt` for more information.
 [commit-url]: https://github.com/wesleymime/Finances-API/commit
 [license-shield]: https://img.shields.io/github/license/wesleymime/Finances-API.svg?style=for-the-badge
 [license-url]: https://github.com/wesleymime/Finances-API/blob/master/LICENSE.txt
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/wesleymime/Finances-API/main.yml?style=for-the-badge
+[workflow-url]: https://img.shields.io/github/actions/workflow/status/wesleymime/Finances-API/main.yml
 [deploy-status]: http://167.234.233.130:3001/api/badge/5/status?upColor=lightdarkgreen&style=for-the-badge
 [deploy-url]: https://marujo.site/
 
