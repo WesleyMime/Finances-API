@@ -34,6 +34,9 @@ export class ProfileMenuComponent {
 
   selectOption(option: string) {
     switch (option) {
+      case 'Editar':
+        this.router.navigateByUrl("client/edit");
+        break;
       case 'Logout':
         this.authService.logout();
         break;

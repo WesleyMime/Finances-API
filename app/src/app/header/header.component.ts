@@ -98,6 +98,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
         activeNavGroup: null
       },
       {
+        routePattern: '/client/edit',
+        showAppNav: true,
+        showLoginAction: false,
+        showRegisterAction: false,
+        showProfileActions: true,
+        activeNavGroup: null
+      },
+      {
         routePattern: '/',
         showAppNav: false,
         showLoginAction: false,
