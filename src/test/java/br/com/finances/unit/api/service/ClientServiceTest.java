@@ -1,15 +1,12 @@
 package br.com.finances.unit.api.service;
 
-import br.com.finances.api.client.Client;
-import br.com.finances.api.client.ClientDTO;
-import br.com.finances.api.client.ClientRepository;
-import br.com.finances.api.client.ClientService;
+import br.com.finances.api.client.*;
 import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.IncomeRepository;
-import br.com.finances.config.auth.SignForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -28,7 +25,7 @@ class ClientServiceTest {
         IncomeRepository incomeRepository = Mockito.mock(IncomeRepository.class);
         ExpenseRepository expenseRepository = Mockito.mock(ExpenseRepository.class);
         this.clientService = new ClientService(clientRepository, incomeRepository,
-                expenseRepository);
+                expenseRepository, new BCryptPasswordEncoder());
     }
 
     private static final Client MOCK_CLIENT = new Client("John Doe", "test@email.com", "password");
@@ -51,15 +48,27 @@ class ClientServiceTest {
     }
 
     @Test
-    void updatesClientSuccessfully() {
-        SignForm signForm = new SignForm(
+    void patchesClientSuccessfully() {
+        ClientForm clientForm = new ClientForm(
                 "newName", "newEmail@email.com", "newPassword");
 
-        Optional<ClientDTO> optional = clientService.put(signForm, PRINCIPAL);
+        Optional<ClientDTO> optional = clientService.patchClient(clientForm, PRINCIPAL);
         assertTrue(optional.isPresent());
         ClientDTO client = optional.get();
-        assertEquals(signForm.getName(), client.getName());
-        assertEquals(signForm.getEmail(), client.getEmail());
+        assertEquals(clientForm.name(), client.getName());
+        assertEquals(clientForm.email(), client.getEmail());
+    }
+
+    @Test
+    void patchesClientSuccessfullyWithOnlyEmail() {
+        ClientForm clientForm = new ClientForm(
+                null, "newEmail@email.com", null);
+
+        Optional<ClientDTO> optional = clientService.patchClient(clientForm, PRINCIPAL);
+        assertTrue(optional.isPresent());
+        ClientDTO client = optional.get();
+        assertEquals(MOCK_CLIENT.getName(), client.getName());
+        assertEquals(clientForm.email(), client.getEmail());
     }
 
     @Test
