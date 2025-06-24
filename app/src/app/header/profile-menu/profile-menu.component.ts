@@ -1,5 +1,8 @@
 import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
+import { Client } from '../../client';
+import { currentClient } from '../../auth/auth.guard';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-menu',
@@ -8,33 +11,36 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class ProfileMenuComponent {
   isOpen = false;
+  client: Client | undefined;
 
   authService = inject(AuthService);
 
   // ElementRef is needed to check if a click happened inside or outside the component
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef, private router: Router) {}
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
+    this.client = currentClient;
   }
 
   // Listen for clicks anywhere on the document
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
-    // Check if the clicked element is *not* inside this component's host element
+    // Check if the clicked element is not inside this component's host element
     if (!this.elementRef.nativeElement.contains(event.target as Node) && this.isOpen) {
       this.isOpen = false;
     }
   }
 
   selectOption(option: string) {
-    console.log('Selected option:', option);
-    // Handle the selected option
     switch (option) {
+      case 'Editar':
+        this.router.navigateByUrl("client/edit");
+        break;
       case 'Logout':
         this.authService.logout();
+        break;
     }
-
     this.isOpen = false;
   }
 }

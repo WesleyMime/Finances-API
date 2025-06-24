@@ -3,6 +3,9 @@ package br.com.finances.api.client;
 import br.com.finances.api.expense.Expense;
 import br.com.finances.api.income.Income;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,8 +22,14 @@ public class Client implements UserDetails{
 
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@NotBlank
+	@Size(min = 3, max = 255)
 	private String name;
+	@NotBlank
+	@Email
 	private String email;
+	@NotBlank
+	@Size(min = 8)
 	private String password;
 
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -66,10 +75,14 @@ public class Client implements UserDetails{
 	}
 
 	public void setName(String name) {
+		if (name == null)
+			return;
 		this.name = name;
 	}
 
 	public void setEmail(String email) {
+		if (email == null)
+			return;
 		this.email = email;
 	}
 

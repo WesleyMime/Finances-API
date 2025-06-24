@@ -62,7 +62,7 @@ public class SecurityConfigurations {
 	private CorsConfigurationSource apiConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(List.of("https://marujo.site", "http://localhost:4200"));
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setExposedHeaders(List.of("Authorization"));
 		configuration.setMaxAge(3600L);

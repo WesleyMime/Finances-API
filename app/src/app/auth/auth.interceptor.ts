@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   var authService = inject(AuthService);
+  let router = inject(Router);
   let authCookie = authService.getAuthCookie();
-  if (!authService.isLoggedIn()) {
-    let router = inject(Router);
+  if (!authService.isLoggedIn() && !router.url.includes("register")) {
     router.navigate(['/login']);
   }
 

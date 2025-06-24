@@ -2,7 +2,7 @@ package br.com.finances.api.client;
 
 import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.IncomeRepository;
-import br.com.finances.config.auth.SignForm;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -14,12 +14,14 @@ public class ClientService {
     private final ClientRepository repository;
     private final IncomeRepository incomeRepository;
     private final ExpenseRepository expenseRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public ClientService(ClientRepository repository, IncomeRepository incomeRepository,
-                         ExpenseRepository expenseRepository) {
+                         ExpenseRepository expenseRepository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.incomeRepository = incomeRepository;
         this.expenseRepository = expenseRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<ClientDTO> getOne(Principal principal) {
@@ -27,15 +29,15 @@ public class ClientService {
         return clientOptional.map(ClientDTO::new);
     }
 
-    public Optional<ClientDTO> put(SignForm signForm, Principal principal) {
+    public Optional<ClientDTO> patchClient(ClientForm clientForm, Principal principal) {
         Optional<Client> optional = repository.findByEmail(principal.getName());
         if (optional.isEmpty()) return Optional.empty();
 
-        Client formClient = signForm.converter();
         Client client = optional.get();
-        client.setName(formClient.getName());
-        client.setEmail(formClient.getUsername());
-        client.setPassword(formClient.getPassword());
+        client.setName(clientForm.name());
+        client.setEmail(clientForm.email());
+        if (clientForm.password() != null)
+            client.setPassword(passwordEncoder.encode(clientForm.password()));
         repository.save(client);
         return Optional.of(client).map(ClientDTO::new);
     }

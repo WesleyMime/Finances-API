@@ -1,6 +1,5 @@
 package br.com.finances.api.client;
 
-import br.com.finances.config.auth.SignForm;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +26,10 @@ public class ClientController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping
-    public ResponseEntity<ClientDTO> putClient(@Valid @RequestBody SignForm signForm,
+    @PatchMapping
+    public ResponseEntity<ClientDTO> patchClient(@Valid @RequestBody ClientForm clientForm,
                                                Principal principal) {
-        Optional<ClientDTO> clientById = clientService.put(signForm, principal);
+        Optional<ClientDTO> clientById = clientService.patchClient(clientForm, principal);
         return clientById.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -39,172 +39,245 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(Lifecycle.PER_CLASS)
 class ClientControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ClientRepository clientRepository;
-    @Autowired
-    private ExpenseService expenseService;
-    @Autowired
-    private IncomeService incomeService;
+	private static final Client CLIENT = SecurityContextFactory.setClient();
+	private static final ClientDTO CLIENT_DTO = new ClientDTO(CLIENT);
+	private static final String ENDPOINT = "/client";
+	private static final SignForm SIGN_FORM = new SignForm(
+			"NewName", "newEmail@email.com", "newPassword");
 
-    private static final Client CLIENT = SecurityContextFactory.setClient();
-    private static final ClientDTO CLIENT_DTO = new ClientDTO(CLIENT);
-    private static final String ENDPOINT = "/client";
+	@Autowired
+	private MockMvc mockMvc;
+	@Autowired
+	private ClientRepository clientRepository;
+	@Autowired
+	private ExpenseService expenseService;
+	@Autowired
+	private IncomeService incomeService;
 
-    @BeforeAll
-    void beforeAll() {
-        clientRepository.deleteAll();
-        clientRepository.save(CLIENT);
-    }
+	@BeforeAll
+	void beforeAll() {
+		clientRepository.deleteAll();
+		clientRepository.save(CLIENT);
+	}
 
-    @BeforeEach
-    void beforeEach() {
-        SecurityContextFactory.setClient();
-    }
+	@BeforeEach
+	void beforeEach() {
+		SecurityContextFactory.setClient();
+	}
 
-    @Test
-    void shouldReturnClient() throws Exception {
-        incomeService.post(new IncomeForm(
-                "Description", BigDecimal.TEN, LocalDate.now()));
-        expenseService.post(new ExpenseForm(
-                "Description", BigDecimal.TEN, LocalDate.now(), Category.Others));
+	@Test
+	void shouldReturnClient() throws Exception {
+		incomeService.post(new IncomeForm(
+				"Description", BigDecimal.TEN, LocalDate.now()));
+		expenseService.post(new ExpenseForm(
+				"Description", BigDecimal.TEN, LocalDate.now(), Category.Others));
 
-        mockMvc.perform(get(ENDPOINT))
-                .andExpectAll(
-                        jsonPath("name", is(CLIENT_DTO.getName())),
-                        jsonPath("email", is(CLIENT_DTO.getEmail())),
-                        jsonPath("password").doesNotExist(),
-                        status().isOk());
-        mockMvc.perform(get("/income?description=d"))
-                .andExpectAll(
-                        jsonPath("[0].description", is("Description")),
-                        jsonPath("[0].value", is(10.0)),
-                        jsonPath("[0].date", is(LocalDate.now().toString())),
-                        status().isOk());
-        mockMvc.perform(get("/expense?description=d"))
-                .andExpectAll(
-                        jsonPath("[0].description", is("Description")),
-                        jsonPath("[0].value", is(10.0)),
-                        jsonPath("[0].date", is(LocalDate.now().toString())),
-                        jsonPath("[0].category", is(Category.Others.toString())),
-                        status().isOk())
-                .andDo(print());
-    }
+		mockMvc.perform(get(ENDPOINT))
+				.andExpectAll(
+						jsonPath("name", is(CLIENT_DTO.getName())),
+						jsonPath("email", is(CLIENT_DTO.getEmail())),
+						jsonPath("password").doesNotExist(),
+						status().isOk());
+		mockMvc.perform(get("/income?description=d"))
+				.andExpectAll(
+						jsonPath("[0].description", is("Description")),
+						jsonPath("[0].value", is(10.0)),
+						jsonPath("[0].date", is(LocalDate.now().toString())),
+						status().isOk());
+		mockMvc.perform(get("/expense?description=d"))
+				.andExpectAll(
+						jsonPath("[0].description", is("Description")),
+						jsonPath("[0].value", is(10.0)),
+						jsonPath("[0].date", is(LocalDate.now().toString())),
+						jsonPath("[0].category", is(Category.Others.toString())),
+						status().isOk())
+				.andDo(print());
+	}
 
-    @Test
-    void shouldReturnForbidden() throws Exception {
-        SecurityContextHolder.clearContext();
-        mockMvc.perform(get(ENDPOINT))
-                .andExpectAll(
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isForbidden())
-                .andDo(print());
-    }
+	@Test
+	void shouldReturnForbidden() throws Exception {
+		SecurityContextHolder.clearContext();
+		mockMvc.perform(get(ENDPOINT))
+				.andExpectAll(
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isForbidden())
+				.andDo(print());
+	}
 
-    @Test
-    void shouldUpdateClient() throws Exception {
-        SignForm signForm = new SignForm("newName", "newEmail@email.com", "newPassword");
+	@Test
+	void shouldPatchClient() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+									"name": "NewName",
+									"email": "newEmail@email.com",
+									"password": "newPassword"
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("name", is(SIGN_FORM.getName())),
+						jsonPath("email", is(SIGN_FORM.getEmail())),
+						jsonPath("password").doesNotExist(),
+						status().isOk())
+				.andDo(print());
 
-        mockMvc.perform(put(ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(signForm.toString()))
-                .andExpectAll(
-                        jsonPath("name", is(signForm.getName())),
-                        jsonPath("email", is(signForm.getEmail())),
-                        jsonPath("password").doesNotExist(),
-                        status().isOk())
-                .andDo(print());
+		Client client = clientRepository.findById(CLIENT.getId()).get();
+		client.setEmail("fulano@email.com");
+		clientRepository.save(client);
+	}
 
-        Client client = clientRepository.findById(CLIENT.getId()).get();
-        client.setEmail("fulano@email.com");
-        clientRepository.save(client);
-    }
+	@Test
+	void shouldPatchClientWithOnlyEmail() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								    "email": "newEmail@email.com"
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("name", is(SIGN_FORM.getName())),
+						jsonPath("email", is(SIGN_FORM.getEmail())),
+						jsonPath("password").doesNotExist(),
+						status().isOk())
+				.andDo(print());
 
-    @Test
-    void shouldNoUpdateClientWithNoInfo() throws Exception {
-        mockMvc.perform(put(ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(""))
-                .andExpectAll(
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isBadRequest())
-                .andDo(print());
-    }
+		Client client = clientRepository.findById(CLIENT.getId()).get();
+		client.setEmail("fulano@email.com");
+		clientRepository.save(client);
+	}
 
-    @Test
-    void shouldNoUpdateClientWithNoName() throws Exception {
-        mockMvc.perform(put(ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new SignForm("", "test@email.com", "password").toString()))
-                .andExpectAll(
-                        jsonPath("errors[0].field", is("name")),
-                        jsonPath("errors[0].detail", is("must not be blank")),
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isUnprocessableEntity())
-                .andDo(print());
-    }
+	@Test
+	void shouldNoPatchClientWithNoInfo() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(""))
+				.andExpectAll(
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isBadRequest())
+				.andDo(print());
+	}
 
-    @Test
-    void shouldNoUpdateClientWithNoPassword() throws Exception {
-        mockMvc.perform(put(ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new SignForm("name", "test@email.com", "").toString()))
-                .andExpectAll(
-                        jsonPath("errors[0].field", is("password")),
-                        jsonPath("errors[0].detail", is("must not be blank")),
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isUnprocessableEntity())
-                .andDo(print());
-    }
+	@Test
+	void shouldNotPatchClientWithEmptyName() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								    "name": ""
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("errors[0].field", is("name")),
+						jsonPath("errors[0].detail", is("size must be between 3 and 255")),
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isUnprocessableEntity())
+				.andDo(print());
+	}
 
-    @Test
-    void shouldReturnBadRequest() throws Exception {
-        mockMvc.perform(put(ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpectAll(
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isBadRequest())
-                .andDo(print());
-    }
+	@Test
+	void shouldNotPatchClientWithEmptyEmail() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								    "email": ""
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("errors[0].field", is("email")),
+						jsonPath("errors[0].detail", is("size must be between 5 and 255")),
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isUnprocessableEntity())
+				.andDo(print());
+	}
 
-    @Test
-    void shouldDeleteExpense() throws Exception {
-        incomeService.post(new IncomeForm(
-                "Description2", BigDecimal.TEN, LocalDate.now()));
-        expenseService.post(new ExpenseForm(
-                "Description2", BigDecimal.TEN, LocalDate.now(), Category.Others));
+	@Test
+	void shouldNotPatchClientWithMalformedEmail() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								    "email": "emailtest.com"
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("errors[0].field", is("email")),
+						jsonPath("errors[0].detail", is("must be a well-formed email address")),
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isUnprocessableEntity())
+				.andDo(print());
+	}
 
-        mockMvc.perform(delete(ENDPOINT))
-                .andExpectAll(
-                        jsonPath("name").doesNotExist(),
-                        jsonPath("email").doesNotExist(),
-                        jsonPath("password").doesNotExist(),
-                        status().isNoContent())
-                .andDo(print());
-        mockMvc.perform(get("/income?description=d"))
-                .andExpectAll(
-                        jsonPath("[0].description").doesNotExist(),
-                        jsonPath("[0].value").doesNotExist(),
-                        jsonPath("[0].date").doesNotExist(),
-                        status().isNotFound());
-        mockMvc.perform(get("/expense?description=d"))
-                .andExpectAll(
-                        jsonPath("[0].description").doesNotExist(),
-                        jsonPath("[0].value").doesNotExist(),
-                        jsonPath("[0].date").doesNotExist(),
-                        jsonPath("[0].category").doesNotExist(),
-                        status().isNotFound())
-                .andDo(print());
-    }
+	@Test
+	void shouldNotPatchClientWithEmptyPassword() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{
+								    "password": ""
+								}
+								"""))
+				.andExpectAll(
+						jsonPath("errors[0].field", is("password")),
+						jsonPath("errors[0].detail", is("size must be between 8 and 255")),
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isUnprocessableEntity())
+				.andDo(print());
+	}
+
+	@Test
+	void shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(patch(ENDPOINT)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isBadRequest())
+				.andDo(print());
+	}
+
+	@Test
+	void shouldDeleteExpense() throws Exception {
+		incomeService.post(new IncomeForm(
+				"Description2", BigDecimal.TEN, LocalDate.now()));
+		expenseService.post(new ExpenseForm(
+				"Description2", BigDecimal.TEN, LocalDate.now(), Category.Others));
+
+		mockMvc.perform(delete(ENDPOINT))
+				.andExpectAll(
+						jsonPath("name").doesNotExist(),
+						jsonPath("email").doesNotExist(),
+						jsonPath("password").doesNotExist(),
+						status().isNoContent())
+				.andDo(print());
+		mockMvc.perform(get("/income?description=d"))
+				.andExpectAll(
+						jsonPath("[0].description").doesNotExist(),
+						jsonPath("[0].value").doesNotExist(),
+						jsonPath("[0].date").doesNotExist(),
+						status().isNotFound());
+		mockMvc.perform(get("/expense?description=d"))
+				.andExpectAll(
+						jsonPath("[0].description").doesNotExist(),
+						jsonPath("[0].value").doesNotExist(),
+						jsonPath("[0].date").doesNotExist(),
+						jsonPath("[0].category").doesNotExist(),
+						status().isNotFound())
+				.andDo(print());
+	}
 }
