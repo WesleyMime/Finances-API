@@ -42,7 +42,7 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 
 ## Deploy
 
-A aplicação Angular está rodando no GitHub Pages e a API Spring Boot stá rodando numa Máquina
+A aplicação Angular está rodando no GitHub Pages e a API Spring Boot está rodando numa Máquina
 Virtual do Google Cloud, com DNS e HTTPS da Cloudflare.
 
 Os links para acesso são:
