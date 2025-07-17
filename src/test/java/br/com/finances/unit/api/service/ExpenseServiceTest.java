@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +41,8 @@ class ExpenseServiceTest {
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static final Client CLIENT = SecurityContextFactory.setClient();
-	
+	private static final Principal PRINCIPAL = SecurityContextHolder.getContext().getAuthentication();
+
 	private static final Expense EXPENSE = new Expense(DESCRIPTION, VALUE, DATE, Category.Others);
 	private static final ExpenseForm FORM = new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Others);
 	
@@ -57,24 +60,24 @@ class ExpenseServiceTest {
 	void shouldReturnAllExpense() {
 		when(expenseRepository.findByClient(CLIENT))
 		.thenReturn(List.of(EXPENSE));
-		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(null);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(EXPENSE.getDescription(), all.getBody().getFirst().getDescription());
+		List<ExpenseDTO> all = expenseService.getAll(null, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldReturnExpenseByDescription() {
 		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(DESCRIPTION, CLIENT))
 				.thenReturn(List.of(EXPENSE));
-		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll(DESCRIPTION);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(EXPENSE.getDescription(), all.getBody().getFirst().getDescription());
+		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindExpenseByDescription() {
-		ResponseEntity<List<ExpenseDTO>> all = expenseService.getAll("a");
-		assertEquals(HttpStatus.NOT_FOUND, all.getStatusCode());
+		List<ExpenseDTO> all = expenseService.getAll("a", PRINCIPAL);
+		Assertions.assertTrue(all.isEmpty());
 	}
 	
 	@Test

@@ -2,11 +2,13 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
+import br.com.finances.config.CacheConfig;
 import br.com.finances.config.errors.FlowAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -14,35 +16,35 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 public class GenericServiceImpl
-	<T extends GenericModel, S extends GenericDTO, U extends GenericForm> implements GenericService<T, S, U> {
+		<T extends GenericModel, S extends GenericDTO, U extends GenericForm> implements GenericService<T, S, U> {
 
 	private final GenericRepository<T> repository;
 	private final ClientRepository clientRepository;
 	private final Mapper<T, S> dtoMapper;
 	private final Mapper<U, T> formMapper;
+	private final CacheConfig cacheConfig;
 
 	public GenericServiceImpl(
 			GenericRepository<T> repository, ClientRepository clientRepository,
-			Mapper<T, S> mapper, Mapper<U, T> formMapper) {
+			Mapper<T, S> mapper, Mapper<U, T> formMapper, CacheConfig cacheConfig) {
 		this.repository = repository;
 		this.clientRepository = clientRepository;
 		this.dtoMapper = mapper;
 		this.formMapper = formMapper;
+		this.cacheConfig = cacheConfig;
 	}
 
-	public ResponseEntity<List<S>> getAll(String description) {
+	public List<S> getAll(String description) {
 		Client client = getClient();
 
 		if (description != null) {
 			List<T> list = repository.findByDescriptionContainingIgnoreCaseAndClient(description,
 					client);
-			if (list.isEmpty()) return ResponseEntity.notFound().build();
+			if (list.isEmpty()) return List.of();
 
-			List<S> listDto = list.stream().map(dtoMapper::map).toList();
-			return ResponseEntity.ok(listDto);
+			return list.stream().map(dtoMapper::map).toList();
 		}
-		List<S> listDto = repository.findByClient(client).stream().map(dtoMapper::map).toList();
-		return ResponseEntity.ok(listDto);
+		return repository.findByClient(client).stream().map(dtoMapper::map).toList();
 	}
 
 	public ResponseEntity<S> getOne(String id) {
@@ -55,7 +57,8 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<List<S>> getByDate(String yearString, String monthString) {
-		int year; int month;
+		int year;
+		int month;
 		Client client = getClient();
 
 		try {
@@ -72,21 +75,24 @@ public class GenericServiceImpl
 		return ResponseEntity.ok(listDto);
 	}
 
-	public ResponseEntity<S> post(U form) {
+	public ResponseEntity<S> post(U form, Principal principal) {
+		cacheConfig.evictClientCache(principal);
+
 		T model = formMapper.map(form);
-		
 		checkIfAlreadyExists(model);
-		
+
 		Client client = getClient();
 		model.setClient(client);
-		
+
 		T save = repository.save(model);
-		
+
 		S dto = dtoMapper.map(save);
 		return ResponseEntity.status(HttpStatus.CREATED).body(dto);
 	}
 
-	public ResponseEntity<List<S>> postList(List<U> forms) {
+	public ResponseEntity<List<S>> postList(List<U> forms, Principal principal) {
+		cacheConfig.evictClientCache(principal);
+
 		Client client = getClient();
 		Set<T> toAddList = new HashSet<>();
 		for (U form : forms) {
@@ -104,7 +110,9 @@ public class GenericServiceImpl
 		return ResponseEntity.status(HttpStatus.CREATED).body(dtoList);
 	}
 
-	public ResponseEntity<S> put(String id, U form, BiFunction<T, U, T> function) {
+	public ResponseEntity<S> put(String id, U form, BiFunction<T, U, T> function, Principal principal) {
+		cacheConfig.evictClientCache(principal);
+
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
 			// Return Bad Request or Not Found
@@ -120,7 +128,9 @@ public class GenericServiceImpl
 		return ResponseEntity.ok(genericDto);
 	}
 
-	public ResponseEntity<S> delete(String id) {
+	public ResponseEntity<S> delete(String id, Principal principal) {
+		cacheConfig.evictClientCache(principal);
+
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
 			// Return Bad Request or Not Found
@@ -131,17 +141,17 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<T> tryToGetById(String id) {
-        Client client = getClient();
+		Client client = getClient();
 
-        long parsedLong;
-        try {
-            parsedLong = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().build();
-        }
-        Optional<T> optional = repository.findByIdAndClient(parsedLong, client);
-        return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+		long parsedLong;
+		try {
+			parsedLong = Long.parseLong(id);
+		} catch (NumberFormatException e) {
+			return ResponseEntity.badRequest().build();
+		}
+		Optional<T> optional = repository.findByIdAndClient(parsedLong, client);
+		return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	}
 
 	private void checkIfAlreadyExists(GenericModel model) {
 		String description = model.getDescription();

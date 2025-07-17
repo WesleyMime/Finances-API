@@ -1,4 +1,6 @@
 package br.com.finances.api.ai;
 
-public record ChatResponseDTO(String message) {
+import java.io.Serializable;
+
+public record ChatResponseDTO(String message) implements Serializable {
 }

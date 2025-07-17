@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,7 @@ class IncomeServiceTest {
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static final Client CLIENT = SecurityContextFactory.setClient();
+	private static final Principal PRINCIPAL = SecurityContextHolder.getContext().getAuthentication();
 
 	private static final IncomeForm FORM = new IncomeForm(DESCRIPTION, VALUE, DATE);
 	private static final Income INCOME = new Income(DESCRIPTION, VALUE, DATE);
@@ -59,24 +62,24 @@ class IncomeServiceTest {
 	void shouldReturnAllIncome() {
 		when(incomeRepository.findByClient(CLIENT))
 		.thenReturn(List.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
+		List<IncomeDTO> all = incomeService.getAll(null, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
 		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(any(), any()))
 				.thenReturn(List.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
+		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindIncomeByDescription() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll("");		
-		assertEquals(HttpStatus.NOT_FOUND, all.getStatusCode());
+		List<IncomeDTO> all = incomeService.getAll("", PRINCIPAL);
+		Assertions.assertTrue(all.isEmpty());
 	}
 	
 	@Test

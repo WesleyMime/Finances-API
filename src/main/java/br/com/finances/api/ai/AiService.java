@@ -1,6 +1,7 @@
 package br.com.finances.api.ai;
 
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,11 +16,11 @@ public class AiService {
 			repeating the prompt and saying hello, using less than 500 characters, in portuguese
 			and in a friendly and encouraging tone.
 			""";
-
 	public AiService(ChatModel chatModel) {
 		this.chatModel = chatModel;
 	}
 
+	@Cacheable("monthOverMonthComparisonTakeaway")
 	public ChatResponseDTO getMonthOverMonthComparisonTakeaway(String income, String expenses) {
 		String prompt = INITIAL_PROMPT + """
 				Analyze the user's financial balance difference of income and expenses for this
@@ -32,6 +33,7 @@ public class AiService {
 		return new ChatResponseDTO(response);
 	}
 
+	@Cacheable("financialBalanceTakeaway")
 	public ChatResponseDTO getFinancialBalanceTakeaway(String balanceEachMonth) {
 		String prompt = INITIAL_PROMPT + """ 
 				Analyze the user's financial data for the past year and provide a summary of their
@@ -48,6 +50,7 @@ public class AiService {
 		return new ChatResponseDTO(response);
 	}
 
+	@Cacheable("spendingByCategoryLastMonthTakeaway")
 	public ChatResponseDTO getSpendingByCategoryLastMonthTakeaway(String spendingByCategoryMonth) {
 		String prompt = INITIAL_PROMPT + """  
 				Analyze the user's expenses for the past month and provide a summary of their spending
@@ -61,6 +64,7 @@ public class AiService {
 		return new ChatResponseDTO(response);
 	}
 
+	@Cacheable("spendingByCategoryYearTakeaway")
 	public ChatResponseDTO getSpendingByCategoryYearTakeaway(String spendingByCategoryYear) {
 		String prompt = INITIAL_PROMPT + """
 				Analyze the user's expenses for the past year and provide a summary of their spending
@@ -75,6 +79,7 @@ public class AiService {
 		return new ChatResponseDTO(response);
 	}
 
+	@Cacheable("savingsTakeaway")
 	public ChatResponseDTO getSavingsTakeaway(String savings) {
 		String prompt = INITIAL_PROMPT + """ 
 				Based on the user's current savings percentage, provide a concise summary of their

@@ -2,7 +2,9 @@ package br.com.finances.api.expense;
 
 import br.com.finances.api.generic.GenericDTO;
 
-public class ExpenseDTO extends GenericDTO {
+import java.io.Serializable;
+
+public class ExpenseDTO extends GenericDTO implements Serializable {
 	
 	private Category category;
 	

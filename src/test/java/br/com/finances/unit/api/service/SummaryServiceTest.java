@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +35,7 @@ public class SummaryServiceTest {
     private final ClientRepository clientRepository;
     private final SummaryService summaryService;
     private static final Client CLIENT = SecurityContextFactory.setClient();
+	private static final Principal PRINCIPAL = SecurityContextHolder.getContext().getAuthentication();
 
     public SummaryServiceTest() {
         this.incomeRepository = Mockito.mock(IncomeRepository.class);
@@ -61,33 +62,33 @@ public class SummaryServiceTest {
 
     @Test
     void shouldReturnTotalIncomeInSummary() {
-        ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
-		Assertions.assertNotNull(summary.getBody());
-        BigDecimal totalIncome = summary.getBody().totalIncome();
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Assertions.assertTrue(summary.isPresent());
+		BigDecimal totalIncome = summary.get().totalIncome();
         assertEquals(new BigDecimal(7500), totalIncome);
     }
 
     @Test
     void shouldReturnTotalExpenseInSummary() {
-        ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
-		Assertions.assertNotNull(summary.getBody());
-        BigDecimal totalExpense = summary.getBody().totalExpense();
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Assertions.assertTrue(summary.isPresent());
+		BigDecimal totalExpense = summary.get().totalExpense();
         assertEquals(new BigDecimal(7500), totalExpense);
     }
 
     @Test
     void shouldReturnFinalBalanceInSummary() {
-        ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
-		Assertions.assertNotNull(summary.getBody());
-        BigDecimal finalBalance = summary.getBody().finalBalance();
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Assertions.assertTrue(summary.isPresent());
+		BigDecimal finalBalance = summary.get().finalBalance();
         assertEquals(new BigDecimal(0), finalBalance);
     }
 
     @Test
     void shouldReturnExpenseByCategoryInSummary() {
-        ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
-		Assertions.assertNotNull(summary.getBody());
-        List<ExpenseCategoryDTO> expenseCategory = summary.getBody().totalExpenseByCategory();
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Assertions.assertTrue(summary.isPresent());
+		List<ExpenseCategoryDTO> expenseCategory = summary.get().totalExpenseByCategory();
 		Category category = expenseCategory.getFirst().category();
 		BigDecimal totalValue = expenseCategory.getFirst().totalValue();
         assertEquals(Category.Food, category);
@@ -96,8 +97,8 @@ public class SummaryServiceTest {
 
     @Test
     void shouldNotReturnSummary() {
-        ResponseEntity<SummaryDTO> summary = summaryService.getSummaryByDate("aa", "aa");
-        assertEquals(HttpStatus.BAD_REQUEST, summary.getStatusCode());
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("aa", "aa", PRINCIPAL);
+		Assertions.assertFalse(summary.isPresent());
     }
 
     @Test
@@ -107,7 +108,7 @@ public class SummaryServiceTest {
         when(expenseRepository.totalExpenseMonth(anyInt(), anyInt(), any())).thenReturn(
                 Optional.of(new BigDecimal(500)));
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now());
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now(), PRINCIPAL);
 
 		assertEquals(new BigDecimal(12000), summary.totalYearIncome());
 		assertEquals(new BigDecimal(6000), summary.totalYearExpense());
@@ -125,7 +126,7 @@ public class SummaryServiceTest {
         when(expenseRepository.totalExpenseMonth(anyInt(), anyInt(), any())).thenReturn(
                 Optional.of(BigDecimal.ZERO));
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now());
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now(), PRINCIPAL);
 
 		assertEquals(new BigDecimal(0), summary.totalYearIncome());
 		assertEquals(new BigDecimal(0), summary.totalYearExpense());
@@ -145,7 +146,7 @@ public class SummaryServiceTest {
         when(expenseRepository.totalExpenseMonth(anyInt(), anyInt(), any())).thenReturn(
                 Optional.empty());
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(date);
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(date, PRINCIPAL);
 
 		assertEquals(new BigDecimal(0), summary.totalYearIncome());
 		assertEquals(new BigDecimal(0), summary.totalYearIncome());
@@ -164,7 +165,7 @@ public class SummaryServiceTest {
         when(expenseRepository.totalExpenseMonth(anyInt(), anyInt(), any())).thenReturn(
                 Optional.of(new BigDecimal(500)));
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(date);
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(date, PRINCIPAL);
 
 		assertEquals(new BigDecimal(24000), summary.totalYearIncome());
 		assertEquals(new BigDecimal(6000), summary.totalYearExpense());
@@ -181,7 +182,7 @@ public class SummaryServiceTest {
                 .thenReturn(Optional.of(new BigDecimal(2000)))
                 .thenReturn(Optional.of(new BigDecimal(1000)));
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now());
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(LocalDate.now(), PRINCIPAL);
 
 		assertEquals(new BigDecimal(38000), summary.totalYearIncome());
 		assertEquals(new BigDecimal(13000), summary.totalYearExpense());
@@ -197,7 +198,7 @@ public class SummaryServiceTest {
         when(expenseRepository.totalExpenseMonth(anyInt(), anyInt(), any()))
                 .thenReturn(Optional.of(new BigDecimal(500)));
 
-        SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(leapYearDate);
+		SummaryLastYearDTO summary = summaryService.getSummaryOfLastYear(leapYearDate, PRINCIPAL);
 
 		assertEquals(new BigDecimal(12000), summary.totalYearIncome());
 		assertEquals(new BigDecimal(6000), summary.totalYearExpense());

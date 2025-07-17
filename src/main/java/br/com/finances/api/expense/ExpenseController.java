@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,8 +21,9 @@ public class ExpenseController {
 	
 	@GetMapping
 	public ResponseEntity<List<ExpenseDTO>> getAllExpenses(
-			@RequestParam(required = false, name = "description") String description) {
-		return expenseService.getAll(description);
+			@RequestParam(required = false, name = "description") String description, Principal principal) {
+		List<ExpenseDTO> all = expenseService.getAll(description);
+		return all.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(all);
 	}	
 	
 	@GetMapping("{id}")
@@ -38,26 +40,25 @@ public class ExpenseController {
 
 	@PostMapping
 	public ResponseEntity<ExpenseDTO> postExpense(
-			@Valid @RequestBody ExpenseForm expenseForm) {
-		return expenseService.post(expenseForm);
+			@Valid @RequestBody ExpenseForm expenseForm, Principal principal) {
+		return expenseService.post(expenseForm, principal);
 	}
 
 	@PostMapping("/list")
 	public ResponseEntity<List<ExpenseDTO>> postExpenseList(
-			@Valid @RequestBody List<ExpenseForm> expenseForms) {
-		return expenseService.postList(expenseForms);
+			@Valid @RequestBody List<ExpenseForm> expenseForms, Principal principal) {
+		return expenseService.postList(expenseForms, principal);
 	}
-	
+
 	@PutMapping("{id}")
 	public ResponseEntity<ExpenseDTO> putExpense(
-			@PathVariable(name = "id") String id, @Valid @RequestBody ExpenseForm expenseForm) {
-		return expenseService.put(id, expenseForm);
+			@PathVariable(name = "id") String id, @Valid @RequestBody ExpenseForm expenseForm, Principal principal) {
+		return expenseService.put(id, expenseForm, principal);
 	}
-	
+
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteExpense(
-			@PathVariable(name = "id") String id) {
-		return expenseService.delete(id);
+	public ResponseEntity<?> deleteExpense(@PathVariable(name = "id") String id, Principal principal) {
+		return expenseService.delete(id, principal);
 	}
 	
 	

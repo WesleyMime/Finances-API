@@ -3,9 +3,11 @@ package br.com.finances.api.expense;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.generic.GenericService;
 import br.com.finances.api.generic.GenericServiceImpl;
+import br.com.finances.config.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -15,13 +17,14 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 	private final GenericServiceImpl<Expense, ExpenseDTO, ExpenseForm> genericServiceImpl;
 
 	public ExpenseService(
-			ExpenseRepository repository, ClientRepository clientRepository, 
-			ExpenseDtoMapper dtoMapper, ExpenseFormMapper formMapper) {
-		this.genericServiceImpl = new GenericServiceImpl<>(repository, clientRepository, dtoMapper, formMapper);
+			ExpenseRepository repository, ClientRepository clientRepository,
+			ExpenseDtoMapper dtoMapper, ExpenseFormMapper formMapper, CacheConfig cacheConfig) {
+		this.genericServiceImpl = new GenericServiceImpl<>(repository, clientRepository, dtoMapper, formMapper,
+				cacheConfig);
 	}
 
 	@Override
-	public ResponseEntity<List<ExpenseDTO>> getAll(String description) {
+	public List<ExpenseDTO> getAll(String description) {
 		return genericServiceImpl.getAll(description);
 	}
 
@@ -36,22 +39,23 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 	}
 
 	@Override
-	public ResponseEntity<ExpenseDTO> post(ExpenseForm form) {
-		return genericServiceImpl.post(form);
+	public ResponseEntity<ExpenseDTO> post(ExpenseForm form, Principal principal) {
+		return genericServiceImpl.post(form, principal);
 	}
 
 	@Override
-	public ResponseEntity<List<ExpenseDTO>> postList(List<ExpenseForm> forms) {
-		return genericServiceImpl.postList(forms);
+	public ResponseEntity<List<ExpenseDTO>> postList(List<ExpenseForm> forms, Principal principal) {
+		return genericServiceImpl.postList(forms, principal);
 	}
 
-	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm expenseForm) {
-		return put(id, expenseForm, this::update);
+	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm expenseForm, Principal principal) {
+		return put(id, expenseForm, this::update, principal);
 	}
 
 	@Override
-	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm form, BiFunction<Expense, ExpenseForm, Expense> function) {
-		return genericServiceImpl.put(id, form, function);
+	public ResponseEntity<ExpenseDTO> put(String id, ExpenseForm form,
+										  BiFunction<Expense, ExpenseForm, Expense> function, Principal principal) {
+		return genericServiceImpl.put(id, form, function, principal);
 	}
 
 	private Expense update(Expense model, ExpenseForm form) {
@@ -63,8 +67,8 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 	}
 
 	@Override
-	public ResponseEntity<ExpenseDTO> delete(String id) {
-		return genericServiceImpl.delete(id);
+	public ResponseEntity<ExpenseDTO> delete(String id, Principal principal) {
+		return genericServiceImpl.delete(id, principal);
 	}
 
 }
