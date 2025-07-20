@@ -8,10 +8,7 @@ import br.com.finances.api.expense.Expense;
 import br.com.finances.api.expense.ExpenseForm;
 import br.com.finances.api.expense.ExpenseRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -20,7 +17,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import redis.embedded.RedisServer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -50,24 +49,33 @@ class ExpenseControllerTest {
 	private static Client CLIENT = SecurityContextFactory.setClient();
 	private static Long ID;
 	private static final String ENDPOINT = "/expense";
-	
+
+	private RedisServer redisServer;
+
 	@BeforeAll
-	void beforeAll() {
+	void beforeAll() throws IOException {
+		this.redisServer = new RedisServer(6379);
+		redisServer.start();
 		Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
 		if(findByEmail.isEmpty()) {
-			clientRepository.save(CLIENT);			
+			clientRepository.save(CLIENT);
 		} else {
 			CLIENT = findByEmail.get();
-		}	
+		}
 		Expense expense = new Expense(DESCRIPTION, VALUE, DATE, Category.Others);
 		expense.setClient(CLIENT);
 		Expense saved = expenseRepository.save(expense);
 		ID = saved.getId();
 	}
-	
+
 	@BeforeEach
 	void beforeEach() {
 		SecurityContextFactory.setClient();
+	}
+
+	@AfterAll
+	void afterAll() throws IOException {
+		redisServer.stop();
 	}
 	
 	//GET

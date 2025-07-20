@@ -4,6 +4,7 @@ import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.*;
+import br.com.finances.config.CacheConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +32,11 @@ class ExpenseServiceTest {
 	public ExpenseServiceTest() {
 		this.expenseRepository = Mockito.mock(ExpenseRepository.class);
 		this.clientRepository = Mockito.mock(ClientRepository.class);
+		CacheConfig cacheConfig = Mockito.mock(CacheConfig.class);
 		ExpenseDtoMapper dtoMapper = new ExpenseDtoMapper();
 		ExpenseFormMapper formMapper = new ExpenseFormMapper();
 		this.expenseService = new ExpenseService(expenseRepository, clientRepository, dtoMapper,
-				formMapper);
+				formMapper, cacheConfig);
 	}
 
 	private static final String DESCRIPTION = "Description";
@@ -60,7 +62,7 @@ class ExpenseServiceTest {
 	void shouldReturnAllExpense() {
 		when(expenseRepository.findByClient(CLIENT))
 		.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(null, PRINCIPAL);
+		List<ExpenseDTO> all = expenseService.getAll(null);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
@@ -69,14 +71,14 @@ class ExpenseServiceTest {
 	void shouldReturnExpenseByDescription() {
 		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(DESCRIPTION, CLIENT))
 				.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION, PRINCIPAL);
+		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindExpenseByDescription() {
-		List<ExpenseDTO> all = expenseService.getAll("a", PRINCIPAL);
+		List<ExpenseDTO> all = expenseService.getAll("a");
 		Assertions.assertTrue(all.isEmpty());
 	}
 	
@@ -131,12 +133,12 @@ class ExpenseServiceTest {
 	void shouldPostExpense() {
 		when(expenseRepository.save(any()))
 		.thenReturn(EXPENSE);
-		ResponseEntity<ExpenseDTO> post1 = expenseService.post(FORM);
+		ResponseEntity<ExpenseDTO> post1 = expenseService.post(FORM, PRINCIPAL);
 		assertEquals(HttpStatus.CREATED, post1.getStatusCode());
 
 		ExpenseForm form = new ExpenseForm(DESCRIPTION, VALUE, LocalDate.of(2023, 1, 1),
 				Category.Others);
-		ResponseEntity<ExpenseDTO> post2 = expenseService.post(form);
+		ResponseEntity<ExpenseDTO> post2 = expenseService.post(form, PRINCIPAL);
 		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
 
@@ -144,7 +146,7 @@ class ExpenseServiceTest {
 	void shouldPostExpenseList() {
 		when(expenseRepository.saveList(any())).thenReturn(List.of(EXPENSE));
 
-		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM));
+		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM), PRINCIPAL);
 		Assertions.assertNotNull(post.getBody());
 		List<ExpenseDTO> body = post.getBody();
 		ExpenseDTO first = body.getFirst();
@@ -162,7 +164,7 @@ class ExpenseServiceTest {
 				DATE.getMonthValue(), CLIENT))
 				.thenReturn(Optional.of(EXPENSE));
 
-		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM, FORM));
+		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM, FORM), PRINCIPAL);
 		Assertions.assertNotNull(post.getBody());
 		List<ExpenseDTO> body = post.getBody();
 		assertEquals(0, body.size());
@@ -176,19 +178,19 @@ class ExpenseServiceTest {
 		.thenReturn(Optional.of(EXPENSE));
 		when(expenseRepository.getReferenceById(any()))
 		.thenReturn(EXPENSE);
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", FORM);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("1", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindExpenseToUpdate() {
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("100000000", FORM);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("100000000", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.NOT_FOUND, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotUpdateExpense() {
-		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("a", FORM);
+		ResponseEntity<ExpenseDTO> newIncome = expenseService.put("a", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, newIncome.getStatusCode());
 	}
 	
@@ -198,19 +200,19 @@ class ExpenseServiceTest {
 	void shouldDeleteExpense() {
 		when(expenseRepository.findByIdAndClient(1L, CLIENT))
 		.thenReturn(Optional.of(EXPENSE));
-		ResponseEntity<?> delete = expenseService.delete("1");
+		ResponseEntity<?> delete = expenseService.delete("1", PRINCIPAL);
 		assertEquals(HttpStatus.OK, delete.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindExpenseToDelete() {
-		ResponseEntity<?> delete = expenseService.delete("100000");
+		ResponseEntity<?> delete = expenseService.delete("100000", PRINCIPAL);
 		assertEquals(HttpStatus.NOT_FOUND, delete.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotDeleteExpense() {
-		ResponseEntity<?> delete = expenseService.delete("a");
+		ResponseEntity<?> delete = expenseService.delete("a", PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
 	}
 	

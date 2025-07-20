@@ -62,7 +62,7 @@ public class SummaryServiceTest {
 
     @Test
     void shouldReturnTotalIncomeInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal totalIncome = summary.get().totalIncome();
         assertEquals(new BigDecimal(7500), totalIncome);
@@ -70,7 +70,7 @@ public class SummaryServiceTest {
 
     @Test
     void shouldReturnTotalExpenseInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal totalExpense = summary.get().totalExpense();
         assertEquals(new BigDecimal(7500), totalExpense);
@@ -78,7 +78,7 @@ public class SummaryServiceTest {
 
     @Test
     void shouldReturnFinalBalanceInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal finalBalance = summary.get().finalBalance();
         assertEquals(new BigDecimal(0), finalBalance);
@@ -86,7 +86,7 @@ public class SummaryServiceTest {
 
     @Test
     void shouldReturnExpenseByCategoryInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01");
 		Assertions.assertTrue(summary.isPresent());
 		List<ExpenseCategoryDTO> expenseCategory = summary.get().totalExpenseByCategory();
 		Category category = expenseCategory.getFirst().category();
@@ -97,7 +97,7 @@ public class SummaryServiceTest {
 
     @Test
     void shouldNotReturnSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("aa", "aa", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("aa", "aa");
 		Assertions.assertFalse(summary.isPresent());
     }
 

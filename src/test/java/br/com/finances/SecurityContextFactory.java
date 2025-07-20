@@ -7,7 +7,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityContextFactory {
 
 	public static Client setClient() {
-		SecurityContextHolder.clearContext();
 		Client client = new Client("Fulano", "fulano@email.com", "password");
 		UsernamePasswordAuthenticationToken authentication = 
 				new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
