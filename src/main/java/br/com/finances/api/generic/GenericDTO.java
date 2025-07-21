@@ -21,7 +21,7 @@ public class GenericDTO implements Serializable {
 		this.date = model.getDate();
 		try {
 			this.client = new ClientDTO(model.getClient());
-		} catch(NullPointerException e) {
+		} catch (NullPointerException _) {
 			this.client = null;
 		}
 	}

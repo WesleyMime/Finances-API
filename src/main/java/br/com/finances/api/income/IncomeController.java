@@ -1,7 +1,6 @@
 package br.com.finances.api.income;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,7 @@ import java.util.List;
 @RequestMapping("/income")
 public class IncomeController {
 
-	@Autowired
-	private IncomeService incomeService;
+	private final IncomeService incomeService;
 
 	public IncomeController(IncomeService incomeService) {
 		this.incomeService = incomeService;
@@ -58,7 +56,7 @@ public class IncomeController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteIncome(
+	public ResponseEntity<IncomeDTO> deleteIncome(
 			@PathVariable(name = "id") String id, Principal principal) {
 		return incomeService.delete(id, principal);
 	}

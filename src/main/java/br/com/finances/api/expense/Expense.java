@@ -12,7 +12,7 @@ public class Expense extends GenericModel {
 	private Category category;
 	
 	public Expense() {
-		
+		super();
 	}
 	
 	public Expense(String description, BigDecimal value, LocalDate date, Category category) {
@@ -22,7 +22,7 @@ public class Expense extends GenericModel {
 	
 	public Category getCategory() {
 		if(category == null) {
-			this.category = Category.Others;
+			this.category = Category.OTHERS;
 		}
 		return category;
 	}	

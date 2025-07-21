@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestInstance(Lifecycle.PER_CLASS)
-public class SummaryControllerTest {
+class SummaryControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -123,7 +123,7 @@ public class SummaryControllerTest {
 			Expense expense = new Expense("Expense " + i,
 					new BigDecimal(i * 500),
 					fromDate.plusMonths(i),
-					Category.Others);
+					Category.OTHERS);
 			expense.setClient(CLIENT);
 			expenseList.add(expense);
 		}

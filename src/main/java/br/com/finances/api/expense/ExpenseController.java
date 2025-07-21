@@ -1,7 +1,6 @@
 package br.com.finances.api.expense;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +10,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/expense")
 public class ExpenseController {
-	
-	@Autowired
-	private ExpenseService expenseService;
+
+	private final ExpenseService expenseService;
 
 	public ExpenseController(ExpenseService expenseService) {
 		this.expenseService = expenseService;
@@ -57,7 +55,7 @@ public class ExpenseController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> deleteExpense(@PathVariable(name = "id") String id, Principal principal) {
+	public ResponseEntity<ExpenseDTO> deleteExpense(@PathVariable(name = "id") String id, Principal principal) {
 		return expenseService.delete(id, principal);
 	}
 	

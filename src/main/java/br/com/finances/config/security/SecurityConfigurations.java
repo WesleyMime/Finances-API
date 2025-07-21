@@ -1,7 +1,6 @@
 package br.com.finances.config.security;
 
 import br.com.finances.api.client.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,15 +24,18 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfigurations {
 
-	@Autowired
-	private TokenService tokenService;
-	
-	@Autowired
-	private ClientRepository clientRepository;
+	private final TokenService tokenService;
+
+	private final ClientRepository clientRepository;
+
+	public SecurityConfigurations(TokenService tokenService, ClientRepository clientRepository) {
+		this.tokenService = tokenService;
+		this.clientRepository = clientRepository;
+	}
 
 	@Bean
 	public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder,
-												 UserDetailsService userDetailsService) throws Exception {
+											 UserDetailsService userDetailsService) {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder);
@@ -43,16 +45,16 @@ public class SecurityConfigurations {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.cors((cors) ->
+				.cors(cors ->
 						cors.configurationSource(apiConfigurationSource()))
-				.authorizeHttpRequests((authorize) -> authorize
+				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/auth/*").permitAll()
 						.requestMatchers("/error").permitAll()
 						.anyRequest().authenticated()
 				)
 				.csrf(AbstractHttpConfigurer::disable
 				)
-				.sessionManagement((configure) -> configure
+				.sessionManagement(configure -> configure
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				)
 				.addFilterBefore(new TokenAuthenticationFilter(tokenService, clientRepository), UsernamePasswordAuthenticationFilter.class);

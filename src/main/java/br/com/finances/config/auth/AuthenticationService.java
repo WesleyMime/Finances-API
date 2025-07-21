@@ -6,7 +6,6 @@ import br.com.finances.api.client.ClientRepository;
 import br.com.finances.config.errors.EmailAlreadyRegisteredException;
 import br.com.finances.config.security.TokenDTO;
 import br.com.finances.config.security.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +24,11 @@ import java.util.Optional;
 @Service
 public class AuthenticationService implements UserDetailsService{
 
-	@Autowired
-	private ClientRepository repository;
+	private final ClientRepository repository;
+
+	public AuthenticationService(ClientRepository repository) {
+		this.repository = repository;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -41,7 +43,7 @@ public class AuthenticationService implements UserDetailsService{
         Authentication authentication;
         try {
             authentication = authManager.authenticate(login);
-        } catch (AuthenticationException e) {
+		} catch (AuthenticationException _) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
         String token = tokenService.generateToken(authentication);

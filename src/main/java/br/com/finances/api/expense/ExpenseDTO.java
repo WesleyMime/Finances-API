@@ -15,7 +15,7 @@ public class ExpenseDTO extends GenericDTO implements Serializable {
 	
 	public Category getCategory() {
 		if (category == null) {
-			category = Category.Others;
+			category = Category.OTHERS;
 		}
 		return category;
 	}

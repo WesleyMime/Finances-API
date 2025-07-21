@@ -45,8 +45,8 @@ class IncomeControllerTest {
 	private static final String DESCRIPTION = "Description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
-	private static Client CLIENT = SecurityContextFactory.setClient();
-	private static Long ID;
+	private static Client client = SecurityContextFactory.setClient();
+	private static Long id;
     private static final String ENDPOINT = "/income";
 
 	private RedisServer redisServer;
@@ -55,16 +55,16 @@ class IncomeControllerTest {
 	void beforeAll() throws IOException {
 		this.redisServer = new RedisServer(6379);
 		redisServer.start();
-		Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
+		Optional<Client> findByEmail = clientRepository.findByEmail(client.getUsername());
 		if(findByEmail.isEmpty()) {
-			clientRepository.save(CLIENT);			
+			clientRepository.save(client);
 		} else {
-			CLIENT = findByEmail.get();
+			client = findByEmail.get();
 		}
 		Income income = new Income(DESCRIPTION, VALUE, DATE);
-		income.setClient(CLIENT);
+		income.setClient(client);
 		Income saved = incomeRepository.save(income);
-		ID = saved.getId();
+		id = saved.getId();
 	}
 
 	@BeforeEach
@@ -107,7 +107,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldReturnIncomeById() throws Exception {
-		mockMvc.perform(get("/income/" + ID))
+		mockMvc.perform(get("/income/" + id))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
@@ -227,7 +227,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldUpdateIncome() throws Exception {
-		mockMvc.perform(put("/income/" + ID)
+		mockMvc.perform(put("/income/" + id)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE.plusDays(5)).toString()))
 				.andExpect(status().isOk());
@@ -253,7 +253,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldDeleteIncome() throws Exception {
-		mockMvc.perform(delete("/income/" + ID))
+		mockMvc.perform(delete("/income/" + id))
 				.andExpect(status().isOk());
 		
 	}

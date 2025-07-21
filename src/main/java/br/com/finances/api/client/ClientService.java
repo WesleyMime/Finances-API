@@ -1,7 +1,5 @@
 package br.com.finances.api.client;
 
-import br.com.finances.api.expense.ExpenseRepository;
-import br.com.finances.api.income.IncomeRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +10,10 @@ import java.util.Optional;
 public class ClientService {
 
     private final ClientRepository repository;
-    private final IncomeRepository incomeRepository;
-    private final ExpenseRepository expenseRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ClientService(ClientRepository repository, IncomeRepository incomeRepository,
-                         ExpenseRepository expenseRepository, PasswordEncoder passwordEncoder) {
+    public ClientService(ClientRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
-        this.incomeRepository = incomeRepository;
-        this.expenseRepository = expenseRepository;
         this.passwordEncoder = passwordEncoder;
     }
 

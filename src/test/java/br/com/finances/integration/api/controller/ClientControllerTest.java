@@ -67,7 +67,7 @@ class ClientControllerTest {
 		incomeRepository.save(new Income(
 				"Description", BigDecimal.TEN, LocalDate.now()));
 		expenseRepository.save(new Expense(
-				"Description", BigDecimal.TEN, LocalDate.now(), Category.Others));
+				"Description", BigDecimal.TEN, LocalDate.now(), Category.OTHERS));
 
 		mockMvc.perform(get(ENDPOINT))
 				.andExpectAll(
@@ -250,7 +250,7 @@ class ClientControllerTest {
 		incomeRepository.save(new Income(
 				"Description2", BigDecimal.TEN, LocalDate.now()));
 		expenseRepository.save(new Expense(
-				"Description2", BigDecimal.TEN, LocalDate.now(), Category.Others));
+				"Description2", BigDecimal.TEN, LocalDate.now(), Category.OTHERS));
 
 		mockMvc.perform(delete(ENDPOINT))
 				.andExpectAll(

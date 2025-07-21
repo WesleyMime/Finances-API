@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
-public class SummaryServiceTest {
+class SummaryServiceTest {
 
     private final IncomeRepository incomeRepository;
     private final ExpenseRepository expenseRepository;
@@ -54,7 +54,7 @@ public class SummaryServiceTest {
                 .thenReturn(optionalTotal);
         when(expenseRepository.totalExpenseByCategory(2022, 1, CLIENT))
                 .thenReturn(
-                List.of(new ExpenseCategoryDTO(Category.Food, new BigDecimal(1500))));
+						List.of(new ExpenseCategoryDTO(Category.FOOD, new BigDecimal(1500))));
         when(clientRepository.findByEmail(any()))
                 .thenReturn(Optional.of(CLIENT));
 
@@ -91,7 +91,7 @@ public class SummaryServiceTest {
 		List<ExpenseCategoryDTO> expenseCategory = summary.get().totalExpenseByCategory();
 		Category category = expenseCategory.getFirst().category();
 		BigDecimal totalValue = expenseCategory.getFirst().totalValue();
-        assertEquals(Category.Food, category);
+		assertEquals(Category.FOOD, category);
         assertEquals(new BigDecimal(1500), totalValue);
     }
 

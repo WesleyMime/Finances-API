@@ -9,13 +9,13 @@ import java.time.LocalDate;
 public abstract class GenericForm{
 
 	@NotBlank
-	private String description;
+	private final String description;
 	@NotNull
-	private BigDecimal value;
+	private final BigDecimal value;
 	@NotNull
-	private LocalDate date;
+	private final LocalDate date;
 
-	public GenericForm(String description, BigDecimal value, LocalDate date) {
+	protected GenericForm(String description, BigDecimal value, LocalDate date) {
 		this.description = description;
 		this.value = value;
 		this.date = date;

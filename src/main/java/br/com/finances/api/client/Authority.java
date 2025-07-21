@@ -16,20 +16,20 @@ public class Authority implements GrantedAuthority{
 
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
-	private String authority;	
+
+	private String name;
 	
 	public Authority() {
 	}
 
-	public Authority(Long id, String authority) {
+	public Authority(Long id, String name) {
 		this.id = id;
-		this.authority = authority;
+		this.name = name;
 	}
 
 	@Override
 	public String getAuthority() {
-		return authority;
+		return name;
 	}
 
 	public Long getId() {

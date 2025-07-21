@@ -64,7 +64,7 @@ public class GenericServiceImpl
 		try {
 			year = Integer.parseInt(yearString);
 			month = Integer.parseInt(monthString);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException _) {
 			return ResponseEntity.badRequest().build();
 		}
 		List<T> listModel = repository.findByYearAndMonth(year, month, client);
@@ -99,7 +99,7 @@ public class GenericServiceImpl
 			T model = formMapper.map(form);
 			try {
 				checkIfAlreadyExists(model);
-			} catch (FlowAlreadyExistsException e) {
+			} catch (FlowAlreadyExistsException _) {
 				continue;
 			}
 			model.setClient(client);
@@ -146,7 +146,7 @@ public class GenericServiceImpl
 		long parsedLong;
 		try {
 			parsedLong = Long.parseLong(id);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException _) {
 			return ResponseEntity.badRequest().build();
 		}
 		Optional<T> optional = repository.findByIdAndClient(parsedLong, client);
