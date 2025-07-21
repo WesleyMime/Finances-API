@@ -23,3 +23,11 @@ spring:
             chat:
                 options:
                     model: ${AI_MODEL:llama-3.1-8b-instant}
+
+    output:
+        ansi:
+            enabled: ALWAYS
+#logging:
+#    level:
+#        org:
+#            springframework: DEBUG
