@@ -20,7 +20,7 @@ public class ExpenseController {
 	@GetMapping
 	public ResponseEntity<List<ExpenseDTO>> getAllExpenses(
 			@RequestParam(required = false, name = "description") String description, Principal principal) {
-		List<ExpenseDTO> all = expenseService.getAll(description);
+		List<ExpenseDTO> all = expenseService.getAll(description, principal);
 		return all.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(all);
 	}	
 	

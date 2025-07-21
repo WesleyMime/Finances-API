@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 
 public interface GenericService<T extends GenericModel, S extends GenericDTO, U extends GenericForm> {
 
-    List<S> getAll(String description);
+    List<S> getAll(String description, Principal principal);
     ResponseEntity<S> getOne(String id);
     ResponseEntity<List<S>> getByDate(String yearString, String monthString);
 

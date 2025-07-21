@@ -64,7 +64,7 @@ class IncomeServiceTest {
 	void shouldReturnAllIncome() {
 		when(incomeRepository.findByClient(CLIENT))
 		.thenReturn(List.of(INCOME));
-		List<IncomeDTO> all = incomeService.getAll(null);
+		List<IncomeDTO> all = incomeService.getAll(null, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
@@ -73,14 +73,14 @@ class IncomeServiceTest {
 	void shouldReturnIncomeByDescription() {
 		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(any(), any()))
 				.thenReturn(List.of(INCOME));
-		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION);
+		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindIncomeByDescription() {
-		List<IncomeDTO> all = incomeService.getAll("");
+		List<IncomeDTO> all = incomeService.getAll("", PRINCIPAL);
 		Assertions.assertTrue(all.isEmpty());
 	}
 	

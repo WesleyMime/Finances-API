@@ -62,7 +62,7 @@ class ExpenseServiceTest {
 	void shouldReturnAllExpense() {
 		when(expenseRepository.findByClient(CLIENT))
 		.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(null);
+		List<ExpenseDTO> all = expenseService.getAll(null, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
@@ -71,14 +71,14 @@ class ExpenseServiceTest {
 	void shouldReturnExpenseByDescription() {
 		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(DESCRIPTION, CLIENT))
 				.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION);
+		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());
 		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindExpenseByDescription() {
-		List<ExpenseDTO> all = expenseService.getAll("a");
+		List<ExpenseDTO> all = expenseService.getAll("a", PRINCIPAL);
 		Assertions.assertTrue(all.isEmpty());
 	}
 	

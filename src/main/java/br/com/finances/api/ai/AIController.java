@@ -24,7 +24,7 @@ public class AIController {
 
 	@PostMapping("/financialBalance")
 	public ResponseEntity<ChatResponseDTO> getFinancialBalanceTakeaway(
-			@RequestParam(name = "balanceEachMonth") String balanceEachMonth) {
+			@RequestBody String balanceEachMonth) {
 		ChatResponseDTO response = this.aiService.getFinancialBalanceTakeaway(balanceEachMonth);
 		return ResponseEntity.ok(response);
 	}

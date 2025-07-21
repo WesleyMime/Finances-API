@@ -34,7 +34,7 @@ public class GenericServiceImpl
 		this.cacheConfig = cacheConfig;
 	}
 
-	public List<S> getAll(String description) {
+	public List<S> getAll(String description, Principal principal) {
 		Client client = getClient();
 
 		if (description != null) {

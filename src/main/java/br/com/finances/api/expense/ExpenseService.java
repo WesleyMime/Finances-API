@@ -3,7 +3,8 @@ package br.com.finances.api.expense;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.generic.GenericService;
 import br.com.finances.api.generic.GenericServiceImpl;
-import br.com.finances.config.CacheConfig;
+import br.com.finances.config.CacheEvictionService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,16 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 
 	public ExpenseService(
 			ExpenseRepository repository, ClientRepository clientRepository,
-			ExpenseDtoMapper dtoMapper, ExpenseFormMapper formMapper, CacheConfig cacheConfig) {
+			ExpenseDtoMapper dtoMapper, ExpenseFormMapper formMapper, CacheEvictionService evictionService) {
 		this.genericServiceImpl = new GenericServiceImpl<>(repository, clientRepository, dtoMapper, formMapper,
-				cacheConfig);
+				evictionService);
 	}
 
 	@Override
-	public List<ExpenseDTO> getAll(String description) {
-		return genericServiceImpl.getAll(description);
+	@Cacheable(value = "getAllExpenses", key = "#description == null ? #principal.name" +
+			" : #principal.name.concat(#description)")
+	public List<ExpenseDTO> getAll(String description, Principal principal) {
+		return genericServiceImpl.getAll(description, principal);
 	}
 
 	@Override

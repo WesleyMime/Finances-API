@@ -12,8 +12,8 @@ public class AiService {
 	private final ChatModel chatModel;
 
 	private static final String INITIAL_PROMPT = """
-			You are a financial advisor and you should give responses direct responses, without
-			repeating the prompt and saying hello, using less than 500 characters, in portuguese
+			You are a financial advisor and you should give responses direct responses, without saying hello,
+			repeating the prompt or explaining what you going to analyze, using less than 500 characters, in portuguese
 			and in a friendly and encouraging tone.
 			""";
 	public AiService(ChatModel chatModel) {
@@ -37,15 +37,13 @@ public class AiService {
 	public ChatResponseDTO getFinancialBalanceTakeaway(String balanceEachMonth) {
 		String prompt = INITIAL_PROMPT + """ 
 				Analyze the user's financial data for the past year and provide a summary of their
-				monthly financial balance. The summary should include:
-				A statement of whether the user's income has consistently exceeded their expenses,
-				resulting in a positive or negative cash flow (if the number is negative);
-				A brief explanation of the implications of the user's financial balance on their
-				overall financial health.
+				monthly financial balance. The summary should include a brief explanation of the implications of
+				the user's financial balance on their overall financial health. Don't include the average in the
+				response, don't repeat the numbers and every positive number is a positive balance.
 				""";
-		String data = "Final Balance for each month, starting from " + LocalDate.now().minusMonths(
-				12)
-				+ " until " + LocalDate.now().minusMonths(1) + ": " + balanceEachMonth;
+		String data =
+				"Final Balance for each month, separated by commas, starting from " + LocalDate.now().minusMonths(
+				12) + " until " + LocalDate.now().minusMonths(1) + ": " + balanceEachMonth;
 		String response = this.chatModel.call(prompt + data);
 		return new ChatResponseDTO(response);
 	}
@@ -73,8 +71,7 @@ public class AiService {
 				A recommendation for reviewing and optimizing the user's spending in these categories
 				to identify potential savings.
 				""";
-		String data =
-				"Total expenses for last 12 months divided by category: " + spendingByCategoryYear;
+		String data = "Total expenses for last 12 months divided by category: " + spendingByCategoryYear;
 		String response = this.chatModel.call(prompt + data);
 		return new ChatResponseDTO(response);
 	}

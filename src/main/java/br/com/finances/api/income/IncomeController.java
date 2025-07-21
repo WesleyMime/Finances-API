@@ -19,8 +19,8 @@ public class IncomeController {
 
 	@GetMapping
 	public ResponseEntity<List<IncomeDTO>> getAllIncome(
-			@RequestParam(required = false, name = "description") String description) {
-		List<IncomeDTO> all = incomeService.getAll(description);
+			@RequestParam(required = false, name = "description") String description, Principal principal) {
+		List<IncomeDTO> all = incomeService.getAll(description, principal);
 		return all.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(all);
 	}
 
