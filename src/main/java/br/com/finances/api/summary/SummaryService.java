@@ -35,7 +35,9 @@ public class SummaryService {
 		this.clientRepository = clientRepository;
 	}
 
-	public Optional<SummaryDTO> getSummaryByDate(String yearString, String monthString) {
+	@Cacheable(value = "summary-last-month", key = "#principal.name.concat(#yearString).concat(#monthString)",
+			unless = "#result == null")
+	public Optional<SummaryDTO> getSummaryByDate(String yearString, String monthString, Principal principal) {
 		Integer year;
 		Integer month;
 		Client client = getClient();
@@ -57,7 +59,8 @@ public class SummaryService {
 		return Optional.of(new SummaryDTO(totalIncome, totalExpense, finalBalance, totalExpenseByCategory));
 	}
 
-	@Cacheable(value = "summary-last-year", key = "#principal.name")
+	@Cacheable(value = "summary-last-year", key = "#principal.name.concat(#date.year).concat(#date.month)",
+			unless = "#result == null")
 	public SummaryLastYearDTO getSummaryOfLastYear(LocalDate date, Principal principal) {
 		Client client = getClient();
 

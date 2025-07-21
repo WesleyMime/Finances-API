@@ -4,7 +4,7 @@ import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.income.*;
-import br.com.finances.config.CacheConfig;
+import br.com.finances.config.CacheEvictionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,11 +33,11 @@ class IncomeServiceTest {
 	public IncomeServiceTest() {
 		this.incomeRepository = Mockito.mock(IncomeRepository.class);
 		this.clientRepository = Mockito.mock(ClientRepository.class);
-		CacheConfig cacheConfig = Mockito.mock(CacheConfig.class);
+		CacheEvictionService cacheEvictionService = Mockito.mock(CacheEvictionService.class);
 		IncomeDtoMapper dtoMapper = new IncomeDtoMapper();
 		IncomeFormMapper formMapper = new IncomeFormMapper();
 		this.incomeService = new IncomeService(incomeRepository, clientRepository, dtoMapper,
-				formMapper, cacheConfig);
+				formMapper, cacheEvictionService);
 	}
 
 	private static final String DESCRIPTION = "description";

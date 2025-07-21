@@ -22,8 +22,9 @@ public class SummaryController {
 
 	@GetMapping("/{year}/{month}")
 	public ResponseEntity<SummaryDTO> getSummaryByDate(
-			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month) {
-		Optional<SummaryDTO> summaryByDate = summaryService.getSummaryByDate(year, month);
+			@PathVariable(name = "year") String year, @PathVariable(name = "month") String month,
+			Principal principal) {
+		Optional<SummaryDTO> summaryByDate = summaryService.getSummaryByDate(year, month, principal);
 		return summaryByDate
 				.map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.badRequest().build());

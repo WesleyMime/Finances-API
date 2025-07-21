@@ -4,7 +4,7 @@ import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.*;
-import br.com.finances.config.CacheConfig;
+import br.com.finances.config.CacheEvictionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,11 +32,11 @@ class ExpenseServiceTest {
 	public ExpenseServiceTest() {
 		this.expenseRepository = Mockito.mock(ExpenseRepository.class);
 		this.clientRepository = Mockito.mock(ClientRepository.class);
-		CacheConfig cacheConfig = Mockito.mock(CacheConfig.class);
+		CacheEvictionService cacheEvictionService = Mockito.mock(CacheEvictionService.class);
 		ExpenseDtoMapper dtoMapper = new ExpenseDtoMapper();
 		ExpenseFormMapper formMapper = new ExpenseFormMapper();
 		this.expenseService = new ExpenseService(expenseRepository, clientRepository, dtoMapper,
-				formMapper, cacheConfig);
+				formMapper, cacheEvictionService);
 	}
 
 	private static final String DESCRIPTION = "Description";

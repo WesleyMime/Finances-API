@@ -2,7 +2,7 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
-import br.com.finances.config.CacheConfig;
+import br.com.finances.config.CacheEvictionService;
 import br.com.finances.config.errors.FlowAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +22,16 @@ public class GenericServiceImpl
 	private final ClientRepository clientRepository;
 	private final Mapper<T, S> dtoMapper;
 	private final Mapper<U, T> formMapper;
-	private final CacheConfig cacheConfig;
+	private final CacheEvictionService evictionService;
 
 	public GenericServiceImpl(
 			GenericRepository<T> repository, ClientRepository clientRepository,
-			Mapper<T, S> mapper, Mapper<U, T> formMapper, CacheConfig cacheConfig) {
+			Mapper<T, S> mapper, Mapper<U, T> formMapper, CacheEvictionService evictionService) {
 		this.repository = repository;
 		this.clientRepository = clientRepository;
 		this.dtoMapper = mapper;
 		this.formMapper = formMapper;
-		this.cacheConfig = cacheConfig;
+		this.evictionService = evictionService;
 	}
 
 	public List<S> getAll(String description, Principal principal) {
@@ -76,7 +76,7 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<S> post(U form, Principal principal) {
-		cacheConfig.evictClientCache(principal);
+		evictionService.evictCacheKeysForUser(principal.getName());
 
 		T model = formMapper.map(form);
 		checkIfAlreadyExists(model);
@@ -91,7 +91,7 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<List<S>> postList(List<U> forms, Principal principal) {
-		cacheConfig.evictClientCache(principal);
+		evictionService.evictCacheKeysForUser(principal.getName());
 
 		Client client = getClient();
 		Set<T> toAddList = new HashSet<>();
@@ -111,7 +111,7 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<S> put(String id, U form, BiFunction<T, U, T> function, Principal principal) {
-		cacheConfig.evictClientCache(principal);
+		evictionService.evictCacheKeysForUser(principal.getName());
 
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
@@ -129,7 +129,7 @@ public class GenericServiceImpl
 	}
 
 	public ResponseEntity<S> delete(String id, Principal principal) {
-		cacheConfig.evictClientCache(principal);
+		evictionService.evictCacheKeysForUser(principal.getName());
 
 		ResponseEntity<T> response = tryToGetById(id);
 		if (!response.hasBody()) {
