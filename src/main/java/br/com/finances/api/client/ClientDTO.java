@@ -1,6 +1,8 @@
 package br.com.finances.api.client;
 
-public class ClientDTO {
+import java.io.Serializable;
+
+public class ClientDTO implements Serializable {
 
 	private final String name;
 	private final String email;

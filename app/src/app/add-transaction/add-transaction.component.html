@@ -38,7 +38,7 @@
               <option value="{{ transaction.category }}" selected disabled>{{ transaction.category }}</option>
             }
             @for (cat of categories; track cat) {
-            <option [value]="cat.name ">{{ cat.namePtBr }}</option>
+            <option [value]="cat.namePtBr ">{{ cat.namePtBr }}</option>
             }
           </select>
         </div>
@@ -85,8 +85,8 @@
       }
       <div class="form-actions">
         <button type="submit" class="btn primary">{{ isEditMode ? 'Atualizar' : 'Adicionar' }} Transação</button>
-        @if (sucessMessage) {
-          <p class="server-success">{{ sucessMessage }}</p>
+        @if (successMessage) {
+        <p class="server-success">{{ successMessage }}</p>
         }
       </div>
     </form>

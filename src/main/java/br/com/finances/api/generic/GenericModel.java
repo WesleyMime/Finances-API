@@ -23,10 +23,10 @@ public abstract class GenericModel {
 	@ManyToOne()
 	private Client client;
 
-	public GenericModel() {
+	protected GenericModel() {
 	}
 
-	public GenericModel(String description, BigDecimal value, LocalDate date) {
+	protected GenericModel(String description, BigDecimal value, LocalDate date) {
 		this.description = description;
 		this.value = value;
 		this.date = date;

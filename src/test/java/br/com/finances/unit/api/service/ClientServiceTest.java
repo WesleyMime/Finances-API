@@ -1,8 +1,6 @@
 package br.com.finances.unit.api.service;
 
 import br.com.finances.api.client.*;
-import br.com.finances.api.expense.ExpenseRepository;
-import br.com.finances.api.income.IncomeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,10 +20,7 @@ class ClientServiceTest {
 
     public ClientServiceTest() {
         clientRepository = Mockito.mock(ClientRepository.class);
-        IncomeRepository incomeRepository = Mockito.mock(IncomeRepository.class);
-        ExpenseRepository expenseRepository = Mockito.mock(ExpenseRepository.class);
-        this.clientService = new ClientService(clientRepository, incomeRepository,
-                expenseRepository, new BCryptPasswordEncoder());
+        this.clientService = new ClientService(clientRepository, new BCryptPasswordEncoder());
     }
 
     private static final Client MOCK_CLIENT = new Client("John Doe", "test@email.com", "password");

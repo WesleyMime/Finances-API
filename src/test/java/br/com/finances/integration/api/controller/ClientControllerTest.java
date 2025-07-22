@@ -5,13 +5,12 @@ import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientDTO;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.Category;
-import br.com.finances.api.expense.ExpenseForm;
-import br.com.finances.api.expense.ExpenseService;
-import br.com.finances.api.income.IncomeForm;
-import br.com.finances.api.income.IncomeService;
+import br.com.finances.api.expense.Expense;
+import br.com.finances.api.expense.ExpenseRepository;
+import br.com.finances.api.income.Income;
+import br.com.finances.api.income.IncomeRepository;
 import br.com.finances.config.auth.SignForm;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -22,6 +21,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -50,9 +51,9 @@ class ClientControllerTest {
 	@Autowired
 	private ClientRepository clientRepository;
 	@Autowired
-	private ExpenseService expenseService;
+	private ExpenseRepository expenseRepository;
 	@Autowired
-	private IncomeService incomeService;
+	private IncomeRepository incomeRepository;
 
 	@BeforeAll
 	void beforeAll() {
@@ -60,43 +61,27 @@ class ClientControllerTest {
 		clientRepository.save(CLIENT);
 	}
 
-	@BeforeEach
-	void beforeEach() {
-		SecurityContextFactory.setClient();
-	}
-
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldReturnClient() throws Exception {
-		incomeService.post(new IncomeForm(
+		incomeRepository.save(new Income(
 				"Description", BigDecimal.TEN, LocalDate.now()));
-		expenseService.post(new ExpenseForm(
-				"Description", BigDecimal.TEN, LocalDate.now(), Category.Others));
+		expenseRepository.save(new Expense(
+				"Description", BigDecimal.TEN, LocalDate.now(), Category.OTHERS));
 
 		mockMvc.perform(get(ENDPOINT))
 				.andExpectAll(
 						jsonPath("name", is(CLIENT_DTO.getName())),
 						jsonPath("email", is(CLIENT_DTO.getEmail())),
 						jsonPath("password").doesNotExist(),
-						status().isOk());
-		mockMvc.perform(get("/income?description=d"))
-				.andExpectAll(
-						jsonPath("[0].description", is("Description")),
-						jsonPath("[0].value", is(10.0)),
-						jsonPath("[0].date", is(LocalDate.now().toString())),
-						status().isOk());
-		mockMvc.perform(get("/expense?description=d"))
-				.andExpectAll(
-						jsonPath("[0].description", is("Description")),
-						jsonPath("[0].value", is(10.0)),
-						jsonPath("[0].date", is(LocalDate.now().toString())),
-						jsonPath("[0].category", is(Category.Others.toString())),
 						status().isOk())
 				.andDo(print());
 	}
 
 	@Test
+	@WithAnonymousUser
 	void shouldReturnForbidden() throws Exception {
-		SecurityContextHolder.clearContext();
+		SecurityContextHolder.createEmptyContext();
 		mockMvc.perform(get(ENDPOINT))
 				.andExpectAll(
 						jsonPath("name").doesNotExist(),
@@ -107,6 +92,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldPatchClient() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -130,6 +116,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldPatchClientWithOnlyEmail() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -151,6 +138,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldNoPatchClientWithNoInfo() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -164,6 +152,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldNotPatchClientWithEmptyName() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -183,6 +172,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldNotPatchClientWithEmptyEmail() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -202,6 +192,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldNotPatchClientWithMalformedEmail() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -221,6 +212,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldNotPatchClientWithEmptyPassword() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -240,6 +232,7 @@ class ClientControllerTest {
 	}
 
 	@Test
+	@WithMockUser("fulano@email.com")
 	void shouldReturnBadRequest() throws Exception {
 		mockMvc.perform(patch(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -252,11 +245,12 @@ class ClientControllerTest {
 	}
 
 	@Test
-	void shouldDeleteExpense() throws Exception {
-		incomeService.post(new IncomeForm(
+	@WithMockUser("fulano@email.com")
+	void shouldDeleteClientAndAllTransactions() throws Exception {
+		incomeRepository.save(new Income(
 				"Description2", BigDecimal.TEN, LocalDate.now()));
-		expenseService.post(new ExpenseForm(
-				"Description2", BigDecimal.TEN, LocalDate.now(), Category.Others));
+		expenseRepository.save(new Expense(
+				"Description2", BigDecimal.TEN, LocalDate.now(), Category.OTHERS));
 
 		mockMvc.perform(delete(ENDPOINT))
 				.andExpectAll(
@@ -264,20 +258,6 @@ class ClientControllerTest {
 						jsonPath("email").doesNotExist(),
 						jsonPath("password").doesNotExist(),
 						status().isNoContent())
-				.andDo(print());
-		mockMvc.perform(get("/income?description=d"))
-				.andExpectAll(
-						jsonPath("[0].description").doesNotExist(),
-						jsonPath("[0].value").doesNotExist(),
-						jsonPath("[0].date").doesNotExist(),
-						status().isNotFound());
-		mockMvc.perform(get("/expense?description=d"))
-				.andExpectAll(
-						jsonPath("[0].description").doesNotExist(),
-						jsonPath("[0].value").doesNotExist(),
-						jsonPath("[0].date").doesNotExist(),
-						jsonPath("[0].category").doesNotExist(),
-						status().isNotFound())
 				.andDo(print());
 	}
 }

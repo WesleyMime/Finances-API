@@ -1,9 +1,9 @@
 package br.com.finances.api.expense;
 
+import br.com.finances.api.generic.GenericForm;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import br.com.finances.api.generic.GenericForm;
 
 public class ExpenseForm extends GenericForm{
 	
@@ -12,7 +12,7 @@ public class ExpenseForm extends GenericForm{
 	public ExpenseForm(String description, BigDecimal value, LocalDate date, Category category) {
 		super(description, value, date);	
 		if(category == null) {
-			this.category = Category.Others;
+			this.category = Category.OTHERS;
 		} else {
 			this.category = category;
 		}

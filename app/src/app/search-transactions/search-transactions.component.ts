@@ -20,25 +20,25 @@ export class SearchTransactionsComponent  {
   date: string | null = null;
   description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
-  
+
   categories = categoriesEnum;
-  
+
   searchResultsIncome: Transaction[] = [];
   searchResultsExpenses: Transaction[] = [];
   searchService = inject(SearchService);
   transactionService = inject(TransactionService);
-  
+
   transactionPendingRemoval: Transaction | null = null;
   router: Router;
   constructor(router: Router) {
     this.router = router;
   }
-  
+
   onSearch(): void {
     this.searchResultsIncome = [];
     this.searchResultsExpenses = [];
     if (this.date) {
-      var date = this.formatDate(this.date);
+      let date = this.formatDate(this.date);
       if (this.incomeIsSelected()) {
         this.searchIncomeByDate(date);
       }
@@ -51,14 +51,14 @@ export class SearchTransactionsComponent  {
       if (this.incomeIsSelected()) {
         this.searchIncomeByDescription(this.description);
       }
-      
+
       if (this.expenseIsSelected()) {
         this.searchExpenseByDescription(this.description);
       }
     }
     this.transactionPendingRemoval = null;
-  }    
-    
+  }
+
   private searchIncomeByDescription(description: string) {
     this.searchService.searchIncomeByDescription(description)
     .subscribe({
@@ -70,7 +70,7 @@ export class SearchTransactionsComponent  {
       }
     });
   }
-    
+
   private searchIncomeByDate(date: Date) {
     this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
       .subscribe({
@@ -78,12 +78,12 @@ export class SearchTransactionsComponent  {
           result.forEach((transaction) => {
             transaction.type = "Receita";
           });
-          var filteredResults = this.filterByDescription(result);
+          let filteredResults = this.filterByDescription(result);
           this.searchResultsIncome.push(...filteredResults);
         }
       });
   }
-    
+
   private searchExpenseByDescription(description: string) {
     this.searchService.searchExpenseByDescription(description)
       .subscribe({
@@ -107,7 +107,7 @@ export class SearchTransactionsComponent  {
           transaction.category = getCategoryNameInPortuguese(transaction.category);
           transaction.value = transaction.value * -1;
         });
-        var filteredResults = this.filterByDescription(result);
+        let filteredResults = this.filterByDescription(result);
         this.searchResultsExpenses.push(...filteredResults);
       }
     });
@@ -115,40 +115,40 @@ export class SearchTransactionsComponent  {
 
   private filterByDescription(transactions: Transaction[]): Transaction[] {
     if (this.description) {
-      var filteredResults = transactions.filter((transaction) => {
+      let filteredResults = transactions.filter((transaction) => {
         return transaction.description.toLocaleLowerCase()
-        .includes(this.description ? this.description : ''.toLocaleLowerCase());
+          .includes(this.description ?? ''.toLocaleLowerCase());
       });
       return filteredResults;
     }
     return transactions;
   }
-    
+
   private formatDate(date: string): Date {
-    var dateSplit = date.split("-");
-    // new Date using html type month returns day 1 at 00:00, 
+    let dateSplit = date.split("-");
+    // new Date using html type month returns day 1 at 00:00,
     // but because of GMT -3 it goes to day 31/30 21:00,
     // So i'm parsing the string eg 2025-01.
     return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
   }
-    
+
   editTransaction(transaction: Transaction) {
     if (transaction.value < 0) {
       transaction.value = transaction.value * -1;
     }
     this.router.navigate(['/transactions/edit'], { state: { transaction: transaction } });
   }
-  
+
   removeTransaction(transaction: Transaction): void {
     this.transactionPendingRemoval = transaction;
   }
-  
+
   handleCancelRemoval(): void {
     this.transactionPendingRemoval = null;
   }
-  
+
   handleConfirmRemoval(transaction: Transaction): void {
-    var id = transaction.id? transaction.id : NaN;
+    let id = transaction.id ?? NaN;
     let type = transaction.type;
     if (type === "Receita") {
       const indexToRemove = this.searchResultsIncome.findIndex(t => t.id === this.transactionPendingRemoval?.id);

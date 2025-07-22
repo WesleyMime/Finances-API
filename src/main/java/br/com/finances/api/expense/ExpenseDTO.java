@@ -2,7 +2,9 @@ package br.com.finances.api.expense;
 
 import br.com.finances.api.generic.GenericDTO;
 
-public class ExpenseDTO extends GenericDTO {
+import java.io.Serializable;
+
+public class ExpenseDTO extends GenericDTO implements Serializable {
 	
 	private Category category;
 	
@@ -13,7 +15,7 @@ public class ExpenseDTO extends GenericDTO {
 	
 	public Category getCategory() {
 		if (category == null) {
-			category = Category.Others;
+			category = Category.OTHERS;
 		}
 		return category;
 	}

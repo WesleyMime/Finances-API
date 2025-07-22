@@ -8,38 +8,38 @@ import { environment } from '../environments/environment';
   providedIn: 'root'
 })
 export class TransactionService {
-  
+
   private readonly API_URL = environment.API_URL
   private readonly INCOME_ENDPOINT = '/income';
   private readonly EXPENSE_ENDPOINT = '/expense';
-  
-  constructor(private http: HttpClient) { }
-  
+
+  constructor(readonly http: HttpClient) { }
+
   addIncome(transaction: Transaction) {
     console.log('Adding income transaction:', transaction);
-    
+
     return this.http.post(this.API_URL+this.INCOME_ENDPOINT, transaction).pipe(
       catchError(this.handleError)
     );
   }
-  
+
   addExpense(transaction: Transaction) {
     console.log('Adding expense transaction:', transaction);
-    
+
     return this.http.post(this.API_URL+this.EXPENSE_ENDPOINT, transaction).pipe(
       catchError(this.handleError)
     );
   }
-  
+
   updateIncome(transaction: Transaction) {
     console.log('Updating income:', transaction);
-    
+
     return this.http.put(this.API_URL+this.INCOME_ENDPOINT + "/" + transaction.id, transaction).pipe(
       catchError(this.handleError)
     );
   }
   updateExpense(transaction: Transaction) {
-    console.log('Updating expense:', transaction);    
+    console.log('Updating expense:', transaction);
 
     return this.http.put(this.API_URL+this.EXPENSE_ENDPOINT + "/" + transaction.id, transaction).pipe(
       catchError(this.handleError)
@@ -48,7 +48,7 @@ export class TransactionService {
 
   deleteIncome(id: number) {
     console.log('Deleting income:', id);
-    
+
     let fullUrl = this.API_URL+this.INCOME_ENDPOINT + "/" + id;
     return this.http.delete(fullUrl).pipe(
       catchError(this.handleError)

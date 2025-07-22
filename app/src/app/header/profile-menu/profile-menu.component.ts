@@ -16,7 +16,7 @@ export class ProfileMenuComponent {
   authService = inject(AuthService);
 
   // ElementRef is needed to check if a click happened inside or outside the component
-  constructor(private elementRef: ElementRef, private router: Router) {}
+  constructor(readonly elementRef: ElementRef, readonly router: Router) {}
 
   toggleMenu() {
     this.isOpen = !this.isOpen;

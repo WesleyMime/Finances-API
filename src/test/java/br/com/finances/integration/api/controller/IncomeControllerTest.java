@@ -7,10 +7,7 @@ import br.com.finances.api.income.Income;
 import br.com.finances.api.income.IncomeForm;
 import br.com.finances.api.income.IncomeRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -19,7 +16,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import redis.embedded.RedisServer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -46,28 +45,36 @@ class IncomeControllerTest {
 	private static final String DESCRIPTION = "Description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
-	private static Client CLIENT = SecurityContextFactory.setClient();
-	private static Long ID;
+	private static Client client = SecurityContextFactory.setClient();
+	private static Long id;
     private static final String ENDPOINT = "/income";
-		
-		
+
+	private RedisServer redisServer;
+
 	@BeforeAll
-	void beforeAll() {
-		Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
+	void beforeAll() throws IOException {
+		this.redisServer = new RedisServer(6379);
+		redisServer.start();
+		Optional<Client> findByEmail = clientRepository.findByEmail(client.getUsername());
 		if(findByEmail.isEmpty()) {
-			clientRepository.save(CLIENT);			
+			clientRepository.save(client);
 		} else {
-			CLIENT = findByEmail.get();
+			client = findByEmail.get();
 		}
 		Income income = new Income(DESCRIPTION, VALUE, DATE);
-		income.setClient(CLIENT);
+		income.setClient(client);
 		Income saved = incomeRepository.save(income);
-		ID = saved.getId();
+		id = saved.getId();
 	}
 
 	@BeforeEach
 	void beforeEach() {
 		SecurityContextFactory.setClient();
+	}
+
+	@AfterAll
+	void afterAll() throws IOException {
+		redisServer.stop();
 	}
 	
 	//GET
@@ -100,7 +107,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldReturnIncomeById() throws Exception {
-		mockMvc.perform(get("/income/" + ID))
+		mockMvc.perform(get("/income/" + id))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
@@ -220,7 +227,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldUpdateIncome() throws Exception {
-		mockMvc.perform(put("/income/" + ID)
+		mockMvc.perform(put("/income/" + id)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new IncomeForm(DESCRIPTION, VALUE, DATE.plusDays(5)).toString()))
 				.andExpect(status().isOk());
@@ -246,7 +253,7 @@ class IncomeControllerTest {
 	
 	@Test
 	void shouldDeleteIncome() throws Exception {
-		mockMvc.perform(delete("/income/" + ID))
+		mockMvc.perform(delete("/income/" + id))
 				.andExpect(status().isOk());
 		
 	}

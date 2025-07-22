@@ -3,9 +3,12 @@ package br.com.finances.api.income;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.generic.GenericService;
 import br.com.finances.api.generic.GenericServiceImpl;
+import br.com.finances.config.CacheEvictionService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -15,14 +18,17 @@ public class IncomeService implements GenericService<Income, IncomeDTO, IncomeFo
 	private final GenericServiceImpl<Income, IncomeDTO, IncomeForm> genericServiceImpl;
 
 	public IncomeService(
-			IncomeRepository repository, ClientRepository clientRepository, 
-			IncomeDtoMapper dtoMapper, IncomeFormMapper formMapper) {
-		this.genericServiceImpl = new GenericServiceImpl<>(repository, clientRepository, dtoMapper, formMapper);
+			IncomeRepository repository, ClientRepository clientRepository,
+			IncomeDtoMapper dtoMapper, IncomeFormMapper formMapper, CacheEvictionService evictionService) {
+		this.genericServiceImpl = new GenericServiceImpl<>(repository, clientRepository, dtoMapper, formMapper,
+				evictionService);
 	}
 
 	@Override
-	public ResponseEntity<List<IncomeDTO>> getAll(String description) {
-		return genericServiceImpl.getAll(description);
+	@Cacheable(value = "getAllIncome", key = "#description == null ? #principal.name" +
+			" : #principal.name.concat(#description)")
+	public List<IncomeDTO> getAll(String description, Principal principal) {
+		return genericServiceImpl.getAll(description, principal);
 	}
 
 	@Override
@@ -36,22 +42,23 @@ public class IncomeService implements GenericService<Income, IncomeDTO, IncomeFo
 	}
 
 	@Override
-	public ResponseEntity<IncomeDTO> post(IncomeForm form) {
-		return genericServiceImpl.post(form);
+	public ResponseEntity<IncomeDTO> post(IncomeForm form, Principal principal) {
+		return genericServiceImpl.post(form, principal);
 	}
 
 	@Override
-	public ResponseEntity<List<IncomeDTO>> postList(List<IncomeForm> forms) {
-		return genericServiceImpl.postList(forms);
+	public ResponseEntity<List<IncomeDTO>> postList(List<IncomeForm> forms, Principal principal) {
+		return genericServiceImpl.postList(forms, principal);
 	}
 
-	public ResponseEntity<IncomeDTO> put(String id, IncomeForm incomeForm) {
-		return put(id, incomeForm, this::update);
+	public ResponseEntity<IncomeDTO> put(String id, IncomeForm incomeForm, Principal principal) {
+		return put(id, incomeForm, this::update, principal);
 	}
 
 	@Override
-	public ResponseEntity<IncomeDTO> put(String id, IncomeForm form, BiFunction<Income, IncomeForm, Income> function) {
-		return genericServiceImpl.put(id, form, function);
+	public ResponseEntity<IncomeDTO> put(String id, IncomeForm form, BiFunction<Income, IncomeForm, Income> function,
+										 Principal principal) {
+		return genericServiceImpl.put(id, form, function, principal);
 	}
 
 	private Income update(Income model, IncomeForm form) {
@@ -62,8 +69,8 @@ public class IncomeService implements GenericService<Income, IncomeDTO, IncomeFo
 	}
 
 	@Override
-	public ResponseEntity<IncomeDTO> delete(String id) {
-		return genericServiceImpl.delete(id);
+	public ResponseEntity<IncomeDTO> delete(String id, Principal principal) {
+		return genericServiceImpl.delete(id, principal);
 	}
 
 }

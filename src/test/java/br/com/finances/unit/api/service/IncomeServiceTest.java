@@ -4,14 +4,17 @@ import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.income.*;
+import br.com.finances.config.CacheEvictionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -30,16 +33,18 @@ class IncomeServiceTest {
 	public IncomeServiceTest() {
 		this.incomeRepository = Mockito.mock(IncomeRepository.class);
 		this.clientRepository = Mockito.mock(ClientRepository.class);
+		CacheEvictionService cacheEvictionService = Mockito.mock(CacheEvictionService.class);
 		IncomeDtoMapper dtoMapper = new IncomeDtoMapper();
 		IncomeFormMapper formMapper = new IncomeFormMapper();
 		this.incomeService = new IncomeService(incomeRepository, clientRepository, dtoMapper,
-				formMapper);
+				formMapper, cacheEvictionService);
 	}
 
 	private static final String DESCRIPTION = "description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
 	private static final Client CLIENT = SecurityContextFactory.setClient();
+	private static final Principal PRINCIPAL = SecurityContextHolder.getContext().getAuthentication();
 
 	private static final IncomeForm FORM = new IncomeForm(DESCRIPTION, VALUE, DATE);
 	private static final Income INCOME = new Income(DESCRIPTION, VALUE, DATE);
@@ -59,24 +64,24 @@ class IncomeServiceTest {
 	void shouldReturnAllIncome() {
 		when(incomeRepository.findByClient(CLIENT))
 		.thenReturn(List.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(null);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
+		List<IncomeDTO> all = incomeService.getAll(null, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
 		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(any(), any()))
 				.thenReturn(List.of(INCOME));
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll(DESCRIPTION);
-		Assertions.assertNotNull(all.getBody());
-		assertEquals(DESCRIPTION, all.getBody().getFirst().getDescription());
+		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION, PRINCIPAL);
+		Assertions.assertFalse(all.isEmpty());
+		assertEquals(DESCRIPTION, all.getFirst().getDescription());
 	}
 	
 	@Test
 	void shouldNotFindIncomeByDescription() {
-		ResponseEntity<List<IncomeDTO>> all = incomeService.getAll("");		
-		assertEquals(HttpStatus.NOT_FOUND, all.getStatusCode());
+		List<IncomeDTO> all = incomeService.getAll("", PRINCIPAL);
+		Assertions.assertTrue(all.isEmpty());
 	}
 	
 	@Test
@@ -124,11 +129,11 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldPostIncome() {
-		ResponseEntity<IncomeDTO> post1 = incomeService.post(FORM);
+		ResponseEntity<IncomeDTO> post1 = incomeService.post(FORM, PRINCIPAL);
 		assertEquals(HttpStatus.CREATED, post1.getStatusCode());
 
 		IncomeForm form = new IncomeForm(DESCRIPTION, VALUE, LocalDate.of(2023, 1, 1));
-		ResponseEntity<IncomeDTO> post2 = incomeService.post(form);
+		ResponseEntity<IncomeDTO> post2 = incomeService.post(form, PRINCIPAL);
 		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
 
@@ -136,7 +141,7 @@ class IncomeServiceTest {
 	void shouldPostIncomeList() {
 		when(incomeRepository.saveList(any())).thenReturn(List.of(INCOME));
 
-		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM));
+		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM), PRINCIPAL);
 		Assertions.assertNotNull(post.getBody());
 		List<IncomeDTO> body = post.getBody();
 		IncomeDTO first = body.getFirst();
@@ -153,7 +158,7 @@ class IncomeServiceTest {
 				DATE.getMonthValue(), CLIENT))
 				.thenReturn(Optional.of(INCOME));
 
-		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM, FORM));
+		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM, FORM), PRINCIPAL);
 		Assertions.assertNotNull(post.getBody());
 		List<IncomeDTO> body = post.getBody();
 		assertEquals(0, body.size());
@@ -167,19 +172,19 @@ class IncomeServiceTest {
 		.thenReturn(Optional.of(INCOME));
 		when(incomeRepository.getReferenceById(any()))
 		.thenReturn(INCOME);
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("1", FORM);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("1", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.OK, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindIncomeToUpdate() {
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("100000000", FORM);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("100000000", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.NOT_FOUND, newIncome.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotUpdateIncome() {
-		ResponseEntity<IncomeDTO> newIncome = incomeService.put("a", FORM);
+		ResponseEntity<IncomeDTO> newIncome = incomeService.put("a", FORM, PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, newIncome.getStatusCode());
 	}
 	
@@ -189,19 +194,19 @@ class IncomeServiceTest {
 	void shouldDeleteIncome() {
 		when(incomeRepository.findByIdAndClient(any(), any()))
 		.thenReturn(Optional.of(INCOME));
-		ResponseEntity<?> delete = incomeService.delete("1");
+		ResponseEntity<?> delete = incomeService.delete("1", PRINCIPAL);
 		assertEquals(HttpStatus.OK, delete.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotFindIncomeToDelete() {
-		ResponseEntity<?> delete = incomeService.delete("100000");
+		ResponseEntity<?> delete = incomeService.delete("100000", PRINCIPAL);
 		assertEquals(HttpStatus.NOT_FOUND, delete.getStatusCode());
 	}
 	
 	@Test
 	void shouldNotDeleteIncome() {
-		ResponseEntity<?> delete = incomeService.delete("a");
+		ResponseEntity<?> delete = incomeService.delete("a", PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
 	}
 	

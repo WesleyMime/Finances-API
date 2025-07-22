@@ -1,11 +1,12 @@
 package br.com.finances.api.generic;
 
+import br.com.finances.api.client.ClientDTO;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.finances.api.client.ClientDTO;
-
-public class GenericDTO{
+public class GenericDTO implements Serializable {
 
 	private Long id;
 	private String description;
@@ -20,7 +21,7 @@ public class GenericDTO{
 		this.date = model.getDate();
 		try {
 			this.client = new ClientDTO(model.getClient());
-		} catch(NullPointerException e) {
+		} catch (NullPointerException _) {
 			this.client = null;
 		}
 	}

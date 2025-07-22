@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ];
 
   // Define header states for different route patterns.
-  private headerConfigs: HeaderConfig[] = [
+  readonly headerConfigs: HeaderConfig[] = [
      {
         routePattern: '/dashboard',
         showAppNav: true,
@@ -118,9 +118,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // We handle the fallback in the update method if find returns undefined.
     ];
 
-  private destroy$ = new Subject<void>(); // Subject to signal unsubscription
+  readonly destroy$ = new Subject<void>(); // Subject to signal unsubscription
 
-  constructor(private router: Router) { }
+  constructor(readonly router: Router) { }
 
   authService = inject(AuthService);
 
@@ -179,12 +179,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   contaDemo() {
-    var credentials = {email: 'test@email.com', password: 'teste', name: '', confirmPassword: ''};
+    let credentials = {email: 'test@email.com', password: 'teste', name: '', confirmPassword: ''};
     this.authService.login(credentials).subscribe({
       next: (response) => {
         console.log('Login successful', response);
         this.router.navigate(['/dashboard']);
       }
-    });   
+    });
   }
 }

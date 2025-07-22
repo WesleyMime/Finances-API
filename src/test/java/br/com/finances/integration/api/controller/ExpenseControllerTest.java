@@ -8,10 +8,7 @@ import br.com.finances.api.expense.Expense;
 import br.com.finances.api.expense.ExpenseForm;
 import br.com.finances.api.expense.ExpenseRepository;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -20,7 +17,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import redis.embedded.RedisServer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -47,27 +46,36 @@ class ExpenseControllerTest {
 	private static final String DESCRIPTION = "Description";
 	private static final BigDecimal VALUE = new BigDecimal("1500");
 	private static final LocalDate DATE = LocalDate.of(2022, 1, 1);
-	private static Client CLIENT = SecurityContextFactory.setClient();
-	private static Long ID;
+	private static Client client = SecurityContextFactory.setClient();
+	private static Long id;
 	private static final String ENDPOINT = "/expense";
-	
+
+	private RedisServer redisServer;
+
 	@BeforeAll
-	void beforeAll() {
-		Optional<Client> findByEmail = clientRepository.findByEmail(CLIENT.getUsername());
+	void beforeAll() throws IOException {
+		this.redisServer = new RedisServer(6379);
+		redisServer.start();
+		Optional<Client> findByEmail = clientRepository.findByEmail(client.getUsername());
 		if(findByEmail.isEmpty()) {
-			clientRepository.save(CLIENT);			
+			clientRepository.save(client);
 		} else {
-			CLIENT = findByEmail.get();
-		}	
-		Expense expense = new Expense(DESCRIPTION, VALUE, DATE, Category.Others);
-		expense.setClient(CLIENT);
+			client = findByEmail.get();
+		}
+		Expense expense = new Expense(DESCRIPTION, VALUE, DATE, Category.OTHERS);
+		expense.setClient(client);
 		Expense saved = expenseRepository.save(expense);
-		ID = saved.getId();
+		id = saved.getId();
 	}
-	
+
 	@BeforeEach
 	void beforeEach() {
 		SecurityContextFactory.setClient();
+	}
+
+	@AfterAll
+	void afterAll() throws IOException {
+		redisServer.stop();
 	}
 	
 	//GET
@@ -97,7 +105,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldReturnExpenseById() throws Exception {
-		mockMvc.perform(get(ENDPOINT + "/" + ID))
+		mockMvc.perform(get(ENDPOINT + "/" + id))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
@@ -140,13 +148,13 @@ class ExpenseControllerTest {
 	void shouldPostExpense() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ExpenseForm("Different expense", VALUE, DATE, Category.Home).toString()))
+						.content(new ExpenseForm("Different expense", VALUE, DATE, Category.HOME).toString()))
 				.andExpect(status().isCreated());
 		LocalDate date = LocalDate.of(2023, 1, 1);
 		mockMvc.perform(post(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, date,
-								Category.Home).toString()))
+								Category.HOME).toString()))
 				.andExpect(status().isCreated());
 	}
 	
@@ -154,7 +162,7 @@ class ExpenseControllerTest {
 	void shouldNotPostExpenseTwice() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Home).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.HOME).toString()))
 				.andExpect(status().isConflict());
 	}
 	
@@ -175,16 +183,16 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
-								new ExpenseForm("Expense1", VALUE, DATE, Category.Home).toString(),
-								new ExpenseForm("Expense2", VALUE, DATE, Category.Leisure).toString()
+								new ExpenseForm("Expense1", VALUE, DATE, Category.HOME).toString(),
+								new ExpenseForm("Expense2", VALUE, DATE, Category.LEISURE).toString()
 						).toString()))
 				.andExpectAll(
 						jsonPath("[*].id", notNullValue()),
 						jsonPath("[*].description", containsInAnyOrder("Expense1", "Expense2")),
 						jsonPath("[*].value", contains(1500, 1500)),
 						jsonPath("[*].date", contains(DATE.toString(), DATE.toString())),
-						jsonPath("[*].category", containsInAnyOrder(Category.Home.toString(),
-								Category.Leisure.toString())),
+						jsonPath("[*].category", containsInAnyOrder(Category.HOME.toString(),
+								Category.LEISURE.toString())),
 						status().isCreated())
 				.andDo(print());
 	}
@@ -194,8 +202,8 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
-								new ExpenseForm("Expense3", VALUE, DATE, Category.Home).toString(),
-								new ExpenseForm("Expense3", VALUE, DATE, Category.Home).toString()
+								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME).toString(),
+								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME).toString()
 						).toString()))
 				.andExpectAll(
 						jsonPath("$", Matchers.hasSize(1)),
@@ -203,7 +211,7 @@ class ExpenseControllerTest {
 						jsonPath("[0].description", is("Expense3")),
 						jsonPath("[0].value", is(1500)),
 						jsonPath("[0].date", is(DATE.toString())),
-						jsonPath("[0].category", is(Category.Home.toString())),
+						jsonPath("[0].category", is(Category.HOME.toString())),
 						status().isCreated())
 				.andDo(print());
 	}
@@ -213,7 +221,7 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, DATE,
-								Category.Home).toString()))
+								Category.HOME).toString()))
 				.andExpect(
 						status().isBadRequest())
 				.andDo(print());
@@ -223,9 +231,9 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldUpdateExpense() throws Exception {
-		mockMvc.perform(put(ENDPOINT + "/" + ID)
+		mockMvc.perform(put(ENDPOINT + "/" + id)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Leisure).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.LEISURE).toString()))
 				.andExpect(status().isOk());
 	}
 	
@@ -233,7 +241,7 @@ class ExpenseControllerTest {
 	void shouldNotFindExpenseToUpdate() throws Exception {
 		mockMvc.perform(put(ENDPOINT + "/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.Education).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.EDUCATION).toString()))
 				.andExpect(status().isNotFound());
 	}
 	
@@ -249,7 +257,7 @@ class ExpenseControllerTest {
 	
 	@Test
 	void shouldDeleteExpense() throws Exception {
-		mockMvc.perform(delete(ENDPOINT + "/" + ID))
+		mockMvc.perform(delete(ENDPOINT + "/" + id))
 				.andExpect(status().isOk());
 		
 	}

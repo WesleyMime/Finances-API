@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @TestInstance(Lifecycle.PER_CLASS)
-public class AuthControllerTest {
+class AuthControllerTest {
 
 	private static final String NAME = "Test";
 	private static final String EMAIL = "test@email.com";
