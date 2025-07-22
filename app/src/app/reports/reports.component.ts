@@ -46,7 +46,7 @@ export class ReportsComponent implements OnInit {
   financialBalanceTakeaway = this.loading;
   // Data for Spending by Category
   spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
-  spendingByCategoriesMonthTakeaway = '';
+  spendingByCategoriesMonthTakeaway = this.loading;
   spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
   spendingByCategoriesYearTakeaway = this.loading;
 

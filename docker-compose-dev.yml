@@ -17,6 +17,8 @@ services:
       "-DPOSTGRES_URL=db:5432/finances-api",
       "-DPOSTGRES_USERNAME=finances-api",
       "-DPOSTGRES_PASSWORD=finances-api",
+      "-DREDIS_URL=redis",
+      "-DAI_API_KEY=CHANGEKEY",
       "-jar",
       "/app.jar"
     ]

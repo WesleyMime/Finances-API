@@ -24,6 +24,10 @@ spring:
                 options:
                     model: ${AI_MODEL:llama-3.1-8b-instant}
 
+    data:
+        redis:
+            host: ${REDIS_URL:localhost}
+
     output:
         ansi:
             enabled: ALWAYS
