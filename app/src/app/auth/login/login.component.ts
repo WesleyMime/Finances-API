@@ -14,13 +14,13 @@ import { ILoginUser } from '../user.model';
 })
 export class LoginComponent {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(readonly authService: AuthService, readonly router: Router) {}
   passwordVisible: boolean = false;
 
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
-  
+
   credentials: ILoginUser = {email: '', password: ''};
   errorMessage: string | null = null;
 

@@ -16,11 +16,6 @@
     margin-bottom: 30px;
 }
 
-.key-takeaway {
-    margin-bottom: 30px;
-}
-
-
 /* Metrics */
 .metrics {
     display: flex;
@@ -142,6 +137,7 @@
 /* Key Takeaway Styles */
 .key-takeaway {
   margin-top: 20px;
+  margin-bottom: 30px;
   padding: 15px;
   background-color: #2d3748;
   border-radius: 6px;

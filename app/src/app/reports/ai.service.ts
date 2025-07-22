@@ -11,7 +11,7 @@ export class AiService {
   private readonly API_URL = environment.API_URL
   private readonly AI_ENDPOINT = '/ai';
 
-  constructor(private http: HttpClient) { }
+  constructor(readonly http: HttpClient) { }
 
   getMonthOverMonthComparisonTakeaway(income: number, expenses: number): Observable<any> {
     let params = new HttpParams().set("income", income).set("expenses", expenses);

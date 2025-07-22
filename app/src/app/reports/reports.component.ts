@@ -56,7 +56,7 @@ export class ReportsComponent implements OnInit {
   aiService = inject(AiService);
 
   async ngOnInit(): Promise<void> {
-    var currentDate = new Date();
+    let currentDate = new Date();
     let lastMonthDate = new Date(currentDate);
     lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
 
@@ -98,19 +98,15 @@ export class ReportsComponent implements OnInit {
 
   private getMonthOverMonthComparison(currentDate: Date, currentMonthSummary: SummaryByDate, lastMonthSummary: SummaryByDate): void {
     this.getMonthOrderForIncomeExpenseComparison(currentDate);
-    let incomeCurrentMonth: number = NaN;
-    let expenseCurrentMonth: number = NaN;
-    let incomeLastMonth: number = NaN;
-    let expenseLastMonth: number = NaN;
 
-    incomeCurrentMonth = currentMonthSummary.totalIncome;
-    expenseCurrentMonth = currentMonthSummary.totalExpense;
+    let incomeCurrentMonth = currentMonthSummary.totalIncome;
+    let expenseCurrentMonth = currentMonthSummary.totalExpense;
 
     this.incomeCurrentMonth = this.formatCurrency(incomeCurrentMonth);
     this.expenseCurrentMonth = this.formatCurrency(expenseCurrentMonth);
 
-    incomeLastMonth = lastMonthSummary.totalIncome;
-    expenseLastMonth = lastMonthSummary.totalExpense;
+    let incomeLastMonth = lastMonthSummary.totalIncome;
+    let expenseLastMonth = lastMonthSummary.totalExpense;
 
     let incomeValueDifference = incomeCurrentMonth - incomeLastMonth;
     let expenseValueDifference = (expenseLastMonth - expenseCurrentMonth) * -1; // To not show a negative number
@@ -154,7 +150,7 @@ export class ReportsComponent implements OnInit {
     this.incomeExpensePercentage = this.formatPercentage(diffBalancePercent);
 
     lastMonthSummary.totalExpenseByCategory.forEach((item) => {
-      this.spendingCategoriesMonth.map((category) => {
+      this.spendingCategoriesMonth.forEach((category) => {
         if (item.category === category.name) category.value += item.totalValue;
       })
     });
@@ -172,7 +168,7 @@ export class ReportsComponent implements OnInit {
 
   private updateSpendingByCategoryYear(list: Expense[]): void {
     list.forEach((expense) => {
-      this.spendingCategories.map((category) => {
+      this.spendingCategories.forEach((category) => {
         if (expense.category === category.name) category.value += expense.value;
       })
     });
@@ -189,12 +185,11 @@ export class ReportsComponent implements OnInit {
   }
 
   private getMonthOrderForIncomeExpenseComparison(currentDate: Date) {
-    var month = currentDate.getMonth();
-    var result = [];
+    let month = currentDate.getMonth();
+    let result = [];
 
-    var j = 0;
-    for (let i: number = month; j < 12; i++) {
-      j++;
+    let j = 0;
+    for (let i: number = month; j < 12; i++, j++) {
       result.push(this.months[i % 12]);
     }
     this.monthOrderIncomeExpenseComparison = result;
@@ -216,9 +211,9 @@ export class ReportsComponent implements OnInit {
     this.incomeExpenseBarHeights = [];
     let maxBalance = Math.max(...list);
     list.map((balance: number) => {
-      var balanceCurrency = this.formatCurrency(balance);
+      let balanceCurrency = this.formatCurrency(balance);
       // Calculate the percentage height based on the maximum balances
-      var percentage = (100 + this.getPercentageChange(balance, maxBalance)) + '%';
+      let percentage = (100 + this.getPercentageChange(balance, maxBalance)) + '%';
       this.incomeExpenseBarHeights.push({ height: percentage, value: balanceCurrency });
     });
   }

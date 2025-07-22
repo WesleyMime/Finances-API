@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
-import { Transaction } from '../add-transaction/transaction';
 
 @Injectable({
   providedIn: 'root'
@@ -13,27 +12,27 @@ export class SearchService {
   private readonly INCOME_ENDPOINT = "/income";
   private readonly EXPENSE_ENDPOINT = "/expense";
 
-  constructor(private http: HttpClient) { }
+  constructor(readonly http: HttpClient) { }
 
-  searchIncomeByDate(year: number, month: number): Observable<Transaction[] | any> {
+  searchIncomeByDate(year: number, month: number): Observable<any> {
     return this.http.get(this.API_URL + this.INCOME_ENDPOINT + "/" + year+ "/" + month).pipe(
       catchError(this.handleError)
     );
   }
 
-  searchExpenseByDate(year: number, month: number): Observable<Transaction[] | any> {
+  searchExpenseByDate(year: number, month: number): Observable<any> {
     return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT + "/" + year+ "/" + month).pipe(
       catchError(this.handleError)
     );
   }
 
-  searchIncomeByDescription(description: string): Observable<Transaction[] | any> {
+  searchIncomeByDescription(description: string): Observable<any> {
     return this.http.get(this.API_URL + this.INCOME_ENDPOINT + "?description=" + description).pipe(
       catchError(this.handleError)
     );
   }
 
-  searchExpenseByDescription(description: string): Observable<Transaction[] | any> {
+  searchExpenseByDescription(description: string): Observable<any> {
     return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT + "?description=" + description).pipe(
       catchError(this.handleError)
     );

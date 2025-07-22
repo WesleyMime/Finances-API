@@ -12,21 +12,21 @@ import { environment } from '../environments/environment';
 })
 export class AuthService {
 
-  private apiUrl = environment.API_URL + "/auth";
-  private loginEndpoint = '/login';
-  private registerEndpoint = '/signin';
+  readonly apiUrl = environment.API_URL + "/auth";
+  readonly loginEndpoint = '/login';
+  readonly registerEndpoint = '/signin';
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly EXPIRATION_MINUTES = 30;
 
-  constructor(private http: HttpClient, private router: Router, private cookieService: CookieService) { }
+  constructor(readonly http: HttpClient, readonly router: Router, readonly cookieService: CookieService) { }
 
   login(credentials: ILoginUser): Observable<ILoginResponse> {
     return this.http.post<ILoginResponse>(this.apiUrl+this.loginEndpoint, credentials).pipe(
       // Use tap to perform a side effect (storing the token)
       // without modifying the observable stream itself.
       tap(response => {
-        if (response && response.token) {
+        if (response?.token) {
           this.setCookie(this.TOKEN_KEY, response.token);
         }
       })
@@ -34,13 +34,13 @@ export class AuthService {
   }
 
   setCookie(name: string, value: string) {
-    var date = new Date();
-    let minutesInMiliseconds = this.EXPIRATION_MINUTES * 60 * 1000;
-    date.setTime(date.getTime() + minutesInMiliseconds);
+    let date = new Date();
+    let minutesInMilliseconds = this.EXPIRATION_MINUTES * 60 * 1000;
+    date.setTime(date.getTime() + minutesInMilliseconds);
 
     this.cookieService.set(name, value, { expires: date});
   }
-  
+
   getAuthCookie(): string {
     return this.cookieService.get(this.TOKEN_KEY);
   }
@@ -48,7 +48,7 @@ export class AuthService {
   isLoggedIn(): boolean {
     const token = this.decodeToken();
     if (!token) return false;
-    
+
     token.exp = token.exp * 1000; // Convert to milliseconds
     if (token.exp < Date.now()) {
       console.warn("Token expired");
@@ -64,7 +64,7 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  decodeToken(): any | null {
+  decodeToken(): any {
     const token = this.getAuthCookie();
     if (!token) {
       console.warn('No token found');

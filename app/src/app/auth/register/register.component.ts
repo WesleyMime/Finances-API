@@ -15,8 +15,8 @@ import { IRegisterUser } from '../user.model';
 export class RegisterComponent {
 
   constructor(
-    private authService: AuthService, 
-    private router: Router,
+    readonly authService: AuthService,
+    readonly router: Router,
   ) {}
 
   credentials: IRegisterUser = {email: '', name: '', password: '', confirmPassword: ''};
@@ -26,9 +26,9 @@ export class RegisterComponent {
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
-  
 
-  onSubmit() {    
+
+  onSubmit() {
     if (this.credentials.password !== this.credentials.confirmPassword) {
       this.errorMessage = ('Senhas não coincidem!');
       return;

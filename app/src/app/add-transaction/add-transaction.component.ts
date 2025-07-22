@@ -4,7 +4,7 @@ import { HeaderComponent } from "../header/header.component";
 import { TransactionService } from './transaction.service';
 import { emptyTransaction, Transaction } from './transaction';
 import { Router } from '@angular/router';
-import { categoriesEnum, getCategoryNameInEnglish, getCategoryNameInPortuguese } from '../category';
+import { categoriesEnum, getCategoryNameInEnglish } from '../category';
 
 @Component({
   selector: 'app-add-transaction',
@@ -16,7 +16,7 @@ export class AddTransactionComponent implements OnInit {
   isEditMode = false;
   transaction: Transaction = emptyTransaction;
 
-  sucessMessage: string | null = null;
+  successMessage: string | null = null;
   errorMessage: string | null = null;
 
   transactionTypes: string[] = ['Receita', 'Despesa'];
@@ -48,8 +48,6 @@ export class AddTransactionComponent implements OnInit {
       return this.addExpense();
     }
     alert("Selecione um tipo de transação válido (Receita ou Despesa).");
-    return;
-
   }
 
   private isExpense() {
@@ -59,14 +57,14 @@ export class AddTransactionComponent implements OnInit {
   private addExpense() {
     this.transactionService.addExpense(this.transaction).subscribe({
       next: (response) => {
-        this.sucessMessage = 'Despesa adicionada com sucesso!';
+        this.successMessage = 'Despesa adicionada com sucesso!';
         console.log('Expense added successfully:', response);
         this.transaction = emptyTransaction;
       },
       error: (error) => {
         console.error('Error adding expense:', error);
         this.errorMessage = error;
-        this.sucessMessage = null;
+        this.successMessage = null;
       }
     });
   }
@@ -75,7 +73,7 @@ export class AddTransactionComponent implements OnInit {
     this.transaction.category = getCategoryNameInEnglish(this.transaction.category);
     this.transactionService.updateExpense(this.transaction).subscribe({
       next: async (response) => {
-        this.sucessMessage = 'Despesa editada com sucesso!';
+        this.successMessage = 'Despesa editada com sucesso!';
         console.log('Expense edited successfully:', response);
         await this.sleep(1);
         this.router.navigateByUrl("/dashboard");
@@ -83,7 +81,7 @@ export class AddTransactionComponent implements OnInit {
       error: (error) => {
         console.error('Error editing expense:', error);
         this.errorMessage = error;
-        this.sucessMessage = null;
+        this.successMessage = null;
       }
     });
   }
@@ -95,14 +93,14 @@ export class AddTransactionComponent implements OnInit {
   private addIncome() {
     this.transactionService.addIncome(this.transaction).subscribe({
       next: (response) => {
-        this.sucessMessage = 'Receita adicionada com sucesso!';
+        this.successMessage = 'Receita adicionada com sucesso!';
         console.log('Income added successfully:', response);
         this.transaction = emptyTransaction;
       },
       error: (error) => {
         console.error('Error adding income:', error);
         this.errorMessage = error;
-        this.sucessMessage = null;
+        this.successMessage = null;
       }
     });
   }
@@ -110,7 +108,7 @@ export class AddTransactionComponent implements OnInit {
   private updateIncome() {
     this.transactionService.updateIncome(this.transaction).subscribe({
       next: async (response) => {
-        this.sucessMessage = 'Receita editada com sucesso!';
+        this.successMessage = 'Receita editada com sucesso!';
         console.log('Income edited successfully:', response);
         await this.sleep(1);
         this.router.navigateByUrl("/search");
@@ -118,7 +116,7 @@ export class AddTransactionComponent implements OnInit {
       error: (error) => {
         console.error('Error editing income:', error);
         this.errorMessage = error;
-        this.sucessMessage = null;
+        this.successMessage = null;
       }
     });
   }
