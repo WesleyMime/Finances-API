@@ -38,6 +38,9 @@
         </div>
       </div>
     </div>
+    <div class="key-takeaway">
+      <p>{{ monthComparisonTakeaway }}</p>
+    </div>
 
     <!-- Income vs. Expenses Section -->
     <div class="card">
@@ -53,12 +56,15 @@
           }
         </div>
         <div class="chart-labels">
-          @for (month of monthOrderincomeExpenseComparison; track month) {
+          @for (month of monthOrderIncomeExpenseComparison; track month) {
             <span>{{ month }}</span>
           }
         </div>
       </div>
       <div class="metric-info">{{ currentYear -1}} - {{ currentYear }}</div>
+    </div>
+    <div class="key-takeaway">
+      <p>{{ financialBalanceTakeaway }}</p>
     </div>
 
     <!-- Spending by Category Section -->
@@ -84,6 +90,9 @@
         </div>
       </div>
     </div>
+    <div class="key-takeaway">
+      <p>{{ spendingByCategoriesMonthTakeaway }}</p>
+    </div>
     <div class="card">
       <div class="metrics">
         <h3>Últimos 12 meses</h3>
@@ -102,11 +111,17 @@
         </div>
       </div>
     </div>
+    <div class="key-takeaway">
+      <p>{{ spendingByCategoriesYearTakeaway }}</p>
+    </div>
 
     <!-- Savings Rate Section -->
     <div class="card gray-background">
       <div class="card-label">Taxa de Poupança</div>
       <div class="card-value">{{ savingsRate }}%</div>
+    </div>
+    <div class="key-takeaway">
+      <p>{{ savingsTakeaway }}</p>
     </div>
   </section>
 </main>

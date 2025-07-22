@@ -16,6 +16,10 @@
     margin-bottom: 30px;
 }
 
+.key-takeaway {
+    margin-bottom: 30px;
+}
+
 
 /* Metrics */
 .metrics {
@@ -179,7 +183,7 @@
   }
   .spending-chart .category-percentage {
       margin-left: 5px;
-  }  
+  }
   .chart-labels {
       gap: 0px;
   }
