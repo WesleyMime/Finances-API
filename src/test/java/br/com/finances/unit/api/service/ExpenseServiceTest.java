@@ -46,7 +46,7 @@ class ExpenseServiceTest {
 	private static final Principal PRINCIPAL = SecurityContextHolder.getContext().getAuthentication();
 
 	private static final Expense EXPENSE = new Expense(DESCRIPTION, VALUE, DATE, Category.OTHERS);
-	private static final ExpenseForm FORM = new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.OTHERS);
+	private static final ExpenseForm FORM = new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.OTHERS.toString());
 	
 	@BeforeEach
 	void beforeEach() {
@@ -137,7 +137,7 @@ class ExpenseServiceTest {
 		assertEquals(HttpStatus.CREATED, post1.getStatusCode());
 
 		ExpenseForm form = new ExpenseForm(DESCRIPTION, VALUE, LocalDate.of(2023, 1, 1),
-				Category.OTHERS);
+				Category.OTHERS.toString());
 		ResponseEntity<ExpenseDTO> post2 = expenseService.post(form, PRINCIPAL);
 		assertEquals(HttpStatus.CREATED, post2.getStatusCode());
 	}
