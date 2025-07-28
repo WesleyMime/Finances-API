@@ -4,7 +4,7 @@ import { HeaderComponent } from "../header/header.component";
 import { TransactionService } from './transaction.service';
 import { emptyTransaction, Transaction } from './transaction';
 import { Router } from '@angular/router';
-import { categoriesEnum, getCategoryNameInEnglish } from '../category';
+import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
 
 @Component({
   selector: 'app-add-transaction',
@@ -28,6 +28,7 @@ export class AddTransactionComponent implements OnInit {
   ngOnInit() {
     const transaction = window.history.state.transaction;
     if (transaction) {
+      transaction.category = getCategoryNameInPortuguese(transaction.category);
       this.transaction = transaction;
       this.isEditMode = true;
     }
@@ -70,7 +71,6 @@ export class AddTransactionComponent implements OnInit {
   }
 
   private updateExpense() {
-    this.transaction.category = getCategoryNameInEnglish(this.transaction.category);
     this.transactionService.updateExpense(this.transaction).subscribe({
       next: async (response) => {
         this.successMessage = 'Despesa editada com sucesso!';
@@ -135,5 +135,9 @@ export class AddTransactionComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  getCategoryNameInPortuguese(categoryName: string) {
+    return getCategoryNameInPortuguese(categoryName);
   }
 }
