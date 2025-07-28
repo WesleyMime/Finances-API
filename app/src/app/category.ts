@@ -4,14 +4,16 @@ export interface Category {
 }
 
 export const categoriesEnum: Category[] = [
-    {name: 'HEALTH', namePtBr: 'Saúde'},
-    {name: 'FOOD', namePtBr: 'Alimentação'},
-    {name: 'HOME', namePtBr: 'Casa'},
-    {name: 'TRANSPORT', namePtBr: 'Transporte'},
-    {name: 'EDUCATION', namePtBr: 'Educação'},
-    {name: 'LEISURE', namePtBr: 'Lazer'},
-    {name: 'UNFORESEEN', namePtBr: 'Imprevístos'},
-    {name: 'OTHERS', namePtBr: 'Outros'}
+  { name: 'HEALTH', namePtBr: 'Saúde' },
+  { name: 'FOOD', namePtBr: 'Alimentação' },
+  { name: 'HOME', namePtBr: 'Casa' },
+  { name: 'TRANSPORT', namePtBr: 'Transporte' },
+  { name: 'EDUCATION', namePtBr: 'Educação' },
+  { name: 'LEISURE', namePtBr: 'Lazer' },
+  { name: 'UNFORESEEN', namePtBr: 'Imprevístos' },
+  { name: 'SERVICES', namePtBr: 'Serviços' },
+  { name: 'CLOTHES', namePtBr: 'Roupas' },
+  { name: 'OTHERS', namePtBr: 'Outros' }
 ];
 
 export function getCategoryNameInPortuguese(categoryName: string) {
