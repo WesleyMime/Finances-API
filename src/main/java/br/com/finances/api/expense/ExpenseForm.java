@@ -6,18 +6,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ExpenseForm extends GenericForm{
-	
-	private Category category;
 
-	public ExpenseForm(String description, BigDecimal value, LocalDate date, Category category) {
-		super(description, value, date);	
-		if(category == null) {
+	private final Category category;
+
+	public ExpenseForm(String description, BigDecimal value, LocalDate date, String category) {
+		super(description, value, date);
+		if (category == null) {
 			this.category = Category.OTHERS;
 		} else {
-			this.category = category;
+			this.category = Category.valueOf(category.toUpperCase());
 		}
 	}
-	
+
 	public Category getCategory() {
 		return category;
 	}

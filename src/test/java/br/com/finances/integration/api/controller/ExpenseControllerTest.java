@@ -148,13 +148,13 @@ class ExpenseControllerTest {
 	void shouldPostExpense() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
-						.content(new ExpenseForm("Different expense", VALUE, DATE, Category.HOME).toString()))
+						.content(new ExpenseForm("Different expense", VALUE, DATE, Category.HOME.toString()).toString()))
 				.andExpect(status().isCreated());
 		LocalDate date = LocalDate.of(2023, 1, 1);
 		mockMvc.perform(post(ENDPOINT)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, date,
-								Category.HOME).toString()))
+								Category.HOME.toString()).toString()))
 				.andExpect(status().isCreated());
 	}
 	
@@ -162,7 +162,7 @@ class ExpenseControllerTest {
 	void shouldNotPostExpenseTwice() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)
-						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.HOME).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.HOME.toString()).toString()))
 				.andExpect(status().isConflict());
 	}
 	
@@ -183,8 +183,8 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
-								new ExpenseForm("Expense1", VALUE, DATE, Category.HOME).toString(),
-								new ExpenseForm("Expense2", VALUE, DATE, Category.LEISURE).toString()
+								new ExpenseForm("Expense1", VALUE, DATE, Category.HOME.toString()).toString(),
+								new ExpenseForm("Expense2", VALUE, DATE, Category.LEISURE.toString()).toString()
 						).toString()))
 				.andExpectAll(
 						jsonPath("[*].id", notNullValue()),
@@ -202,8 +202,8 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(List.of(
-								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME).toString(),
-								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME).toString()
+								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME.toString()).toString(),
+								new ExpenseForm("Expense3", VALUE, DATE, Category.HOME.toString()).toString()
 						).toString()))
 				.andExpectAll(
 						jsonPath("$", Matchers.hasSize(1)),
@@ -221,7 +221,7 @@ class ExpenseControllerTest {
 		mockMvc.perform(post(ENDPOINT + "/list")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ExpenseForm("Different expense", VALUE, DATE,
-								Category.HOME).toString()))
+								Category.HOME.toString()).toString()))
 				.andExpect(
 						status().isBadRequest())
 				.andDo(print());
@@ -233,7 +233,7 @@ class ExpenseControllerTest {
 	void shouldUpdateExpense() throws Exception {
 		mockMvc.perform(put(ENDPOINT + "/" + id)
 				.contentType(MediaType.APPLICATION_JSON)
-						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.LEISURE).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.LEISURE.toString()).toString()))
 				.andExpect(status().isOk());
 	}
 	
@@ -241,7 +241,7 @@ class ExpenseControllerTest {
 	void shouldNotFindExpenseToUpdate() throws Exception {
 		mockMvc.perform(put(ENDPOINT + "/1000000")
 				.contentType(MediaType.APPLICATION_JSON)
-						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.EDUCATION).toString()))
+						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.EDUCATION.toString()).toString()))
 				.andExpect(status().isNotFound());
 	}
 	
@@ -249,7 +249,7 @@ class ExpenseControllerTest {
 	void shouldNotUpdateExpense() throws Exception {
 		mockMvc.perform(put(ENDPOINT + "/a")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ExpenseForm(null, null, null, null).toString()))
+						.content(new ExpenseForm(null, null, null, null).toString()))
 				.andExpect(status().isBadRequest());
 	}
 	

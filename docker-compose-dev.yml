@@ -33,6 +33,13 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 55067868+wesleymime@users.noreply.github.com
+      PGADMIN_DEFAULT_PASSWORD: password_finances-api
+    ports:
+      - "5050:80"
 
   redis:
     image: redis

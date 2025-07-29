@@ -101,7 +101,7 @@
 .spending-header {
     display: grid;
     /* Define columns: Date, Type, Category, Amount, Description, Edit, Remove */
-    grid-template-columns: 81px 65px 90px 110px 1fr 60px 90px;
+    grid-template-columns: 90px 65px 95px 110px 1fr 60px 90px;
     gap: 15px;
     padding: 10px 0;
     justify-items: start;
@@ -124,7 +124,7 @@
 
 
 .spending-item {
-    word-break: break-word; 
+    word-break: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -168,7 +168,7 @@
 }
 
 @media (max-width: 836px) {
-    
+
     .spending-btn {
         display: flex;
         color: #81c784;

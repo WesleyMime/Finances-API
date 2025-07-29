@@ -45,6 +45,13 @@ export class AiService {
     );
   }
 
+  getJSONForTransactionsUsingAI(transaction: string, type: string): Observable<any> {
+    console.log('Adding transaction: ', type, transaction);
+    let params = new HttpParams().set("type", type);
+    return this.http.post(this.API_URL + this.AI_ENDPOINT + "/jsonForTransactions", transaction, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 
   private handleError(error: HttpErrorResponse) {

@@ -22,7 +22,7 @@ spring:
             base-url: ${AI_BASE_URL:https://api.groq.com/openai}
             chat:
                 options:
-                    model: ${AI_MODEL:llama-3.1-8b-instant}
+                    model: ${AI_MODEL:qwen/qwen3-32b}
 
     data:
         redis:

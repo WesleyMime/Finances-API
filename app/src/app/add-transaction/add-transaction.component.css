@@ -6,6 +6,7 @@
   padding: 40px;
   width: 100%;
   max-width: 600px;
+  margin-bottom: 20px;
 }
 
 .add-transaction-box h2 {
@@ -23,10 +24,19 @@
   justify-content: space-between;
 }
 
+.form-container {
+  flex-direction: column;
+
+}
 input.ng-invalid.ng-touched {
   border-color: rgb(220, 14, 14);
 }
 
+@media (max-width: 800px) {
+  .add-transaction-box {
+    max-width: 75%;
+  }
+}
 
 @media (max-width: 480px) {
   .add-transaction-box h2 {

@@ -9,5 +9,7 @@ public enum Category {
 	EDUCATION,
 	LEISURE,
 	UNFORESEEN,
-	OTHERS
+	OTHERS,
+	SERVICES,
+	CLOTHES
 }

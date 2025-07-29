@@ -4,7 +4,9 @@ import { HeaderComponent } from "../header/header.component";
 import { TransactionService } from './transaction.service';
 import { emptyTransaction, Transaction } from './transaction';
 import { Router } from '@angular/router';
-import { categoriesEnum, getCategoryNameInEnglish } from '../category';
+import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
+import { AiService } from '../reports/ai.service';
+import { ChatResponse } from '../reports/chat-response';
 
 @Component({
   selector: 'app-add-transaction',
@@ -14,20 +16,25 @@ import { categoriesEnum, getCategoryNameInEnglish } from '../category';
 })
 export class AddTransactionComponent implements OnInit {
   isEditMode = false;
-  transaction: Transaction = emptyTransaction;
+  transaction: Transaction = JSON.parse(JSON.stringify(emptyTransaction)); // Copy without reference
+  transactionPrompt: Transaction = JSON.parse(JSON.stringify(emptyTransaction));
 
   successMessage: string | null = null;
+  successMessageIA: string | null = null;
   errorMessage: string | null = null;
+  errorMessageIA: string | null = null;
 
   transactionTypes: string[] = ['Receita', 'Despesa'];
 
   transactionService = inject(TransactionService);
   router = inject(Router);
+  aiService = inject(AiService);
   categories = categoriesEnum;
 
   ngOnInit() {
     const transaction = window.history.state.transaction;
     if (transaction) {
+      transaction.category = getCategoryNameInPortuguese(transaction.category);
       this.transaction = transaction;
       this.isEditMode = true;
     }
@@ -50,6 +57,50 @@ export class AddTransactionComponent implements OnInit {
     alert("Selecione um tipo de transação válido (Receita ou Despesa).");
   }
 
+  submitPrompt() {
+    if (!this.validPrompt(this.transactionPrompt)) return;
+    this.errorMessageIA = null;
+
+    this.aiService.getJSONForTransactionsUsingAI(this.transaction.description, this.transaction.type).subscribe({
+      next: (response: ChatResponse) => {
+        if (this.isIncome()) {
+          this.transactionService.addIncomeList(response.message).subscribe({
+            next: (response) => {
+              this.successMessageIA = 'Receita adicionada com sucesso!';
+              console.log('Income added successfully:', response);
+              this.transaction = emptyTransaction;
+            },
+            error: (error) => {
+              console.error('Error adding income:', error);
+              this.errorMessageIA = error;
+              this.successMessageIA = null;
+            }
+          });
+        }
+        else if (this.isExpense()) {
+          this.transactionService.addExpenseList(response.message).subscribe({
+            next: (response) => {
+              this.successMessageIA = 'Despesa adicionada com sucesso!';
+              console.log('Expense added successfully:', response);
+              this.transaction = emptyTransaction;
+            },
+            error: (error) => {
+              console.error('Error adding expense:', error);
+              this.errorMessageIA = error;
+              this.successMessageIA = null;
+            }
+          });
+        }
+        else alert("Selecione um tipo de transação válido (Receita ou Despesa).");
+      },
+      error: (error: any) => {
+        console.error('Error adding transaction:', error);
+        this.errorMessage = error.message;
+        this.successMessage = null;
+      }
+    });
+  }
+
   private isExpense() {
     return this.transaction.type == this.transactionTypes[1];
   }
@@ -70,7 +121,6 @@ export class AddTransactionComponent implements OnInit {
   }
 
   private updateExpense() {
-    this.transaction.category = getCategoryNameInEnglish(this.transaction.category);
     this.transactionService.updateExpense(this.transaction).subscribe({
       next: async (response) => {
         this.successMessage = 'Despesa editada com sucesso!';
@@ -135,5 +185,17 @@ export class AddTransactionComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  validPrompt(transaction: Transaction) {
+    if (!transaction.type || !transaction.description) {
+      this.errorMessageIA = 'Por favor, preencha todos os campos obrigatórios.';
+      return false;
+    }
+    return true;
+  }
+
+  getCategoryNameInPortuguese(categoryName: string) {
+    return getCategoryNameInPortuguese(categoryName);
   }
 }
