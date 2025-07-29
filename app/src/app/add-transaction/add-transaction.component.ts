@@ -5,6 +5,8 @@ import { TransactionService } from './transaction.service';
 import { emptyTransaction, Transaction } from './transaction';
 import { Router } from '@angular/router';
 import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
+import { AiService } from '../reports/ai.service';
+import { ChatResponse } from '../reports/chat-response';
 
 @Component({
   selector: 'app-add-transaction',
@@ -14,15 +16,19 @@ import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
 })
 export class AddTransactionComponent implements OnInit {
   isEditMode = false;
-  transaction: Transaction = emptyTransaction;
+  transaction: Transaction = JSON.parse(JSON.stringify(emptyTransaction)); // Copy without reference
+  transactionPrompt: Transaction = JSON.parse(JSON.stringify(emptyTransaction));
 
   successMessage: string | null = null;
+  successMessageIA: string | null = null;
   errorMessage: string | null = null;
+  errorMessageIA: string | null = null;
 
   transactionTypes: string[] = ['Receita', 'Despesa'];
 
   transactionService = inject(TransactionService);
   router = inject(Router);
+  aiService = inject(AiService);
   categories = categoriesEnum;
 
   ngOnInit() {
@@ -49,6 +55,50 @@ export class AddTransactionComponent implements OnInit {
       return this.addExpense();
     }
     alert("Selecione um tipo de transação válido (Receita ou Despesa).");
+  }
+
+  submitPrompt() {
+    if (!this.validPrompt(this.transactionPrompt)) return;
+    this.errorMessageIA = null;
+
+    this.aiService.getJSONForTransactionsUsingAI(this.transaction.description, this.transaction.type).subscribe({
+      next: (response: ChatResponse) => {
+        if (this.isIncome()) {
+          this.transactionService.addIncomeList(response.message).subscribe({
+            next: (response) => {
+              this.successMessageIA = 'Receita adicionada com sucesso!';
+              console.log('Income added successfully:', response);
+              this.transaction = emptyTransaction;
+            },
+            error: (error) => {
+              console.error('Error adding income:', error);
+              this.errorMessageIA = error;
+              this.successMessageIA = null;
+            }
+          });
+        }
+        else if (this.isExpense()) {
+          this.transactionService.addExpenseList(response.message).subscribe({
+            next: (response) => {
+              this.successMessageIA = 'Despesa adicionada com sucesso!';
+              console.log('Expense added successfully:', response);
+              this.transaction = emptyTransaction;
+            },
+            error: (error) => {
+              console.error('Error adding expense:', error);
+              this.errorMessageIA = error;
+              this.successMessageIA = null;
+            }
+          });
+        }
+        else alert("Selecione um tipo de transação válido (Receita ou Despesa).");
+      },
+      error: (error: any) => {
+        console.error('Error adding transaction:', error);
+        this.errorMessage = error.message;
+        this.successMessage = null;
+      }
+    });
   }
 
   private isExpense() {
@@ -132,6 +182,14 @@ export class AddTransactionComponent implements OnInit {
     }
     if (transaction.value < 1) {
       this.errorMessage = 'Por favor, digite um número maior que zero.'
+      return false;
+    }
+    return true;
+  }
+
+  validPrompt(transaction: Transaction) {
+    if (!transaction.type || !transaction.description) {
+      this.errorMessageIA = 'Por favor, preencha todos os campos obrigatórios.';
       return false;
     }
     return true;

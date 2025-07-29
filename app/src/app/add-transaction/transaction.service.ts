@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Transaction } from './transaction';
@@ -18,15 +18,32 @@ export class TransactionService {
   addIncome(transaction: Transaction) {
     console.log('Adding income transaction:', transaction);
 
-    return this.http.post(this.API_URL+this.INCOME_ENDPOINT, transaction).pipe(
+    return this.http.post(this.API_URL + this.INCOME_ENDPOINT, transaction).pipe(
       catchError(this.handleError)
     );
   }
 
+  addIncomeList(transactions: any) {
+    console.log('Adding income transactions:', transactions);
+    let headers = new HttpHeaders().append("Content-Type", "application/json");
+    return this.http.post(this.API_URL + this.INCOME_ENDPOINT + "/list", transactions, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
   addExpense(transaction: Transaction) {
     console.log('Adding expense transaction:', transaction);
 
-    return this.http.post(this.API_URL+this.EXPENSE_ENDPOINT, transaction).pipe(
+    return this.http.post(this.API_URL + this.EXPENSE_ENDPOINT, transaction).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  addExpenseList(transactions: any) {
+    console.log('Adding expenses transactions:', transactions);
+    let headers = new HttpHeaders().append("Content-Type", "application/json");
+    return this.http.post(this.API_URL + this.EXPENSE_ENDPOINT + "/list", transactions, { headers }).pipe(
       catchError(this.handleError)
     );
   }
@@ -34,14 +51,14 @@ export class TransactionService {
   updateIncome(transaction: Transaction) {
     console.log('Updating income:', transaction);
 
-    return this.http.put(this.API_URL+this.INCOME_ENDPOINT + "/" + transaction.id, transaction).pipe(
+    return this.http.put(this.API_URL + this.INCOME_ENDPOINT + "/" + transaction.id, transaction).pipe(
       catchError(this.handleError)
     );
   }
   updateExpense(transaction: Transaction) {
     console.log('Updating expense:', transaction);
 
-    return this.http.put(this.API_URL+this.EXPENSE_ENDPOINT + "/" + transaction.id, transaction).pipe(
+    return this.http.put(this.API_URL + this.EXPENSE_ENDPOINT + "/" + transaction.id, transaction).pipe(
       catchError(this.handleError)
     );
   }
@@ -49,7 +66,7 @@ export class TransactionService {
   deleteIncome(id: number) {
     console.log('Deleting income:', id);
 
-    let fullUrl = this.API_URL+this.INCOME_ENDPOINT + "/" + id;
+    let fullUrl = this.API_URL + this.INCOME_ENDPOINT + "/" + id;
     return this.http.delete(fullUrl).pipe(
       catchError(this.handleError)
     );
@@ -58,7 +75,7 @@ export class TransactionService {
   deleteExpense(id: number) {
     console.log('Deleting expense:', id);
 
-    let fullUrl = this.API_URL+this.EXPENSE_ENDPOINT + "/" + id;
+    let fullUrl = this.API_URL + this.EXPENSE_ENDPOINT + "/" + id;
     return this.http.delete(fullUrl).pipe(
       catchError(this.handleError)
     );
@@ -66,7 +83,7 @@ export class TransactionService {
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if(error.status == 422) errorMessage = "Falha no envio. Por favor verifique as informações.";
+    if (error.status == 422) errorMessage = "Falha no envio. Por favor verifique as informações.";
     return throwError(() => new Error(errorMessage));
   }
 }
