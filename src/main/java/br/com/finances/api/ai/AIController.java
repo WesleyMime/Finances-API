@@ -15,16 +15,13 @@ public class AIController {
 
 	@GetMapping("/monthOverMonth")
 	public ResponseEntity<ChatResponseDTO> getMonthOverMonthComparisonTakeaway(
-			@RequestParam(name = "income") String income,
-			@RequestParam(name = "expenses") String expenses) {
-		ChatResponseDTO response = this.aiService.getMonthOverMonthComparisonTakeaway(income,
-				expenses);
+			@RequestParam(name = "income") String income, @RequestParam(name = "expenses") String expenses) {
+		ChatResponseDTO response = this.aiService.getMonthOverMonthComparisonTakeaway(income, expenses);
 		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/financialBalance")
-	public ResponseEntity<ChatResponseDTO> getFinancialBalanceTakeaway(
-			@RequestBody String balanceEachMonth) {
+	public ResponseEntity<ChatResponseDTO> getFinancialBalanceTakeaway(@RequestBody String balanceEachMonth) {
 		ChatResponseDTO response = this.aiService.getFinancialBalanceTakeaway(balanceEachMonth);
 		return ResponseEntity.ok(response);
 	}
@@ -32,16 +29,14 @@ public class AIController {
 	@PostMapping("/spendingByCategoryLastMonth")
 	public ResponseEntity<ChatResponseDTO> getSpendingByCategoryLastMonthTakeaway(
 			@RequestBody String spendingByCategoryMonth) {
-		ChatResponseDTO response = this.aiService.getSpendingByCategoryLastMonthTakeaway(
-				spendingByCategoryMonth);
+		ChatResponseDTO response = this.aiService.getSpendingByCategoryLastMonthTakeaway(spendingByCategoryMonth);
 		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/spendingByCategoryYear")
 	public ResponseEntity<ChatResponseDTO> getSpendingByCategoryYearTakeaway(
 			@RequestBody String spendingByCategoryYear) {
-		ChatResponseDTO response = this.aiService.getSpendingByCategoryYearTakeaway(
-				spendingByCategoryYear);
+		ChatResponseDTO response = this.aiService.getSpendingByCategoryYearTakeaway(spendingByCategoryYear);
 		return ResponseEntity.ok(response);
 	}
 
@@ -49,6 +44,13 @@ public class AIController {
 	public ResponseEntity<ChatResponseDTO> getSavingsTakeaway(
 			@RequestParam(name = "savingsPercentage") String savings) {
 		ChatResponseDTO response = this.aiService.getSavingsTakeaway(savings);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/jsonForTransactions")
+	public ResponseEntity<ChatResponseDTO> getJSONForTransactionsUsingAI(@RequestBody String info,
+																		 @RequestParam("type") String type) {
+		ChatResponseDTO response = this.aiService.getJSONForTransactionsUsingAI(info, type);
 		return ResponseEntity.ok(response);
 	}
 }

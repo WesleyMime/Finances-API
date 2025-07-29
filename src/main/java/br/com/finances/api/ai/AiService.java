@@ -41,6 +41,7 @@ public class AiService {
 				.system(INITIAL_PROMPT)
 				.call()
 				.content();
+		assert response != null;
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
@@ -61,6 +62,7 @@ public class AiService {
 				.system(INITIAL_PROMPT)
 				.call()
 				.content();
+		assert response != null;
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
@@ -80,6 +82,7 @@ public class AiService {
 				.system(INITIAL_PROMPT)
 				.call()
 				.content();
+		assert response != null;
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
@@ -99,6 +102,7 @@ public class AiService {
 				.system(INITIAL_PROMPT)
 				.call()
 				.content();
+		assert response != null;
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
@@ -118,12 +122,93 @@ public class AiService {
 				.system(INITIAL_PROMPT)
 				.call()
 				.content();
+		assert response != null;
+		String finalResponse = removeThinking(response);
+		return new ChatResponseDTO(finalResponse);
+	}
+
+	public ChatResponseDTO getJSONForTransactionsUsingAI(String info, String type) {
+		// Few-shot prompting
+		String prompt = """
+				Parse a user's transaction into valid JSON
+				
+				EXAMPLE 1:
+				Adicione salário de 5440 na data de 5 de março de 2024.
+				JSON Response:
+				[
+					{
+						"description": "Salário",
+						"value": "5440",
+						"date": "2024-03-05"
+					}
+				]
+				EXAMPLE 2:
+				120 Supermercado no dia 1 e 45 no dia 10 de maio de 2024.
+				JSON Response:
+				[
+					{
+					 "description": "Supermercado",
+					 "value": "120",
+					 "date": "2024-05-01",
+					 "category": "FOOD"
+					},
+					{
+					 "description": "Farmácia",
+					 "value": "45",
+					 "date": "2024-05-10",
+					 "category": "HEALTH"
+					}
+				]
+				
+				EXAMPLE 2:
+				Parcelas de 299 da faculdade por 3 meses a partir de agosto de 2024.
+				JSON Response:
+				[
+					{
+					 "description": "Faculdade",
+					 "value": "299",
+					 "date": "2024-08-01",
+					 "category": "EDUCATION"
+					},
+					{
+					 "description": "Faculdade",
+					 "value": "299",
+					 "date": "2024-09-01",
+					 "category": "EDUCATION"
+					},
+					{
+					 "description": "Faculdade",
+					 "value": "299",
+					 "date": "2024-10-01",
+					 "category": "EDUCATION"
+					}
+				]
+				Category options:
+					FOOD,
+					HEALTH,
+					HOME,
+					TRANSPORT,
+					EDUCATION,
+					LEISURE,
+					UNFORESEEN,
+					OTHERS,
+					SERVICES,
+					CLOTHES
+				""";
+		LocalDate now = LocalDate.now();
+		String response = this.chatClient
+				.prompt(prompt + " " + info + " " + type + " Today is: " + now)
+				.options(chatOptions)
+				.system(INITIAL_PROMPT)
+				.call()
+				.content();
+		assert response != null;
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
 
 	private static String removeThinking(String response) {
-		int i = response.lastIndexOf(">"); // </think>
-		return response.substring(i + 3); // 3 = >\n
+		int indexFinalOfThinkSection = response.lastIndexOf(">"); // </think>
+		return response.substring(indexFinalOfThinkSection + 3); // 3 = >\n
 	}
 }
