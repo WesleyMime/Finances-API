@@ -35,12 +35,11 @@
             @if (!isEditMode) {
               <option value="" selected disabled>Selecione categoria</option>
             } @else {
-            <option value="{{ transaction.category }}" selected disabled>{{
-              getCategoryNameInPortuguese(transaction.category) }}
+            <option value="{{ transaction.category }}" selected disabled>{{ transaction.category }}
             </option>
             }
             @for (cat of categories; track cat) {
-            <option [value]="cat.name ">{{ cat.namePtBr }}</option>
+            <option [value]="cat.namePtBr ">{{ cat.namePtBr }}</option>
             }
           </select>
         </div>

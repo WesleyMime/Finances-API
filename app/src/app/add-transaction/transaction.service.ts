@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { Transaction } from './transaction';
 import { environment } from '../environments/environment';
 
@@ -23,7 +23,7 @@ export class TransactionService {
     );
   }
 
-  addIncomeList(transactions: any) {
+  addIncomeList(transactions: any): Observable<any> {
     console.log('Adding income transactions:', transactions);
     let headers = new HttpHeaders().append("Content-Type", "application/json");
     return this.http.post(this.API_URL + this.INCOME_ENDPOINT + "/list", transactions, { headers }).pipe(
@@ -40,7 +40,7 @@ export class TransactionService {
     );
   }
 
-  addExpenseList(transactions: any) {
+  addExpenseList(transactions: any): Observable<any> {
     console.log('Adding expenses transactions:', transactions);
     let headers = new HttpHeaders().append("Content-Type", "application/json");
     return this.http.post(this.API_URL + this.EXPENSE_ENDPOINT + "/list", transactions, { headers }).pipe(
@@ -84,6 +84,7 @@ export class TransactionService {
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
     if (error.status == 422) errorMessage = "Falha no envio. Por favor verifique as informações.";
+    if (error.status == 409) errorMessage = "Uma transação com esta descrição já foi registrada neste mês.";
     return throwError(() => new Error(errorMessage));
   }
 }
