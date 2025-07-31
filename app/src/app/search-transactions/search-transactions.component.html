@@ -3,13 +3,13 @@
   <section class="page-overview">
       <h1>Pesquisar Transações</h1>
       <p class="subtitle">Filtre transações por data e/ou descrição para encontrar receitas e despesas específicas.</p>
-  
+
     <div class="search-form">
       <div class="form-group">
         <label for="date">Data</label>
         <input type="month" id="date" [(ngModel)]="date">
       </div>
-  
+
       <div class="form-group">
         <label for="description">Descrição</label>
         <input type="text" id="description" [(ngModel)]="description" placeholder="Descrição">
@@ -23,7 +23,7 @@
           <option value="Expense">Despesa</option>
         </select>
       </div>
-  
+
       <button class="btn primary search" (click)="onSearch()">Pesquisar</button>
     </div>
     <div class="card gray-background">

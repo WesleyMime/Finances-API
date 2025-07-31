@@ -15,7 +15,7 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
-export class SearchTransactionsComponent  {
+export class SearchTransactionsComponent {
 
   date: string | null = null;
   description: string | null = null;
@@ -47,6 +47,9 @@ export class SearchTransactionsComponent  {
       }
       return;
     }
+    if (!this.description && !this.date) {
+      this.description = " ";
+    }
     if (this.description) {
       if (this.incomeIsSelected()) {
         this.searchIncomeByDescription(this.description);
@@ -61,14 +64,14 @@ export class SearchTransactionsComponent  {
 
   private searchIncomeByDescription(description: string) {
     this.searchService.searchIncomeByDescription(description)
-    .subscribe({
-      next: (result: Transaction[]) => {
-        result.forEach((transaction) => {
-          transaction.type = "Receita";
-        });
-        this.searchResultsIncome.push(...result);
-      }
-    });
+      .subscribe({
+        next: (result: Transaction[]) => {
+          result.forEach((transaction) => {
+            transaction.type = "Receita";
+          });
+          this.searchResultsIncome.push(...result);
+        }
+      });
   }
 
   private searchIncomeByDate(date: Date) {
@@ -90,7 +93,7 @@ export class SearchTransactionsComponent  {
         next: (result: Transaction[]) => {
           result.forEach((transaction) => {
             transaction.type = "Despesa";
-          transaction.category = getCategoryNameInPortuguese(transaction.category);
+            transaction.category = getCategoryNameInPortuguese(transaction.category);
             transaction.value = transaction.value * -1;
           });
           this.searchResultsExpenses.push(...result);
@@ -99,22 +102,23 @@ export class SearchTransactionsComponent  {
   }
 
   private searchExpenseByDate(date: Date) {
-  this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
-    .subscribe({
-      next: (result: Transaction[]) => {
-        result.forEach((transaction) => {
-          transaction.type = "Despesa";
-          transaction.category = getCategoryNameInPortuguese(transaction.category);
-          transaction.value = transaction.value * -1;
-        });
-        let filteredResults = this.filterByDescription(result);
-        this.searchResultsExpenses.push(...filteredResults);
-      }
-    });
+    this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
+      .subscribe({
+        next: (result: Transaction[]) => {
+          result.forEach((transaction) => {
+            transaction.type = "Despesa";
+            transaction.category = getCategoryNameInPortuguese(transaction.category);
+            transaction.value = transaction.value * -1;
+          });
+          let filteredResults = this.filterByDescription(result);
+          this.searchResultsExpenses.push(...filteredResults);
+        }
+      });
   }
 
   private filterByDescription(transactions: Transaction[]): Transaction[] {
     if (this.description) {
+      this.description = this.description.trim();
       let filteredResults = transactions.filter((transaction) => {
         return transaction.description.toLocaleLowerCase()
           .includes(this.description ?? ''.toLocaleLowerCase());

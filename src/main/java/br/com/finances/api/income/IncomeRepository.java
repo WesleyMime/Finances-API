@@ -19,10 +19,12 @@ public interface IncomeRepository extends GenericRepository<Income>, JpaReposito
 	Optional<Income> findByDescriptionAndDate(String description, Integer year, Integer month,
 											  Client client);
 
-	@Query("SELECT i FROM Income i WHERE EXTRACT(year FROM i.date) = ?1 AND EXTRACT(month FROM i.date) = ?2 AND i.client = ?3")
+	@Query("SELECT i FROM Income i WHERE EXTRACT(year FROM i.date) = ?1 AND EXTRACT(month FROM i.date) = ?2 AND i" +
+			".client = ?3 ORDER BY i.date DESC")
 	List<Income> findByYearAndMonth(Integer year, Integer month, Client client);
 
-	@Query("SELECT sum(i.value) FROM Income i WHERE year(i.date) = :year AND month(i.date) = :month AND i.client = :client")
+	@Query("SELECT sum(i.value) FROM Income i WHERE year(i.date) = :year AND month(i.date) = :month AND i.client = " +
+			":client")
 	Optional<BigDecimal> totalIncomeMonth(Integer year, Integer month, Client client);
 
 	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) >= ?1 " +

@@ -71,7 +71,7 @@ class IncomeServiceTest {
 	
 	@Test
 	void shouldReturnIncomeByDescription() {
-		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClient(any(), any()))
+		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(any(), any()))
 				.thenReturn(List.of(INCOME));
 		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());

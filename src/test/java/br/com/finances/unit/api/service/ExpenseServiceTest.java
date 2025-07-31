@@ -69,7 +69,7 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldReturnExpenseByDescription() {
-		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClient(DESCRIPTION, CLIENT))
+		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION, CLIENT))
 				.thenReturn(List.of(EXPENSE));
 		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION, PRINCIPAL);
 		Assertions.assertFalse(all.isEmpty());

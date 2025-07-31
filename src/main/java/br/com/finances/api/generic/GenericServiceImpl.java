@@ -38,7 +38,7 @@ public class GenericServiceImpl
 		Client client = getClient();
 
 		if (description != null) {
-			List<T> list = repository.findByDescriptionContainingIgnoreCaseAndClient(description,
+			List<T> list = repository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(description,
 					client);
 			if (list.isEmpty()) return List.of();
 
