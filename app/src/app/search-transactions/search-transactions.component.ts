@@ -38,7 +38,7 @@ export class SearchTransactionsComponent {
     this.searchResultsIncome = [];
     this.searchResultsExpenses = [];
     if (this.date) {
-      let date = this.formatDate(this.date);
+      let date = this.date.replace("-", "/");
       if (this.incomeIsSelected()) {
         this.searchIncomeByDate(date);
       }
@@ -74,8 +74,8 @@ export class SearchTransactionsComponent {
       });
   }
 
-  private searchIncomeByDate(date: Date) {
-    this.searchService.searchIncomeByDate(date.getFullYear(), date.getMonth())
+  private searchIncomeByDate(date: string) {
+    this.searchService.searchIncomeByDate(date)
       .subscribe({
         next: (result: Transaction[]) => {
           result.forEach((transaction) => {
@@ -101,8 +101,8 @@ export class SearchTransactionsComponent {
       });
   }
 
-  private searchExpenseByDate(date: Date) {
-    this.searchService.searchExpenseByDate(date.getFullYear(), date.getMonth())
+  private searchExpenseByDate(date: string) {
+    this.searchService.searchExpenseByDate(date)
       .subscribe({
         next: (result: Transaction[]) => {
           result.forEach((transaction) => {
@@ -126,14 +126,6 @@ export class SearchTransactionsComponent {
       return filteredResults;
     }
     return transactions;
-  }
-
-  private formatDate(date: string): Date {
-    let dateSplit = date.split("-");
-    // new Date using html type month returns day 1 at 00:00,
-    // but because of GMT -3 it goes to day 31/30 21:00,
-    // So i'm parsing the string eg 2025-01.
-    return new Date(Number.parseFloat(dateSplit[0]), Number.parseFloat(dateSplit[1]), 1);
   }
 
   editTransaction(transaction: Transaction) {

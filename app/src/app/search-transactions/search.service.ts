@@ -14,14 +14,14 @@ export class SearchService {
 
   constructor(readonly http: HttpClient) { }
 
-  searchIncomeByDate(year: number, month: number): Observable<any> {
-    return this.http.get(this.API_URL + this.INCOME_ENDPOINT + "/" + year+ "/" + month).pipe(
+  searchIncomeByDate(date: string): Observable<any> {
+    return this.http.get(this.API_URL + this.INCOME_ENDPOINT + "/" + date).pipe(
       catchError(this.handleError)
     );
   }
 
-  searchExpenseByDate(year: number, month: number): Observable<any> {
-    return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT + "/" + year+ "/" + month).pipe(
+  searchExpenseByDate(date: string): Observable<any> {
+    return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT + "/" + date).pipe(
       catchError(this.handleError)
     );
   }
@@ -40,7 +40,7 @@ export class SearchService {
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if(error.status == 404) errorMessage = "Nenhuma transação encontrada.";
+    if (error.status == 404) errorMessage = "Nenhuma transação encontrada.";
     return throwError(() => new Error(errorMessage));
   }
 }
