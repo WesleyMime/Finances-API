@@ -29,12 +29,14 @@ export class SearchTransactionsComponent {
   transactionService = inject(TransactionService);
 
   transactionPendingRemoval: Transaction | null = null;
+  searching = false;
   router: Router;
   constructor(router: Router) {
     this.router = router;
   }
 
   onSearch(): void {
+    this.searching = true;
     this.searchResultsIncome = [];
     this.searchResultsExpenses = [];
     if (this.date) {
@@ -70,6 +72,7 @@ export class SearchTransactionsComponent {
             transaction.type = "Receita";
           });
           this.searchResultsIncome.push(...result);
+          this.searching = false;
         }
       });
   }
@@ -83,6 +86,7 @@ export class SearchTransactionsComponent {
           });
           let filteredResults = this.filterByDescription(result);
           this.searchResultsIncome.push(...filteredResults);
+          this.searching = false;
         }
       });
   }
@@ -97,6 +101,7 @@ export class SearchTransactionsComponent {
             transaction.value = transaction.value * -1;
           });
           this.searchResultsExpenses.push(...result);
+          this.searching = false;
         }
       });
   }
@@ -112,6 +117,7 @@ export class SearchTransactionsComponent {
           });
           let filteredResults = this.filterByDescription(result);
           this.searchResultsExpenses.push(...filteredResults);
+          this.searching = false;
         }
       });
   }

@@ -83,7 +83,13 @@
         </div>
       }
 
-      @if (searchResultsIncome.length === 0 && searchResultsExpenses.length === 0) {
+      @if (searching) {
+      <div class="no-results">
+        Pesquisando...
+      </div>
+      }
+
+      @if (searchResultsIncome.length === 0 && searchResultsExpenses.length === 0 && !searching) {
         <div class="no-results">
             Nenhuma transação encontrada.
         </div>
