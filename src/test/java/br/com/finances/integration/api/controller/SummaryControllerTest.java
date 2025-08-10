@@ -52,11 +52,15 @@ class SummaryControllerTest {
 	
 	@BeforeAll
 	void beforeAll() throws IOException {
+		clientRepository.deleteAll();
+		expenseRepository.deleteAll();
+		incomeRepository.deleteAll();
 		this.redisServer = new RedisServer(6379);
 		redisServer.start();
 		if((clientRepository.findByEmail(CLIENT.getUsername()).isEmpty())) {
 			clientRepository.save(CLIENT);			
 		}
+		populateDB();
 	}
 	
 	@BeforeEach
@@ -88,7 +92,6 @@ class SummaryControllerTest {
 	}
 	@Test
 	void shouldReturnSummaryForPast12Months() throws Exception {
-		populateDB();
 		mockMvc.perform(MockMvcRequestBuilders
 						.get("/summary/last-year")
 						.contentType(MediaType.APPLICATION_JSON))
