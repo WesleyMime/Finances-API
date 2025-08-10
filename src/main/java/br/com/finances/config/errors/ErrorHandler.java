@@ -3,6 +3,7 @@ package br.com.finances.config.errors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,6 +37,22 @@ public class ErrorHandler {
 		e.setTitle("Email already registered.");
 		e.setDetail("There is already a client with this email registered.");
 		return ResponseEntity.status(e.getStatusCode()).body(e.getBody());
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ProblemDetail> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+		problemDetail.setDetail("Documentation: https://documenter.getpostman.com/view/19203694/UVeGs6cv");
+		return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<ProblemDetail> runtimeExceptionHandler(RuntimeException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		problemDetail.setTitle("Something went wrong :( try again later. " +
+				"Documentation: https://documenter.getpostman.com/view/19203694/UVeGs6cv");
+		problemDetail.setDetail(e.getMessage());
+		return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
 	}
 
 	private record FieldErrorDetail(String field, String detail) {
