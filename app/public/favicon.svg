@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="1000" height="1000">
+  <style>
+    #light-icon {
+    display: inline;
+    }
+    #dark-icon {
+    display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+    #light-icon {
+    display: none;
+    }
+    #dark-icon {
+    display: inline;
+    }
+    }
+  </style>
+  <g id="light-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+         width="1000" height="1000">
+      <g>
+        <g transform="matrix(20.833333333333332,0,0,20.833333333333332,0,0)">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+               width="48px" height="48px">
+            <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960"
+                 width="48px" fill="#000000">
+              <path
+                d="M318-420v-295h90v295l-45-45-45 45Zm194 91v-551h90v461l-90 90ZM124-229v-320h90v230l-90 90Zm-4 111 246-246 149 132 262-262h-88v-60h191v190h-60v-88L517-149 368-280 206-118h-86Z"></path>
+            </svg>
+          </svg>
+        </g>
+      </g>
+    </svg>
+  </g>
+  <g id="dark-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+         width="1000" height="1000">
+      <g>
+        <g transform="matrix(20.833333333333332,0,0,20.833333333333332,0,0)">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+               width="48px" height="48px">
+            <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960"
+                 width="48px" fill="#e3e3e3">
+              <path
+                d="M318-420v-295h90v295l-45-45-45 45Zm194 91v-551h90v461l-90 90ZM124-229v-320h90v230l-90 90Zm-4 111 246-246 149 132 262-262h-88v-60h191v190h-60v-88L517-149 368-280 206-118h-86Z"></path>
+            </svg>
+          </svg>
+        </g>
+      </g>
+    </svg>
+  </g>
+</svg>
