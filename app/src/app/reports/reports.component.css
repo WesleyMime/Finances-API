@@ -1,21 +1,3 @@
-.reports-content {
-    padding: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.page-overview h1 {
-    font-size: 2em;
-    margin-bottom: 5px;
-    color: #ffffff;
-}
-
-.page-overview .subtitle {
-    font-size: 1em;
-    color: #cbd5e0;
-    margin-bottom: 30px;
-}
-
 /* Metrics */
 .metrics {
     display: flex;

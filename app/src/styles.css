@@ -10,6 +10,25 @@ body {
   min-width: auto;
 }
 
+.content {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 60px);
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 5px;
+  color: #ffffff;
+}
+
+.subtitle {
+    font-size: 1em;
+    color: #cbd5e0;
+    margin-bottom: 30px;
+}
+
 .card {
   border: 1px solid #2d3748;
   border-radius: 8px;

@@ -1,11 +1,23 @@
+h1 {
+  margin-bottom: 30px;
+}
+
 a {
   text-decoration: none;
   color: #cbd5e0;
 }
 
 .card h2 {
+  font-size: 1.3em;
   color: #ffffff;
   text-align: center;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 @media (max-width: 990px) {
