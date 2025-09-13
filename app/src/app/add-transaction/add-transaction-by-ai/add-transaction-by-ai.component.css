@@ -1,0 +1,49 @@
+
+.add-transaction-box {
+  background-color: #1a202c;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.add-transaction-box h2 {
+  font-size: 1.8em;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.form-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: rgb(220, 14, 14);
+}
+
+@media (max-width: 800px) {
+  .add-transaction-box {
+    max-width: 75%;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-transaction-box h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: center;
+  }
+}

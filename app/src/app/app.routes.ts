@@ -8,6 +8,7 @@ import { RegisterComponent } from './auth/register/register.component';
 import { ReportsComponent } from './reports/reports.component';
 import { SearchTransactionsComponent } from './search-transactions/search-transactions.component';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
+import { AddTransactionByAiComponent } from './add-transaction/add-transaction-by-ai/add-transaction-by-ai.component';
 import { AddTransactionManuallyComponent } from './add-transaction/add-transaction-manually/add-transaction-manually.component';
 
 export const routes: Routes = [
@@ -21,4 +22,5 @@ export const routes: Routes = [
     {path: "reports", component: ReportsComponent, title: "Relatório", canActivate: [authGuard]},
     {path: "search", component: SearchTransactionsComponent, title: "Pesquisar", canActivate: [authGuard]}
   { path: "add-transaction-manually", component: AddTransactionManuallyComponent, title: "Adicionar Transação", canActivate: [authGuard] },
+  { path: "add-transaction-by-ai", component: AddTransactionByAiComponent, title: "Adicionar Transação", canActivate: [authGuard] },
 ];
