@@ -28,9 +28,10 @@ O projeto foi desenvolvido em sprints com duração 1 semana cada, que possuiam 
 
 ## Características principais
 
-- **Operações CRUD** para registros financeiros (renda e despesas).
+- Operações CRUD para registros financeiros (renda e despesas) usando **Spring Boot**.
 - Frontend desenvolvido utilizando **Angular** para uma experiência de usuário dinâmica e
   responsíva.
+- Integração com IA para relatórios financeiros customizados com **Spring AI**.
 - Controle de acesso seguro usando **autenticação JWT**.
 - Armazenamento de dados persistente com **PostgreSQL**.
 - Contêinerzado para facilitar a implantação usando **Docker**.
@@ -78,6 +79,9 @@ docker compose up
 
 Depois que o aplicativo estiver em execução, você pode usar a aplicação Angular ou usar um
 API cliente como o Postman para interagir com a API.
+Para usar as funcionalidades de IA, você irá precisar de uma API Key. Você pode conseguir uma de
+graça
+em https://groq.com/, após obter a chave, mude o parâmetro AI_API_KEY no docker-compose para ela.
 
 Os links para acesso são:
 

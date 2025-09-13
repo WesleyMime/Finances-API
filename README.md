@@ -29,8 +29,9 @@ For better management of activities, trello was used.
 
 ## Key Features
 
-- **CRUD operations** for financial records (income and expenses).
+- CRUD operations for financial records (income and expenses) using **Spring Boot**.
 - Frontend developed using **Angular** for a dynamic and responsive user experience.
+- AI integration for custom financial analysis with **Spring AI**.
 - Secure access control using **JWT authentication**.
 - Persistent data storage with **PostgreSQL**.
 - Containerized for easy deployment using **Docker**.
@@ -78,6 +79,8 @@ docker compose up
 
 Once the application is running, you can use the Angular app or use an API client like Postman
 to interact with the API.
+To use AI features, you will need an API Key. You can get one for free at https://groq.com/,
+after obtaining the key, change the AI_API_KEY param in docker-compose to it.
 
 The links to access are:
 
