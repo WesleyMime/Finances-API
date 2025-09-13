@@ -1,0 +1,28 @@
+<app-header></app-header>
+<main class="content">
+  <h1>Escolha como quer adicionar transações:</h1>
+  <div class="cards-grid">
+    <a [routerLink]="['/add-transaction-manually']">
+      <div class="card gray-background">
+        <h2>Manualmente</h2>
+        <p>Para quando se quer criar somente poucas transações e de diferentes tipos, exemplos:</p>
+        <ul>
+          <li>Pagamento</li>
+          <li>Cabeleireiro</li>
+          <li>Restaurante</li>
+        </ul>
+      </div>
+    </a>
+    <a [routerLink]="['/add-transaction-by-ai']">
+      <div class="card gray-background">
+        <h2>Com Inteligência Artificial</h2>
+        <p>Para quando se quer criar várias transações do mesmo tipo e de uma só vez, exemplos:</p>
+        <ul>
+          <li>12 Parcelas de 199 da academia.</li>
+          <li>Pagamento de 120 de Internet até o fim do ano.</li>
+          <li>Mensalidade de 499 da faculdade por 6 meses.</li>
+        </ul>
+      </div>
+    </a>
+  </div>
+</main>

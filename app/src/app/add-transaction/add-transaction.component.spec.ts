@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddTransactionComponent } from './add-transaction.component';
+import { AddTransactionManuallyComponent } from './add-transaction-manually.component';
 
-describe('AddTransactionComponent', () => {
-  let component: AddTransactionComponent;
-  let fixture: ComponentFixture<AddTransactionComponent>;
+describe('AddTransactionManuallyComponent', () => {
+  let component: AddTransactionManuallyComponent;
+  let fixture: ComponentFixture<AddTransactionManuallyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddTransactionComponent]
+      imports: [AddTransactionManuallyComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AddTransactionComponent);
+    fixture = TestBed.createComponent(AddTransactionManuallyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

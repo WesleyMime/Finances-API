@@ -1,0 +1,15 @@
+a {
+  text-decoration: none;
+  color: #cbd5e0;
+}
+
+.card h2 {
+  color: #ffffff;
+  text-align: center;
+}
+
+@media (max-width: 990px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
