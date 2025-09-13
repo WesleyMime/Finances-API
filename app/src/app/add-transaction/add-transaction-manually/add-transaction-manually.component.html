@@ -92,45 +92,4 @@
       </div>
     </form>
   </div>
-  <div class="add-transaction-box">
-    <h2>Adicionar com IA</h2>
-    <div>
-      <form (ngSubmit)="submitPrompt()">
-        <div class="form-group">
-          <label for="transactionType">Tipo de Transação*</label>
-          <select
-            id="transactionTypeIA"
-            [(ngModel)]="transactionPrompt.type"
-            name="transactionType"
-            required
-          >
-            <option value="" disabled selected>Selecione tipo</option>
-            @for (type of transactionTypes; track type) {
-            <option [value]="type">{{ type }}</option>
-            }
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="description">Descrição*</label>
-          <textarea
-            id="descriptionIA"
-            [(ngModel)]="transactionPrompt.description"
-            placeholder="12 parcelas de 230 do celular a partir de julho de 2024"
-            name="notes"
-            required
-            rows="4"
-          ></textarea>
-        </div>
-        @if (errorMessageIA) {
-        <p class="server-error">{{ errorMessageIA }}</p>
-        }
-        <div class="form-actions">
-          <button type="submit" class="btn primary">Adicionar Transação</button>
-          @if (successMessageIA) {
-          <p class="server-success">{{ successMessageIA }}</p>
-          }
-        </div>
-      </form>
-    </div>
-  </div>
 </main>

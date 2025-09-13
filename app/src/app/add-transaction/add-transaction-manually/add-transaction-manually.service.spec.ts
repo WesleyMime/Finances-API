@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TransactionService } from './transaction.service';
+import { TransactionService } from './../transaction.service';
 
 describe('AddTransactionService', () => {
   let service: TransactionService;
