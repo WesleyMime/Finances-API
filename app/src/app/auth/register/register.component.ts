@@ -17,10 +17,11 @@ export class RegisterComponent {
   constructor(
     readonly authService: AuthService,
     readonly router: Router,
-  ) {}
+  ) { }
 
-  credentials: IRegisterUser = {email: '', name: '', password: '', confirmPassword: ''};
+  credentials: IRegisterUser = { email: '', name: '', password: '', confirmPassword: '' };
   passwordVisible: boolean = false;
+  isLoading: boolean = false;
   errorMessage: string | null = null;
 
   togglePasswordVisibility() {
@@ -38,15 +39,18 @@ export class RegisterComponent {
       fullName: this.credentials.name,
       email: this.credentials.email
     });
+    this.isLoading = true;
     this.authService.register(this.credentials).subscribe({
       next: (response: any) => {
         console.log('Register successful', response);
         alert('Registrado com sucesso!');
         this.router.navigate(['/login']);
+        this.isLoading = false;
       },
       error: (error: Error) => {
         console.log('Register failed', error);
         this.errorMessage = error.message;
+        this.isLoading = false;
       }
     });
   }

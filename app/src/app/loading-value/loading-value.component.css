@@ -1,0 +1,9 @@
+div {
+  display: flex;
+  align-items: center;
+  height: 21px;
+}
+
+img {
+  margin-right:10px;
+}

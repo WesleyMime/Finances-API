@@ -6,10 +6,11 @@ import { emptyTransaction, Transaction } from '../transaction';
 import { Router } from '@angular/router';
 import { categoriesEnum, getCategoryNameInEnglish, getCategoryNameInPortuguese } from '../../category';
 import { isExpense, isIncome, transactionTypeEnum } from '../transaction-types';
+import { LoadingValueComponent } from '../../loading-value/loading-value.component';
 
 @Component({
   selector: 'add-transaction-manually',
-  imports: [FormsModule, HeaderComponent],
+  imports: [FormsModule, HeaderComponent, LoadingValueComponent],
   templateUrl: './add-transaction-manually.component.html',
   styleUrls: ['./add-transaction-manually.component.css']
 })
@@ -19,6 +20,7 @@ export class AddTransactionManuallyComponent implements OnInit {
 
   successMessage: string | null = null;
   errorMessage: string | null = null;
+  isLoading: boolean = false;
 
   transactionTypes = transactionTypeEnum;
 
@@ -39,6 +41,7 @@ export class AddTransactionManuallyComponent implements OnInit {
     if (!this.valid(this.transaction)) return;
     this.errorMessage = null;
     this.successMessage = null;
+    this.isLoading = true;
 
     if (isIncome(this.transaction.type)) {
       if (this.isEditMode)
@@ -51,6 +54,7 @@ export class AddTransactionManuallyComponent implements OnInit {
       return this.addExpense();
     }
     alert("Selecione um tipo de transação válido (Receita ou Despesa).");
+    this.isLoading = false;
   }
 
   private addExpense() {
@@ -60,11 +64,13 @@ export class AddTransactionManuallyComponent implements OnInit {
         this.successMessage = 'Despesa adicionada com sucesso!';
         console.log('Expense added successfully:', response);
         this.transaction = emptyTransaction;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error adding expense:', error);
         this.errorMessage = error;
         this.successMessage = null;
+        this.isLoading = false;
       }
     });
   }
@@ -77,11 +83,13 @@ export class AddTransactionManuallyComponent implements OnInit {
         console.log('Expense edited successfully:', response);
         await this.sleep(1);
         this.router.navigateByUrl("/dashboard");
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error editing expense:', error);
         this.errorMessage = error;
         this.successMessage = null;
+        this.isLoading = false;
       }
     });
   }
@@ -92,11 +100,13 @@ export class AddTransactionManuallyComponent implements OnInit {
         this.successMessage = 'Receita adicionada com sucesso!';
         console.log('Income added successfully:', response);
         this.transaction = emptyTransaction;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error adding income:', error);
         this.errorMessage = error;
         this.successMessage = null;
+        this.isLoading = false;
       }
     });
   }
@@ -108,11 +118,13 @@ export class AddTransactionManuallyComponent implements OnInit {
         console.log('Income edited successfully:', response);
         await this.sleep(1);
         this.router.navigateByUrl("/search");
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error editing income:', error);
         this.errorMessage = error;
         this.successMessage = null;
+        this.isLoading = false;
       }
     });
   }

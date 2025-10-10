@@ -45,78 +45,78 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Define header states for different route patterns.
   readonly headerConfigs: HeaderConfig[] = [
-     {
-        routePattern: '/dashboard',
-        showAppNav: true,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: true,
-        activeNavGroup: 'app',
-        activeNavLink: '/dashboard',
-      },
-       {
-        routePattern: '/add-transaction',
-        showAppNav: true,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: true,
-        activeNavGroup: 'app',
-        activeNavLink: '/add-transaction',
-      },
-      {
-        routePattern: '/reports',
-        showAppNav: true,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: true,
-        activeNavGroup: 'app',
-        activeNavLink: '/reports',
-      },
-      {
-        routePattern: '/search',
-        showAppNav: true,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: true,
-        activeNavGroup: 'app',
-        activeNavLink: '/search',
-      },
-      {
-        routePattern: '/login',
-        showAppNav: false,
-        showLoginAction: false,
-        showRegisterAction: true,
-        showProfileActions: false,
-        activeNavGroup: null,
-      },
-      {
-        routePattern: '/register',
-        showAppNav: false,
-        showLoginAction: true,
-        showRegisterAction: false,
-        showProfileActions: false,
-        activeNavGroup: null
-      },
-      {
-        routePattern: '/client/edit',
-        showAppNav: true,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: true,
-        activeNavGroup: null
-      },
-      {
-        routePattern: '/',
-        showAppNav: false,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: false,
-        activeNavGroup: null
-      },
-      // Fallback configuration if no pattern matches (e.g., 404 page)
-      // This config won't have a routePattern, or could have an empty string pattern.
-      // We handle the fallback in the update method if find returns undefined.
-    ];
+    {
+      routePattern: '/dashboard',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: 'app',
+      activeNavLink: '/dashboard',
+    },
+    {
+      routePattern: '/add-transaction',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: 'app',
+      activeNavLink: '/add-transaction',
+    },
+    {
+      routePattern: '/reports',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: 'app',
+      activeNavLink: '/reports',
+    },
+    {
+      routePattern: '/search',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: 'app',
+      activeNavLink: '/search',
+    },
+    {
+      routePattern: '/login',
+      showAppNav: false,
+      showLoginAction: false,
+      showRegisterAction: true,
+      showProfileActions: false,
+      activeNavGroup: null,
+    },
+    {
+      routePattern: '/register',
+      showAppNav: false,
+      showLoginAction: true,
+      showRegisterAction: false,
+      showProfileActions: false,
+      activeNavGroup: null
+    },
+    {
+      routePattern: '/client/edit',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: null
+    },
+    {
+      routePattern: '/',
+      showAppNav: false,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: false,
+      activeNavGroup: null
+    },
+    // Fallback configuration if no pattern matches (e.g., 404 page)
+    // This config won't have a routePattern, or could have an empty string pattern.
+    // We handle the fallback in the update method if find returns undefined.
+  ];
 
   readonly destroy$ = new Subject<void>(); // Subject to signal unsubscription
 
@@ -148,13 +148,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const matchedConfig = this.headerConfigs.find(config => currentUrl.startsWith(config.routePattern));
 
     const fallbackConfig: HeaderConfig = {
-        routePattern: '',
-        showAppNav: false,
-        showLoginAction: false,
-        showRegisterAction: false,
-        showProfileActions: false,
-        activeNavGroup: null,
-        activeNavLink: undefined,
+      routePattern: '',
+      showAppNav: false,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: false,
+      activeNavGroup: null,
+      activeNavLink: undefined,
     };
 
     const finalConfig = matchedConfig || fallbackConfig;
@@ -168,22 +168,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private updateNavActiveState(activeGroup: 'marketing' | 'app' | null, activeLink: string | undefined): void {
-      this.appNavItems.forEach(item => item.active = false);
+    this.appNavItems.forEach(item => item.active = false);
 
-      if (activeGroup === 'app' && activeLink !== undefined) {
-           const activeItem = this.appNavItems.find(item => item.link === activeLink);
-           if (activeItem) {
-               activeItem.active = true;
-           }
+    if (activeGroup === 'app' && activeLink !== undefined) {
+      const activeItem = this.appNavItems.find(item => item.link === activeLink);
+      if (activeItem) {
+        activeItem.active = true;
       }
+    }
   }
 
-  contaDemo() {
-    let credentials = {email: 'test@email.com', password: 'teste', name: '', confirmPassword: ''};
+  isLoading: boolean = false;
+
+  demoAccount() {
+    this.isLoading = true;
+    let credentials = { email: 'test@email.com', password: 'teste', name: '', confirmPassword: '' };
     this.authService.login(credentials).subscribe({
       next: (response) => {
         console.log('Login successful', response);
         this.router.navigate(['/dashboard']);
+        this.isLoading = false;
       }
     });
   }

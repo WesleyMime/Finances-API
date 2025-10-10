@@ -1,0 +1,11 @@
+@if (value) {
+<!-- If value is present (loaded or true), shows original HTML-->
+<ng-content></ng-content>
+}
+@else {
+<!-- If not, replace HTML with image (loading gif) -->
+<div>
+  <img [src]="loadingImg" width="35" height="35" priority>
+  <p>{{ message }}</p>
+</div>
+}

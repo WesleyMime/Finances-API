@@ -32,10 +32,11 @@
       <p class="server-error">{{ errorMessageIA }}</p>
       }
       <div class="form-actions">
-        <button type="submit" class="btn primary">Adicionar Transação</button>
-        @if (successMessageIA) {
-        <p class="server-success">{{ successMessageIA }}</p>
-        }
+        <button type="submit" class="btn primary" [disabled]="isLoading">Adicionar Transação
+        </button>
+        <app-loading-value [value]="!isLoading">
+          <p class="server-success">{{ successMessageIA }}</p>
+        </app-loading-value>
       </div>
     </form>
   </div>

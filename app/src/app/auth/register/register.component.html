@@ -135,7 +135,18 @@
         <p class="server-error">{{ errorMessage }}</p>
       }
       <br>
-        <button type="submit" class="btn primary account-action-button">Registrar</button>
-      </form>
-    </div>
-  </main>
+      <button type="submit" class="btn primary account-action-button"
+              [disabled]="credentials.name.length == 0 ||
+        credentials.email.length == 0 ||
+        credentials.password.length == 0 ||
+        credentials.confirmPassword.length == 0 ||
+        isLoading">
+        @if (isLoading) {
+        Registrando...
+        } @else {
+        Registrar
+        }
+      </button>
+    </form>
+  </div>
+</main>

@@ -85,10 +85,12 @@
         <p class="server-error">{{ errorMessage }}</p>
       }
       <div class="form-actions">
-        <button type="submit" class="btn primary">{{ isEditMode ? 'Atualizar' : 'Adicionar' }} Transação</button>
-        @if (successMessage) {
-        <p class="server-success">{{ successMessage }}</p>
-        }
+        <button type="submit" class="btn primary" [disabled]="isLoading">{{ isEditMode ? 'Atualizar'
+          : 'Adicionar' }} Transação
+        </button>
+        <app-loading-value [value]="!isLoading">
+          <p class="server-success">{{ successMessage }}</p>
+        </app-loading-value>
       </div>
     </form>
   </div>

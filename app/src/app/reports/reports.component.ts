@@ -8,17 +8,18 @@ import { firstValueFrom } from 'rxjs';
 import { categoriesEnum } from '../category';
 import { AiService } from './ai.service';
 import { AiMessage } from './ai-message';
+import { LoadingValueComponent } from '../loading-value/loading-value.component';
 
 @Component({
   selector: 'app-reports',
-  imports: [NgClass, NgStyle, HeaderComponent],
+  imports: [NgClass, NgStyle, HeaderComponent, LoadingValueComponent],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })
 export class ReportsComponent implements OnInit {
   loading = 'Carregando análise por IA...';
   // Data for Net Worth Trend
-  totalNetWorth = '';
+  totalNetWorth = ''
   totalAssets = '';
   totalLiabilities = '';
   totalNetWorthValue = 0;
@@ -32,7 +33,7 @@ export class ReportsComponent implements OnInit {
   expenseValueDifference = '';
   incomeChangePercentage = '';
   expenseChangePercentage = '';
-  monthComparisonTakeaway = this.loading;
+  monthComparisonTakeaway = '';
 
   months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
@@ -43,15 +44,15 @@ export class ReportsComponent implements OnInit {
   monthOrderIncomeExpenseComparison: string[] = [];
   incomeExpenseBarHeights = [{ height: '', value: '' }];
   currentYear = 0;
-  financialBalanceTakeaway = this.loading;
+  financialBalanceTakeaway = '';
   // Data for Spending by Category
   spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
-  spendingByCategoriesMonthTakeaway = this.loading;
+  spendingByCategoriesMonthTakeaway = '';
   spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
-  spendingByCategoriesYearTakeaway = this.loading;
+  spendingByCategoriesYearTakeaway = '';
 
   savingsRate = '';
-  savingsTakeaway = this.loading;
+  savingsTakeaway = '';
   reportsService = inject(ReportsService);
   aiService = inject(AiService);
 

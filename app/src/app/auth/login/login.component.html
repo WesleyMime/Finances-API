@@ -70,8 +70,14 @@
       @if (errorMessage) {
         <p class="server-error">{{ errorMessage }}</p>
       }
-
-      <button type="submit" class="btn primary account-action-button">Entrar</button>
+      <button type="submit" class="btn primary account-action-button"
+              [disabled]="credentials.email.length == 0 || credentials.password.length == 0 || isLoading">
+        @if (isLoading) {
+        Entrando...
+        } @else {
+        Entrar
+        }
+      </button>
     </form>
   </div>
 </main>

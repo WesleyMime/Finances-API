@@ -14,26 +14,30 @@ import { ILoginUser } from '../user.model';
 })
 export class LoginComponent {
 
-  constructor(readonly authService: AuthService, readonly router: Router) {}
+  constructor(readonly authService: AuthService, readonly router: Router) { }
   passwordVisible: boolean = false;
+  isLoading: boolean = false
 
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  credentials: ILoginUser = {email: '', password: ''};
+  credentials: ILoginUser = { email: '', password: '' };
   errorMessage: string | null = null;
 
   onSubmit() {
+    this.isLoading = true;
     console.log('Login attempted with:', this.credentials.email);
     this.errorMessage = null;
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
         console.log('Login successful', response);
+        this.isLoading = false;
         this.router.navigate(['/dashboard']);
       },
       error: (error: Error) => {
         console.error('Login failed', error);
+        this.isLoading = false;
         this.errorMessage = 'Falha no Login. Por favor verifique suas credenciais.';
       }
     });
@@ -48,4 +52,5 @@ export class LoginComponent {
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
   }
+
 }

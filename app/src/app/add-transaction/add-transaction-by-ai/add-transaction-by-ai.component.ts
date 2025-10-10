@@ -6,10 +6,11 @@ import { ChatResponse } from '../../reports/chat-response';
 import { HeaderComponent } from '../../header/header.component';
 import { FormsModule } from '@angular/forms';
 import { isExpense, isIncome, transactionTypeEnum } from '../transaction-types';
+import { LoadingValueComponent } from '../../loading-value/loading-value.component';
 
 @Component({
   selector: 'app-add-transaction-by-ai',
-  imports: [FormsModule, HeaderComponent],
+  imports: [FormsModule, HeaderComponent, LoadingValueComponent],
   templateUrl: './add-transaction-by-ai.component.html',
   styleUrl: './add-transaction-by-ai.component.css'
 })
@@ -19,6 +20,7 @@ export class AddTransactionByAiComponent {
   transactionPrompt: Transaction = JSON.parse(JSON.stringify(emptyTransaction));
   successMessageIA: string | null = null;
   errorMessageIA: string | null = null;
+  isLoading: boolean = false;
 
   transactionTypes = transactionTypeEnum
 
@@ -26,9 +28,11 @@ export class AddTransactionByAiComponent {
   transactionService = inject(TransactionService);
 
   submitPrompt() {
-    if (!this.validPrompt(this.transactionPrompt)) return;
+    if (!this.validPrompt(this.transactionPrompt)) {
+      return;
+    }
+    this.isLoading = true;
     this.errorMessageIA = null;
-    this.successMessageIA = "Processando...";
     this.aiService.getJSONForTransactionsUsingAI(this.transactionPrompt.description, this.transactionPrompt.type).subscribe({
       next: (response: ChatResponse) => {
         if (isIncome(this.transactionPrompt.type)) {
@@ -38,11 +42,13 @@ export class AddTransactionByAiComponent {
           return this.addExpenseList(response.message);
         }
         alert("Selecione um tipo de transação válido (Receita ou Despesa).");
+        this.isLoading = false;
       },
-      error: (error: any) => {
+      error: (error) => {
         console.error('Error adding transaction:', error);
         this.errorMessageIA = error.message;
         this.successMessageIA = null;
+        this.isLoading = false;
       }
     });
   }
@@ -54,11 +60,13 @@ export class AddTransactionByAiComponent {
           : '1 despesa adicionada!';
         console.log('Expense added successfully:', response);
         this.transaction = emptyTransaction;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error adding expense:', error);
         this.errorMessageIA = error;
         this.successMessageIA = null;
+        this.isLoading = false;
       }
     });
   }
@@ -70,11 +78,13 @@ export class AddTransactionByAiComponent {
           : '1 receita adicionada!';
         console.log('Income added successfully:', response);
         this.transaction = emptyTransaction;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error adding income:', error);
         this.errorMessageIA = error;
         this.successMessageIA = null;
+        this.isLoading = false;
       }
     });
   }

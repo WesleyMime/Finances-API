@@ -6,17 +6,23 @@
 
     <div class="card gray-background net-worth-card">
       <div class="card-label">Patrimônio líquido</div>
-      <div class="card-value">{{ totalNetWorth }}</div>
+      <app-loading-value [value]="totalNetWorth">
+        <div class="card-value">{{ totalNetWorth }}</div>
+      </app-loading-value>
     </div>
     <div class="cards-grid">
       <div class="card gray-background net-worth-card">
         <div class="card-label">Total de Ativos</div>
-        <div class="card-value">{{ totalAssets }}</div>
+        <app-loading-value [value]="totalAssets">
+          <div class="card-value">{{ totalAssets }}</div>
+        </app-loading-value>
       </div>
       <div class="card gray-background net-worth-card">
         <div class="card-column">
           <div class="card-label">Total de Passivos</div>
-          <div class="card-value">{{ totalLiabilities }}</div>
+          <app-loading-value [value]="totalLiabilities">
+            <div class="card-value">{{ totalLiabilities }}</div>
+          </app-loading-value>
         </div>
       </div>
     </div>
@@ -25,21 +31,28 @@
     <div class="cards-grid">
       <div class="card gray-background net-worth-card">
         <div class="card-label">Renda Total</div>
-        <div class="card-value">{{ incomeCurrentMonth }}</div>
+        <app-loading-value [value]="incomeCurrentMonth">
+          <div class="card-value">{{ incomeCurrentMonth }}</div>
+        </app-loading-value>
         <div class="metric-info"><span
           [ngClass]="getChangeColorGood(incomeChangePercentage)">{{ incomeChangePercentage }} {{ incomeValueDifference }}</span>
         </div>
       </div>
       <div class="card gray-background net-worth-card">
         <div class="card-label">Despesa Total</div>
-        <div class="card-value">{{ expenseCurrentMonth }}</div>
+        <app-loading-value [value]="expenseCurrentMonth">
+          <div class="card-value">{{ expenseCurrentMonth }}</div>
+        </app-loading-value>
         <div class="metric-info"><span
           [ngClass]="getChangeColorBad(expenseChangePercentage)">{{ expenseChangePercentage }} {{ expenseValueDifference }}</span>
         </div>
       </div>
     </div>
     <div class="key-takeaway">
-      <p>{{ monthComparisonTakeaway }}</p>
+      <app-loading-value [value]="monthComparisonTakeaway" [message]="loading"
+                         loadingImg="/assets/loading-ezgif-takeaway.gif">
+        <p>{{ monthComparisonTakeaway }}</p>
+      </app-loading-value>
     </div>
 
     <!-- Income vs. Expenses Section -->
@@ -64,7 +77,10 @@
       <div class="metric-info">{{ currentYear -1}} - {{ currentYear }}</div>
     </div>
     <div class="key-takeaway">
-      <p>{{ financialBalanceTakeaway }}</p>
+      <app-loading-value [value]="financialBalanceTakeaway" [message]="loading"
+                         loadingImg="/assets/loading-ezgif-takeaway.gif">
+        <p>{{ financialBalanceTakeaway }}</p>
+      </app-loading-value>
     </div>
 
     <!-- Spending by Category Section -->
@@ -91,7 +107,10 @@
       </div>
     </div>
     <div class="key-takeaway">
-      <p>{{ spendingByCategoriesMonthTakeaway }}</p>
+      <app-loading-value [value]="spendingByCategoriesMonthTakeaway" [message]="loading"
+                         loadingImg="/assets/loading-ezgif-takeaway.gif">
+        <p>{{ spendingByCategoriesMonthTakeaway }}</p>
+      </app-loading-value>
     </div>
     <div class="card">
       <div class="metrics">
@@ -112,16 +131,24 @@
       </div>
     </div>
     <div class="key-takeaway">
-      <p>{{ spendingByCategoriesYearTakeaway }}</p>
+      <app-loading-value [value]="spendingByCategoriesYearTakeaway" [message]="loading"
+                         loadingImg="/assets/loading-ezgif-takeaway.gif">
+        <p>{{ spendingByCategoriesYearTakeaway }}</p>
+      </app-loading-value>
     </div>
 
     <!-- Savings Rate Section -->
     <div class="card gray-background">
       <div class="card-label">Taxa de Poupança</div>
-      <div class="card-value">{{ savingsRate }}%</div>
+      <app-loading-value [value]="savingsRate">
+        <div class="card-value">{{ savingsRate }}</div>
+      </app-loading-value>
     </div>
     <div class="key-takeaway">
-      <p>{{ savingsTakeaway }}</p>
+      <app-loading-value [value]="savingsTakeaway" [message]="loading"
+                         loadingImg="/assets/loading-ezgif-takeaway.gif">
+        <p>{{ savingsTakeaway }}</p>
+      </app-loading-value>
     </div>
   </section>
 </main>

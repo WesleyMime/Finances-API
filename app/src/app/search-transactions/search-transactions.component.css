@@ -136,6 +136,13 @@
     padding: 20px;
     color: #c0c0c0;
     font-style: italic;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.no-results img {
+  margin-right: 10px;
 }
 
 @media (max-width: 836px) {

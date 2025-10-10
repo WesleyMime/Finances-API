@@ -73,6 +73,10 @@ export class SearchTransactionsComponent {
           });
           this.searchResultsIncome.push(...result);
           this.searching = false;
+        },
+        error: (error) => {
+          console.error('Error searching income:', error);
+          this.searching = false;
         }
       });
   }
@@ -86,6 +90,10 @@ export class SearchTransactionsComponent {
           });
           let filteredResults = this.filterByDescription(result);
           this.searchResultsIncome.push(...filteredResults);
+          this.searching = false;
+        },
+        error: (error) => {
+          console.error('Error searching income:', error);
           this.searching = false;
         }
       });
@@ -102,7 +110,11 @@ export class SearchTransactionsComponent {
           });
           this.searchResultsExpenses.push(...result);
           this.searching = false;
-        }
+        },
+       error: (error) => {
+         console.error('Error searching expense:', error);
+         this.searching = false;
+       }
       });
   }
 
@@ -118,7 +130,11 @@ export class SearchTransactionsComponent {
           let filteredResults = this.filterByDescription(result);
           this.searchResultsExpenses.push(...filteredResults);
           this.searching = false;
-        }
+        },
+        error: (error) => {
+         console.error('Error searching expense:', error);
+         this.searching = false;
+       }
       });
   }
 
