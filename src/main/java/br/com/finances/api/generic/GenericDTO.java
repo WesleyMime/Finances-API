@@ -1,6 +1,7 @@
 package br.com.finances.api.generic;
 
 import br.com.finances.api.client.ClientDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,18 +13,15 @@ public class GenericDTO implements Serializable {
 	private String description;
 	private BigDecimal value;
 	private LocalDate date;
+	@JsonIgnore
 	private ClientDTO client;
-	
+
+
 	public GenericDTO(GenericModel model) {
 		this.id = model.getId();
 		this.description = model.getDescription();
 		this.value = model.getValue();
 		this.date = model.getDate();
-		try {
-			this.client = new ClientDTO(model.getClient());
-		} catch (NullPointerException _) {
-			this.client = null;
-		}
 	}
 
 	public Long getId() {
