@@ -151,19 +151,6 @@ class IncomeServiceTest {
 		assertEquals(first.getValue(), FORM.getValue());
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
-
-	@Test
-	void shouldNotPostIncomeListTwice() {
-		when(incomeRepository.findByDescriptionAndDate(DESCRIPTION, DATE.getYear(),
-				DATE.getMonthValue(), CLIENT))
-				.thenReturn(Optional.of(INCOME));
-
-		ResponseEntity<List<IncomeDTO>> post = incomeService.postList(List.of(FORM, FORM), PRINCIPAL);
-		Assertions.assertNotNull(post.getBody());
-		List<IncomeDTO> body = post.getBody();
-		assertEquals(0, body.size());
-		assertEquals(HttpStatus.CREATED, post.getStatusCode());
-	}
 	
 	//UPDATE
 	@Test

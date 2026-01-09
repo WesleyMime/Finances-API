@@ -159,14 +159,6 @@ class ExpenseControllerTest {
 	}
 	
 	@Test
-	void shouldNotPostExpenseTwice() throws Exception {
-		mockMvc.perform(post(ENDPOINT)
-				.contentType(MediaType.APPLICATION_JSON)
-						.content(new ExpenseForm(DESCRIPTION, VALUE, DATE, Category.HOME.toString()).toString()))
-				.andExpect(status().isConflict());
-	}
-	
-	@Test
 	void shouldNotPostExpense() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)

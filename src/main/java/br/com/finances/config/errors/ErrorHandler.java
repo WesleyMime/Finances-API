@@ -25,13 +25,6 @@ public class ErrorHandler {
 		return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
 	}
 
-	@ExceptionHandler(FlowAlreadyExistsException.class)
-	public ResponseEntity<ProblemDetail> flowAlreadyExistsExceptionHandler(FlowAlreadyExistsException e) {
-		e.setTitle("Flow already registered.");
-		e.setDetail("There is already an income or expense with this description in this month registered.");
-		return ResponseEntity.status(e.getStatusCode()).body(e.getBody());
-	}
-
 	@ExceptionHandler(EmailAlreadyRegisteredException.class)
 	public ResponseEntity<ProblemDetail> emailAlreadyRegisteredExceptionHandler(EmailAlreadyRegisteredException e) {
 		e.setTitle("Email already registered.");

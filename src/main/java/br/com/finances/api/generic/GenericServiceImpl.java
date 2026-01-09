@@ -3,7 +3,6 @@ package br.com.finances.api.generic;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.config.CacheEvictionService;
-import br.com.finances.config.errors.FlowAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,7 +78,6 @@ public class GenericServiceImpl
 		evictionService.evictCacheKeysForUser(principal.getName());
 
 		T model = formMapper.map(form);
-		checkIfAlreadyExists(model);
 
 		Client client = getClient();
 		model.setClient(client);
@@ -97,11 +95,6 @@ public class GenericServiceImpl
 		Set<T> toAddList = new HashSet<>();
 		for (U form : forms) {
 			T model = formMapper.map(form);
-			try {
-				checkIfAlreadyExists(model);
-			} catch (FlowAlreadyExistsException _) {
-				continue;
-			}
 			model.setClient(client);
 			toAddList.add(model);
 		}
@@ -151,19 +144,6 @@ public class GenericServiceImpl
 		}
 		Optional<T> optional = repository.findByIdAndClient(parsedLong, client);
 		return optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-	}
-
-	private void checkIfAlreadyExists(GenericModel model) {
-		String description = model.getDescription();
-		Integer year = model.getDate().getYear();
-		Integer month = model.getDate().getMonthValue();
-		Client client = getClient();
-
-		Optional<T> sameValue = repository.findByDescriptionAndDate(description, year, month,
-				client);
-		if (sameValue.isPresent()) {
-			throw new FlowAlreadyExistsException();
-		}
 	}
 
 	private Client getClient() {

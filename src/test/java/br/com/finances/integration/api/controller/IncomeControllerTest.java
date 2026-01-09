@@ -154,14 +154,6 @@ class IncomeControllerTest {
 	}
 	
 	@Test
-	void shouldNotPostSameIncomeTwice() throws Exception {
-		mockMvc.perform(post(ENDPOINT)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new IncomeForm(DESCRIPTION, VALUE, DATE).toString()))
-				.andExpect(status().isConflict());
-	}
-	
-	@Test
 	void shouldNotPostIncome() throws Exception {
 		mockMvc.perform(post(ENDPOINT)
 				.contentType(MediaType.APPLICATION_JSON)

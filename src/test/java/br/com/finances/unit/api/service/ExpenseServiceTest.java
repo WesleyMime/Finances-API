@@ -157,19 +157,6 @@ class ExpenseServiceTest {
 		assertEquals(first.getCategory(), FORM.getCategory());
 		assertEquals(HttpStatus.CREATED, post.getStatusCode());
 	}
-
-	@Test
-	void shouldNotPostExpenseListTwice() {
-		when(expenseRepository.findByDescriptionAndDate(DESCRIPTION, DATE.getYear(),
-				DATE.getMonthValue(), CLIENT))
-				.thenReturn(Optional.of(EXPENSE));
-
-		ResponseEntity<List<ExpenseDTO>> post = expenseService.postList(List.of(FORM, FORM), PRINCIPAL);
-		Assertions.assertNotNull(post.getBody());
-		List<ExpenseDTO> body = post.getBody();
-		assertEquals(0, body.size());
-		assertEquals(HttpStatus.CREATED, post.getStatusCode());
-	}
 	
 	//UPDATE
 	@Test
