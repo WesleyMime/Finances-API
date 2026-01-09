@@ -36,30 +36,7 @@
             <div>Descrição</div>
         </div>
       </div>
-      @for (transaction of searchResultsIncome; track transaction.id) {
-        <div class="list">
-          <div class="spending-list">
-            <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
-            <div class="spending-item">{{ transaction.type }}</div>
-            <div class="spending-item">{{ transaction.category }}</div>
-            <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
-            <div class="spending-item">{{ transaction.description }}</div>
-            @if (transaction !== transactionPendingRemoval) {
-              <div class="spending-btn">
-                <a class="edit" (click)="editTransaction(transaction)">EDITAR</a>
-                <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
-              </div>
-            }
-          </div>
-          @if (transaction === transactionPendingRemoval) {
-            <app-remove-transaction
-              (cancelled)="handleCancelRemoval()"
-              (confirmed)="handleConfirmRemoval(transaction)"
-            ></app-remove-transaction>
-          }
-        </div>
-      }
-      @for (transaction of searchResultsExpenses; track transaction.id) {
+      @for (transaction of searchResults; track transaction.id) {
         <div class="list">
           <div class="spending-list">
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
@@ -90,7 +67,7 @@
       </div>
       }
 
-      @if (searchResultsIncome.length === 0 && searchResultsExpenses.length === 0 && !searching) {
+      @if (searchResults.length === 0 && !searching) {
         <div class="no-results">
             Nenhuma transação encontrada.
         </div>

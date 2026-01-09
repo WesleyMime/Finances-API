@@ -23,8 +23,7 @@ export class SearchTransactionsComponent {
 
   categories = categoriesEnum;
 
-  searchResultsIncome: Transaction[] = [];
-  searchResultsExpenses: Transaction[] = [];
+  searchResults: Transaction[] = [];
   searchService = inject(SearchService);
   transactionService = inject(TransactionService);
 
@@ -37,8 +36,7 @@ export class SearchTransactionsComponent {
 
   onSearch(): void {
     this.searching = true;
-    this.searchResultsIncome = [];
-    this.searchResultsExpenses = [];
+    this.searchResults = [];
     if (this.date) {
       let date = this.date.replace("-", "/");
       if (this.incomeIsSelected()) {
@@ -111,10 +109,10 @@ export class SearchTransactionsComponent {
           this.searchResultsExpenses.push(...result);
           this.searching = false;
         },
-       error: (error) => {
-         console.error('Error searching expense:', error);
-         this.searching = false;
-       }
+        error: (error) => {
+          console.error('Error searching expense:', error);
+          this.searching = false;
+        }
       });
   }
 
@@ -132,9 +130,9 @@ export class SearchTransactionsComponent {
           this.searching = false;
         },
         error: (error) => {
-         console.error('Error searching expense:', error);
-         this.searching = false;
-       }
+          console.error('Error searching expense:', error);
+          this.searching = false;
+        }
       });
   }
 
@@ -166,12 +164,12 @@ export class SearchTransactionsComponent {
   }
 
   handleConfirmRemoval(transaction: Transaction): void {
-    let id = transaction.id ?? NaN;
+    let id = transaction.id ?? Number.NaN;
     let type = transaction.type;
     if (type === "Receita") {
-      const indexToRemove = this.searchResultsIncome.findIndex(t => t.id === this.transactionPendingRemoval?.id);
+      const indexToRemove = this.searchResults.findIndex(t => t.id === this.transactionPendingRemoval?.id);
       if (indexToRemove > -1) {
-        this.searchResultsIncome.splice(indexToRemove, 1);
+        this.searchResults.splice(indexToRemove, 1);
       }
       this.transactionService.deleteIncome(id).subscribe({
         next: () => {
@@ -180,9 +178,9 @@ export class SearchTransactionsComponent {
       });
     }
     if (type === "Despesa") {
-      const indexToRemove = this.searchResultsExpenses.findIndex(t => t.id === this.transactionPendingRemoval?.id);
+      const indexToRemove = this.searchResults.findIndex(t => t.id === this.transactionPendingRemoval?.id);
       if (indexToRemove > -1) {
-        this.searchResultsExpenses.splice(indexToRemove, 1);
+        this.searchResults.splice(indexToRemove, 1);
       }
       this.transactionService.deleteExpense(id).subscribe({
         next: () => {
