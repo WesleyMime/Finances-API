@@ -69,7 +69,8 @@ export class SearchTransactionsComponent {
           result.forEach((transaction) => {
             transaction.type = "Receita";
           });
-          this.searchResultsIncome.push(...result);
+          this.searchResults.push(...result);
+          this.sort();
           this.searching = false;
         },
         error: (error) => {
@@ -87,7 +88,8 @@ export class SearchTransactionsComponent {
             transaction.type = "Receita";
           });
           let filteredResults = this.filterByDescription(result);
-          this.searchResultsIncome.push(...filteredResults);
+          this.searchResults.push(...filteredResults);
+          this.sort();
           this.searching = false;
         },
         error: (error) => {
@@ -106,7 +108,8 @@ export class SearchTransactionsComponent {
             transaction.category = getCategoryNameInPortuguese(transaction.category);
             transaction.value = transaction.value * -1;
           });
-          this.searchResultsExpenses.push(...result);
+          this.searchResults.push(...result);
+          this.sort();
           this.searching = false;
         },
         error: (error) => {
@@ -126,7 +129,8 @@ export class SearchTransactionsComponent {
             transaction.value = transaction.value * -1;
           });
           let filteredResults = this.filterByDescription(result);
-          this.searchResultsExpenses.push(...filteredResults);
+          this.searchResults.push(...filteredResults);
+          this.sort();
           this.searching = false;
         },
         error: (error) => {
@@ -197,5 +201,15 @@ export class SearchTransactionsComponent {
 
   expenseIsSelected() {
     return this.selectedType == 'Both' || this.selectedType == 'Expense'
+  }
+
+  sort() {
+    this.searchResults.sort((a: Transaction, b: Transaction) => {
+      if (a.date < b.date)
+        return 1;
+      if (a.date == b.date)
+        return 0;
+      return -1;
+    });
   }
 }
