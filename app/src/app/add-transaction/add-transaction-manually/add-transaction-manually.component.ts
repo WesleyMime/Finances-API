@@ -140,7 +140,12 @@ export class AddTransactionManuallyComponent implements OnInit {
       return false;
     }
     if (transaction.value < 1) {
-      this.errorMessage = 'Por favor, digite um número maior que zero.'
+      this.errorMessage = 'Se você precisa por um número negativo, está usando a categoria errada.';
+      this.successMessage = null;
+      return false;
+    }
+    if (transaction.value > 1000000000) {
+      this.errorMessage = 'Quem você está querendo enganar?';
       this.successMessage = null;
       return false;
     }
