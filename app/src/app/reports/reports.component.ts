@@ -166,7 +166,11 @@ export class ReportsComponent implements OnInit {
   }
 
   private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByDate, currentDate: Date): void {
-    this.lastMonth = this.months[currentDate.getMonth() - 1];
+    let month = currentDate.getMonth() - 1;
+    if (month < 0)
+      month = 11;
+
+    this.lastMonth = this.months[month];
 
     let diffBalancePercent = this.getPercentageChange(
       lastYearSummary.finalBalanceEachMonth[11], lastYearSummary.finalBalanceEachMonth[10]) * -1; // Invert the sign
