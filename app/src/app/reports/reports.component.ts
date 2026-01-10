@@ -18,6 +18,11 @@ import { LoadingValueComponent } from '../loading-value/loading-value.component'
 })
 export class ReportsComponent implements OnInit {
   loading = 'Carregando análise por IA...';
+
+  hiddenValue = '*****';
+  hidden = false;
+  opacity: number = 1;
+
   // Data for Net Worth Trend
   totalNetWorth = ''
   totalAssets = '';
@@ -55,6 +60,23 @@ export class ReportsComponent implements OnInit {
   savingsTakeaway = '';
   reportsService = inject(ReportsService);
   aiService = inject(AiService);
+
+  hide() {
+    this.fadeIn();
+    this.hidden = !this.hidden;
+  }
+
+  fadeIn(): void {
+    this.opacity = 0;
+    const step = () => {
+      this.opacity += 0.015;
+      if (this.opacity < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }
 
   async ngOnInit(): Promise<void> {
     let currentDate = new Date();

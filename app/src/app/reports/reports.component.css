@@ -1,3 +1,11 @@
+.toggle-icon {
+  cursor: pointer;
+  user-select: none;
+  position: fixed;
+  top: 100px;
+  right: 40px;
+}
+
 /* Metrics */
 .metrics {
     display: flex;
@@ -133,7 +141,7 @@
 }
 
 
-@media (max-width: 680px) {
+@media (max-width: 640px) {
   .report-section {
       padding: 20px;
   }
@@ -145,6 +153,10 @@
   }
   .spending-list .spending-item {
     display: block;
+  }
+  .toggle-icon {
+    top: 15px;
+    right: 40px;
   }
 }
 
@@ -165,4 +177,8 @@
   .chart-labels {
       gap: 0px;
   }
+  .toggle-icon {
+      top: 15px;
+      right: 20px;
+    }
 }
