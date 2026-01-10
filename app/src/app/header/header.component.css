@@ -117,3 +117,10 @@
     gap: 15px;
   }
 }
+
+@media (min-width: 1920px) {
+  .app-header {
+    padding-left: calc((100% - 1920px) / 2 + 40px);
+    padding-right: calc((100% - 1920px) / 2 + 40px);
+  }
+}

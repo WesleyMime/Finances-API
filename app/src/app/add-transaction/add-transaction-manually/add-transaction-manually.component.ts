@@ -82,7 +82,7 @@ export class AddTransactionManuallyComponent implements OnInit {
         this.successMessage = 'Despesa editada com sucesso!';
         console.log('Expense edited successfully:', response);
         await this.sleep(1);
-        this.router.navigateByUrl("/dashboard");
+        this.router.navigateByUrl("/search");
         this.isLoading = false;
       },
       error: (error) => {

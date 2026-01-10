@@ -64,6 +64,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       activeNavLink: '/add-transaction',
     },
     {
+      routePattern: '/transactions/edit',
+      showAppNav: true,
+      showLoginAction: false,
+      showRegisterAction: false,
+      showProfileActions: true,
+      activeNavGroup: 'app',
+      activeNavLink: '/search',
+    },
+    {
       routePattern: '/reports',
       showAppNav: true,
       showLoginAction: false,

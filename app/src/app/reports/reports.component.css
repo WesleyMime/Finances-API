@@ -3,7 +3,7 @@
   user-select: none;
   position: fixed;
   top: 100px;
-  right: 40px;
+  right: 45px;
 }
 
 /* Metrics */
@@ -148,6 +148,9 @@
   .spending-chart .category-name {
     width: 100px;
   }
+  .spending-chart .category-value {
+     margin-left: 0px;
+  }
   .cards-grid {
       grid-template-columns: 1fr; /* Stack cards on smaller screens */
   }
@@ -155,8 +158,8 @@
     display: block;
   }
   .toggle-icon {
-    top: 15px;
-    right: 40px;
+    top: 100px;
+    right: 45px;
   }
 }
 
@@ -178,7 +181,13 @@
       gap: 0px;
   }
   .toggle-icon {
-      top: 15px;
-      right: 20px;
-    }
+      top: 100px;
+      right: 23px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .toggle-icon {
+    padding-right: calc((100% - 1920px) / 2);
+  }
 }
