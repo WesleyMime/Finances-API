@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.9</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.finances</groupId>
@@ -15,9 +15,9 @@
 	<description>API for management of income and expenses..</description>
 	<properties>
         <java.version>24</java.version>
-        <jjwt.version>0.12.6</jjwt.version>
+        <jjwt.version>0.13.0</jjwt.version>
 		<h2.version>1.4.200</h2.version>
-        <spring-ai.version>1.0.1</spring-ai.version>
+        <spring-ai.version>1.0.3</spring-ai.version>
         <embedded-redis>1.4.3</embedded-redis>
 	</properties>
 	<dependencies>
