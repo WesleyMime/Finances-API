@@ -20,7 +20,7 @@ export const routes: Routes = [
   { path: "add-transaction-by-ai", component: AddTransactionByAiComponent, title: "Adicionar Transação", canActivate: [authGuard] },
   { path: "add-transaction-manually", component: AddTransactionManuallyComponent, title: "Adicionar Transação", canActivate: [authGuard] },
   { path: 'transactions/edit', component: AddTransactionManuallyComponent, title: "Editar Transação", canActivate: [authGuard] },
-  { path: "dashboard", redirectTo: "reports", },
+  { path: "dashboard", component: DashboardComponent, title: "Finances APP" },
   { path: "reports", component: ReportsComponent, title: "Relatório", canActivate: [authGuard] },
   { path: "search", component: SearchTransactionsComponent, title: "Pesquisar", canActivate: [authGuard] }
 ];
