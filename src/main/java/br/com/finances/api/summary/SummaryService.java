@@ -138,7 +138,7 @@ public class SummaryService {
 
 		LocalDate from = LocalDate.of(yearFrom, monthFrom, 1);
 		// Get the last day of the 'to' month
-		LocalDate to = LocalDate.of(yearTo, monthTo + 1, 1).minusDays(1);
+		LocalDate to = LocalDate.of(yearTo, monthTo, 1).plusMonths(1).minusDays(1);
 		List<IncomeDTO> incomeListByDate = incomeRepository.findIncomeByDate(from, to, client);
 		List<ExpenseDTO> expenseListByDate = expenseRepository.findExpenseByDate(from, to, client);
 

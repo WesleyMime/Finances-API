@@ -74,12 +74,81 @@ class SummaryControllerTest {
 	}
 	
 	@Test
-	void shouldReturnSummaryByDate() throws Exception {
+	void shouldReturnSummaryByMonth() throws Exception {
+		LocalDate date = LocalDate.now().minusMonths(1);
 		mockMvc.perform(MockMvcRequestBuilders
-				.get("/summary/2022/01")
+						.get("/summary/" + date.getYear() + "/" + date.getMonthValue())
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-		
+				.andExpectAll(
+						status().is2xxSuccessful(),
+						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalIncome", is(10000.0)),
+						jsonPath("$.totalExpense", is(5500.0)),
+						jsonPath("$.finalBalance", is(4500.00)),
+						jsonPath("$.incomeList", hasSize(1)),
+						jsonPath("$.totalExpenseByCategory", hasSize(1)))
+				.andDo(print());
+
+	}
+
+	@Test
+	void shouldReturnEmptySummaryByMonth() throws Exception {
+		LocalDate date = LocalDate.now().plusMonths(1);
+		mockMvc.perform(MockMvcRequestBuilders
+						.get("/summary/" + date.getYear() + "/" + date.getMonthValue())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().is2xxSuccessful(),
+						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalIncome", is(0)),
+						jsonPath("$.totalExpense", is(0)),
+						jsonPath("$.finalBalance", is(0)),
+						jsonPath("$.incomeList", hasSize(0)),
+						jsonPath("$.totalExpenseByCategory", hasSize(0)))
+				.andDo(print());
+
+	}
+
+	@Test
+	void shouldReturnSummaryByDate() throws Exception {
+		LocalDate from = LocalDate.now().minusMonths(13);
+		LocalDate to = from.plusMonths(6);
+		mockMvc.perform(MockMvcRequestBuilders
+						.get("/summary")
+						.param("yearFrom", String.valueOf(from.getYear()))
+						.param("monthFrom", String.valueOf(from.getMonthValue()))
+						.param("yearTo", String.valueOf(to.getYear()))
+						.param("monthTo", String.valueOf(to.getMonthValue()))
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().is2xxSuccessful(),
+						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalIncome", is(1060000.0)),
+						jsonPath("$.totalExpense", is(507500.0)),
+						jsonPath("$.balance", is(552500.0)))
+				.andDo(print());
+
+	}
+
+	@Test
+	void shouldReturnEmptySummaryByDate() throws Exception {
+		LocalDate from = LocalDate.now().minusYears(3);
+		LocalDate to = LocalDate.now().minusYears(2);
+		mockMvc.perform(MockMvcRequestBuilders
+						.get("/summary"
+								+ "?yearFrom=" + from.getYear()
+								+ "&monthFrom=" + from.getMonthValue()
+								+ "&yearTo=" + to.getYear()
+								+ "&monthTo=" + to.getMonthValue())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().is2xxSuccessful(),
+						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalIncome", is(0)),
+						jsonPath("$.totalExpense", is(0)),
+						jsonPath("$.balance", is(0)))
+				.andDo(print());
+
 	}
 	
 	@Test
@@ -111,25 +180,57 @@ class SummaryControllerTest {
 				.andDo(print());
 	}
 
+	@Test
+	void shouldReturnAccountSummary() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders
+						.get("/summary/account")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(
+						status().is2xxSuccessful(),
+						content().contentType(MediaType.APPLICATION_JSON),
+						jsonPath("$.totalIncome", is(1120000.0)),
+						jsonPath("$.totalExpense", is(533000.0)),
+						jsonPath("$.balance", is(587000.0)))
+				.andDo(print());
+
+	}
+
 	private void populateDB() {
 		List<Income> incomeList = new ArrayList<>();
 		List<Expense> expenseList = new ArrayList<>();
 		LocalDate fromDate = LocalDate.now().minusMonths(12);
 
-		// Populate 14 months with incomes and expenses
-		for (int i = -1; i < 13; i++) {
-			Income income = new Income("Income " + i,
+
+		Income income = new Income("Income -1", new BigDecimal(1000000), fromDate.minusMonths(1));
+		income.setClient(CLIENT);
+		incomeList.add(income);
+		Expense expense = new Expense("Expense -1", new BigDecimal(500000), fromDate.minusMonths(1), Category.OTHERS);
+		expense.setClient(CLIENT);
+		expenseList.add(expense);
+
+		// Populate 12 months with incomes and expenses
+		for (int i = 0; i < 12; i++) {
+			income = new Income("Income " + i,
 					new BigDecimal(10000),
 					fromDate.plusMonths(i));
 			income.setClient(CLIENT);
 			incomeList.add(income);
-			Expense expense = new Expense("Expense " + i,
+			expense = new Expense("Expense " + i,
 					new BigDecimal(i * 500),
 					fromDate.plusMonths(i),
 					Category.OTHERS);
 			expense.setClient(CLIENT);
 			expenseList.add(expense);
 		}
+
+		income = new Income("Income 13", new BigDecimal(1000000), fromDate.plusMonths(12).plusDays(1));
+		income.setClient(CLIENT);
+		incomeList.add(income);
+		expense = new Expense("Expense 13", new BigDecimal(500000), fromDate.plusMonths(12).plusDays(1),
+				Category.OTHERS);
+		expense.setClient(CLIENT);
+		expenseList.add(expense);
+
 		incomeRepository.saveAll(incomeList);
 		expenseRepository.saveAll(expenseList);
 	}
