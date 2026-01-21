@@ -22,7 +22,9 @@ public class CacheEvictionService {
 
 	public void evictCacheKeysForUser(String user) {
 		// Cache that should change after any update:
-		List<String> cacheList = List.of("summary-last-month", "summary-last-year", "getAllIncome", "getAllExpenses");
+		List<String> cacheList = List.of("summary-last-year", "summary-by-month", "summary-by-date", "account-summary",
+				"getAllIncome",
+				"getAllExpenses");
 		for (String cache : cacheList) {
 			String pattern = cache + "::" + user + "*";
 			Set<String> keysToDelete = scanKeys(pattern);

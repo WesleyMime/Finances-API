@@ -6,6 +6,7 @@ import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.Category;
 import br.com.finances.api.expense.ExpenseCategoryDTO;
 import br.com.finances.api.expense.ExpenseRepository;
+import br.com.finances.api.income.IncomeDtoMapper;
 import br.com.finances.api.income.IncomeRepository;
 import br.com.finances.api.summary.SummaryDTO;
 import br.com.finances.api.summary.SummaryLastYearDTO;
@@ -41,8 +42,9 @@ class SummaryServiceTest {
         this.incomeRepository = Mockito.mock(IncomeRepository.class);
         this.expenseRepository = Mockito.mock(ExpenseRepository.class);
         this.clientRepository = Mockito.mock(ClientRepository.class);
+		IncomeDtoMapper incomeDtoMapper = new IncomeDtoMapper();
         this.summaryService = new SummaryService(incomeRepository, expenseRepository,
-                clientRepository);
+				clientRepository, incomeDtoMapper);
     }
 
     @BeforeEach
@@ -62,7 +64,7 @@ class SummaryServiceTest {
 
     @Test
     void shouldReturnTotalIncomeInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByMonth("2022", "01", PRINCIPAL);
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal totalIncome = summary.get().totalIncome();
         assertEquals(new BigDecimal(7500), totalIncome);
@@ -70,7 +72,7 @@ class SummaryServiceTest {
 
     @Test
     void shouldReturnTotalExpenseInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByMonth("2022", "01", PRINCIPAL);
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal totalExpense = summary.get().totalExpense();
         assertEquals(new BigDecimal(7500), totalExpense);
@@ -78,7 +80,7 @@ class SummaryServiceTest {
 
     @Test
     void shouldReturnFinalBalanceInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByMonth("2022", "01", PRINCIPAL);
 		Assertions.assertTrue(summary.isPresent());
 		BigDecimal finalBalance = summary.get().finalBalance();
         assertEquals(new BigDecimal(0), finalBalance);
@@ -86,7 +88,7 @@ class SummaryServiceTest {
 
     @Test
     void shouldReturnExpenseByCategoryInSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("2022", "01", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByMonth("2022", "01", PRINCIPAL);
 		Assertions.assertTrue(summary.isPresent());
 		List<ExpenseCategoryDTO> expenseCategory = summary.get().totalExpenseByCategory();
 		Category category = expenseCategory.getFirst().category();
@@ -97,7 +99,7 @@ class SummaryServiceTest {
 
     @Test
     void shouldNotReturnSummary() {
-		Optional<SummaryDTO> summary = summaryService.getSummaryByDate("aa", "aa", PRINCIPAL);
+		Optional<SummaryDTO> summary = summaryService.getSummaryByMonth("aa", "aa", PRINCIPAL);
 		Assertions.assertFalse(summary.isPresent());
     }
 

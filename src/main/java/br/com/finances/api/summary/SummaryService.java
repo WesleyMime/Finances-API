@@ -5,7 +5,9 @@ import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.ExpenseCategoryDTO;
 import br.com.finances.api.expense.ExpenseDTO;
 import br.com.finances.api.expense.ExpenseRepository;
+import br.com.finances.api.income.Income;
 import br.com.finances.api.income.IncomeDTO;
+import br.com.finances.api.income.IncomeDtoMapper;
 import br.com.finances.api.income.IncomeRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,16 +30,19 @@ public class SummaryService {
 
 	private final ClientRepository clientRepository;
 
+	private final IncomeDtoMapper dtoMapper;
+
 	public SummaryService(IncomeRepository incomeRepository, ExpenseRepository expenseRepository,
-						  ClientRepository clientRepository) {
+						  ClientRepository clientRepository, IncomeDtoMapper dtoMapper) {
 		this.incomeRepository = incomeRepository;
 		this.expenseRepository = expenseRepository;
 		this.clientRepository = clientRepository;
+		this.dtoMapper = dtoMapper;
 	}
 
-	@Cacheable(value = "summary-last-month", key = "#principal.name.concat(#yearString).concat(#monthString)",
+	@Cacheable(value = "summary-by-month", key = "#principal.name.concat(#yearString).concat(#monthString)",
 			unless = "#result == null")
-	public Optional<SummaryDTO> getSummaryByDate(String yearString, String monthString, Principal principal) {
+	public Optional<SummaryDTO> getSummaryByMonth(String yearString, String monthString, Principal principal) {
 		Integer year;
 		Integer month;
 		Client client = getClient();
@@ -52,11 +57,14 @@ public class SummaryService {
 		BigDecimal totalIncome = incomeRepository.totalIncomeMonth(year, month, client).orElse(BigDecimal.ZERO);
 		BigDecimal totalExpense = expenseRepository.totalExpenseMonth(year, month, client).orElse(BigDecimal.ZERO);
 
-		BigDecimal finalBalance = totalIncome.subtract(totalExpense);
+		List<Income> incomeList = incomeRepository.findByYearAndMonth(year, month, client);
 		List<ExpenseCategoryDTO> totalExpenseByCategory = expenseRepository.totalExpenseByCategory(year, month,
 				client);
 
-		return Optional.of(new SummaryDTO(totalIncome, totalExpense, finalBalance, totalExpenseByCategory));
+		List<IncomeDTO> incomeListDto = incomeList.stream().map(dtoMapper::map).toList();
+		return Optional.of(
+				new SummaryDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense), incomeListDto,
+						totalExpenseByCategory));
 	}
 
 	@Cacheable(value = "summary-last-year", key = "#principal.name.concat(#date.year).concat(#date.month)",
@@ -65,9 +73,12 @@ public class SummaryService {
 		Client client = getClient();
 
 		LocalDate from = LocalDate.of(date.getYear() - 1, date.getMonthValue(), 1);
-		List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeFromLastYear(from, date.minusMonths(1),
+		LocalDate now = LocalDate.now();
+		List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeByDate(from,
+				now.minusDays(now.getDayOfMonth()),
 				client);
-		List<ExpenseDTO> expenseFromLastYear = expenseRepository.findExpenseFromLastYear(from, date.minusMonths(1),
+		List<ExpenseDTO> expenseFromLastYear = expenseRepository.findExpenseByDate(from,
+				now.minusDays(now.getDayOfMonth()),
 				client);
 
 		List<BigDecimal> finalBalanceEachMonth = new ArrayList<>();
@@ -104,6 +115,67 @@ public class SummaryService {
 
 		return new SummaryLastYearDTO(totalYearIncome, totalYearExpense, avgBalanceYear, percentageSavingsRate,
 				finalBalanceEachMonth, incomeFromLastYear, expenseFromLastYear);
+	}
+
+	@Cacheable(value = "summary-by-date", key = "#principal.name.concat(#yearFromString).concat(#yearToString)",
+			unless = "#result == null")
+	public Optional<SummaryBasicDTO> getSummaryByDate(String yearFromString, String monthFromString,
+													  String yearToString, String monthToString, Principal principal) {
+		Integer yearFrom;
+		Integer monthFrom;
+		Integer yearTo;
+		Integer monthTo;
+		Client client = getClient();
+
+		try {
+			yearFrom = Integer.parseInt(yearFromString);
+			monthFrom = Integer.parseInt(monthFromString);
+			yearTo = Integer.parseInt(yearToString);
+			monthTo = Integer.parseInt(monthToString);
+		} catch (NumberFormatException _) {
+			return Optional.empty();
+		}
+
+		LocalDate from = LocalDate.of(yearFrom, monthFrom, 1);
+		// Get the last day of the 'to' month
+		LocalDate to = LocalDate.of(yearTo, monthTo + 1, 1).minusDays(1);
+		List<IncomeDTO> incomeListByDate = incomeRepository.findIncomeByDate(from, to, client);
+		List<ExpenseDTO> expenseListByDate = expenseRepository.findExpenseByDate(from, to, client);
+
+		BigDecimal balance;
+		BigDecimal totalIncome = BigDecimal.ZERO;
+		BigDecimal totalExpense = BigDecimal.ZERO;
+
+		for (IncomeDTO incomeDTO : incomeListByDate) {
+			totalIncome = totalIncome.add(incomeDTO.getValue());
+		}
+		for (ExpenseDTO expenseDTO : expenseListByDate) {
+			totalExpense = totalExpense.add(expenseDTO.getValue());
+		}
+
+		balance = totalIncome.subtract(totalExpense);
+
+		return Optional.of(new SummaryBasicDTO(totalIncome, totalExpense, balance));
+	}
+
+	@Cacheable(value = "account-summary", key = "#principal.name.concat(#date.month)",
+			unless = "#result == null")
+	public SummaryBasicDTO getAccountSummary(LocalDate date, Principal principal) {
+		Client client = getClient();
+
+		List<IncomeDTO> incomeList = incomeRepository.findAllIncomeUntilNow(date, client);
+		List<ExpenseDTO> expenseList = expenseRepository.findAllExpenseUntilNow(date, client);
+
+		BigDecimal totalIncome = BigDecimal.ZERO;
+		BigDecimal totalExpense = BigDecimal.ZERO;
+
+		for (IncomeDTO incomeDTO : incomeList) {
+			totalIncome = totalIncome.add(incomeDTO.getValue());
+		}
+		for (ExpenseDTO expenseDTO : expenseList) {
+			totalExpense = totalExpense.add(expenseDTO.getValue());
+		}
+		return new SummaryBasicDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense));
 	}
 
 	private Client getClient() {
