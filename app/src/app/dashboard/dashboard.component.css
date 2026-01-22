@@ -31,6 +31,7 @@ svg {
 .chart-summary {
     margin-bottom: 20px;
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 10px;
 }
@@ -68,7 +69,6 @@ svg {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
     margin-bottom: 10px;
 }
 
@@ -156,8 +156,9 @@ svg {
 
 .pie {
   justify-self: center;
-  width: 200px;
-  height: 200px;
+  margin-top: 30px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   background-image: conic-gradient(
     #2d3748 calc(3.6deg * var(--segment1, 0)),
@@ -166,24 +167,51 @@ svg {
 }
 
 .innerPie {
-  margin-bottom: 20px;
   display: flex;
   justify-self: center;
-  margin-top: -175px;
-  width: 150px;
-  height: 150px;
+  margin-top: -225px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   background-image: conic-gradient(#1a202c 0);
   justify-content: center;
   align-items: center;
-  font-size: 2em;
+  font-size: 2.5em;
+}
+
+@media (max-width: 1049px) {
+  .pie {
+    justify-self: center;
+    margin-top: 0px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-image: conic-gradient(
+      #2d3748 calc(3.6deg * var(--segment1, 0)),
+      #48bb78 0
+    );
+  }
+
+  .innerPie {
+    margin-bottom: 20px;
+    display: flex;
+    justify-self: center;
+    margin-top: -175px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-image: conic-gradient(#1a202c 0);
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+   }
 }
 
 
 
-@media (max-width: 930px) {
+@media (max-width: 900px) {
   .cards-grid {
-      grid-template-columns: 1fr 3fr;
+      grid-template-columns: 1fr 2fr;
   }
   .pie {
     justify-self: center;
@@ -252,10 +280,6 @@ svg {
 
   :host ::ng-deep .label {
     font-size: 1.2em;
-  }
-
-  svg {
-    font-size: 1em;
   }
 }
 
