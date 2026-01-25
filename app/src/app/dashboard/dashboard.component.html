@@ -178,11 +178,13 @@
         </div>
         }
         <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of pastIncomeBarHeights"
+          @for (bar of pastIncomeBarHeights; track bar) {
+          <div class="bar"
                [style.height]="bar.height + '%'"
                [title]="bar.value"
                style="background-color: #48bb78;">
           </div>
+          }
         </div>
         <div class="chart-labels bar-labels">
           <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
@@ -195,8 +197,8 @@
         <div class="card-label">Despesas Passadas</div>
         @if (hidden) {
         <span class="chart-summary">
-              {{ hiddenValue }}
-            </span>
+            {{ hiddenValue }}
+          </span>
         } @else {
         <div class="chart-summary" [style.opacity]="opacity">
             <span class="summary-value">
@@ -209,11 +211,13 @@
         </div>
         }
         <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of pastExpensesBarHeights"
+          @for (bar of pastExpensesBarHeights; track bar) {
+          <div class="bar"
                [style.height]="bar.height + '%'"
                [title]="bar.value"
                style="background-color: #fc8181;">
           </div>
+          }
         </div>
         <div class="chart-labels bar-labels">
           <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
@@ -242,11 +246,13 @@
         </div>
         }
         <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of futureIncomeBarHeights"
+          @for (bar of futureIncomeBarHeights; track bar) {
+          <div class="bar"
                [style.height]="bar.height + '%'"
                [title]="bar.value"
                style="background-color: #48bb78;">
           </div>
+          }
         </div>
         <div class="chart-labels bar-labels">
           <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
@@ -273,11 +279,13 @@
         </div>
         }
         <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of futureExpensesBarHeights"
+          @for (bar of futureExpensesBarHeights; track bar) {
+          <div class="bar"
                [style.height]="bar.height + '%'"
                [title]="bar.value"
                style="background-color: #fc8181;">
           </div>
+          }
         </div>
         <div class="chart-labels bar-labels">
           <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
@@ -299,7 +307,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let transaction of recentTransactions">
+        @for (transaction of recentTransactions; track transaction) {
+        <tr>
           <td>{{ transaction.date }}</td>
           <td>{{ transaction.category }}</td>
           <td>{{ transaction.description }}</td>
@@ -307,6 +316,7 @@
             {{ hidden ? hiddenValue : transaction.amount | currency }}
           </td>
         </tr>
+        }
         </tbody>
       </table>
     </section>

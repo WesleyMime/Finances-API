@@ -4,7 +4,6 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
 import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
-import { CookieService } from 'ngx-cookie-service';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -19,10 +18,10 @@ export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly EXPIRATION_MINUTES = 30;
 
-  constructor(readonly http: HttpClient, readonly router: Router, readonly cookieService: CookieService) { }
+  constructor(readonly http: HttpClient, readonly router: Router) { }
 
   login(credentials: ILoginUser): Observable<ILoginResponse> {
-    return this.http.post<ILoginResponse>(this.apiUrl+this.loginEndpoint, credentials).pipe(
+    return this.http.post<ILoginResponse>(this.apiUrl + this.loginEndpoint, credentials).pipe(
       // Use tap to perform a side effect (storing the token)
       // without modifying the observable stream itself.
       tap(response => {
@@ -38,11 +37,11 @@ export class AuthService {
     let minutesInMilliseconds = this.EXPIRATION_MINUTES * 60 * 1000;
     date.setTime(date.getTime() + minutesInMilliseconds);
 
-    this.cookieService.set(name, value, { expires: date});
+    localStorage.setItem(name, value);
   }
 
-  getAuthCookie(): string {
-    return this.cookieService.get(this.TOKEN_KEY);
+  getAuthCookie(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   isLoggedIn(): boolean {
@@ -60,7 +59,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.cookieService.delete(this.TOKEN_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
     this.router.navigate(['/']);
   }
 
@@ -81,15 +80,15 @@ export class AuthService {
   }
 
   register(registerCredentials: IRegisterUser) {
-    return this.http.post(this.apiUrl+this.registerEndpoint, registerCredentials).pipe(
+    return this.http.post(this.apiUrl + this.registerEndpoint, registerCredentials).pipe(
       catchError(this.handleError)
     );
   }
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if(error.status == 422) errorMessage = "Falha no registro. Por favor verifique suas credenciais.";
-    if(error.status == 409) errorMessage = "Já existe um cliente cadastrado com esse email.";
+    if (error.status == 422) errorMessage = "Falha no registro. Por favor verifique suas credenciais.";
+    if (error.status == 409) errorMessage = "Já existe um cliente cadastrado com esse email.";
     return throwError(() => new Error(errorMessage));
   }
 }

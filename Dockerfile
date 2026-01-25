@@ -1,4 +1,4 @@
-FROM openjdk:25-slim-bullseye
+FROM eclipse-temurin:24
 VOLUME /main-app
 RUN addgroup --system spring && adduser --system spring && adduser spring spring
 USER spring:spring
