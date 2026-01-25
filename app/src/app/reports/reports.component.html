@@ -22,7 +22,7 @@
 
     <p class="subtitle">Analise sua saúde financeira com relatórios detalhados.</p>
 
-    <div class="card gray-background net-worth-card">
+    <div class="card net-worth-card">
       <div class="card-label">Patrimônio líquido</div>
       <app-loading-value [value]="totalNetWorth">
         <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : totalNetWorth
@@ -31,7 +31,7 @@
       </app-loading-value>
     </div>
     <div class="cards-grid">
-      <div class="card gray-background net-worth-card">
+      <div class="card net-worth-card">
         <div class="card-label">Total de Ativos</div>
         <app-loading-value [value]="totalAssets">
           <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : totalAssets
@@ -39,7 +39,7 @@
           </div>
         </app-loading-value>
       </div>
-      <div class="card gray-background net-worth-card">
+      <div class="card net-worth-card">
         <div class="card-column">
           <div class="card-label">Total de Passivos</div>
           <app-loading-value [value]="totalLiabilities">
@@ -53,7 +53,7 @@
 
     <h3>Comparação mensal</h3>
     <div class="cards-grid">
-      <div class="card gray-background net-worth-card">
+      <div class="card net-worth-card">
         <div class="card-label">Renda Total</div>
         <app-loading-value [value]="incomeCurrentMonth">
           <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue :
@@ -68,7 +68,7 @@
           }
         </div>
       </div>
-      <div class="card gray-background net-worth-card">
+      <div class="card net-worth-card">
         <div class="card-label">Despesa Total</div>
         <app-loading-value [value]="expenseCurrentMonth">
           <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue :
@@ -94,13 +94,14 @@
     <!-- Income vs. Expenses Section -->
     <div class="card">
       <h3>Saldo Financeiro</h3>
+
       <div class="metrics">
         <div class="metric-value" [style.opacity]="opacity">{{ hidden ? hiddenValue :
           incomeExpenseTotal }}
         </div>
         <div class="metric-info">Média dos últimos 12 meses.</div>
       </div>
-      <div class="chart income-expense-chart">
+      <div class="income-expense-chart">
         <div class="chart-bars">
           @for (bar of incomeExpenseBarHeights; track bar) {
             <div class="bar" [ngStyle]="{ 'height': bar.height}" title="{{ bar.value }}"></div>
@@ -112,6 +113,7 @@
           }
         </div>
       </div>
+
       <div class="metric-info">{{ currentYear -1}} - {{ currentYear }}</div>
     </div>
     <div class="key-takeaway">
@@ -176,7 +178,7 @@
     </div>
 
     <!-- Savings Rate Section -->
-    <div class="card gray-background">
+    <div class="card">
       <div class="card-label">Taxa de Poupança</div>
       <app-loading-value [value]="savingsRate">
         <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : savingsRate }}

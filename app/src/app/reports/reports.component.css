@@ -4,6 +4,8 @@
   position: fixed;
   top: 100px;
   right: 45px;
+  border: none;
+  background-color: unset;
 }
 
 /* Metrics */
@@ -30,17 +32,6 @@
 }
 
 
-.green {
-  color: #48bb78;
-}
-
-.red {
-  color: #fc8181;
-}
-
-.gray {
-    color: #a0aec0;
-}
 
 /* Chart */
 .chart {
@@ -113,6 +104,8 @@
   max-width: 99%;
   background-color: #364669;
   border-right: 2px solid #a0aec0;
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
 }
 
 .spending-chart .category-value {
@@ -138,6 +131,12 @@
 
 .key-takeaway p {
     margin: 0;
+}
+
+@media (min-width: 1920px) {
+  .toggle-icon {
+    padding-right: calc((100% - 1920px) / 2);
+  }
 }
 
 
@@ -183,11 +182,5 @@
   .toggle-icon {
       top: 100px;
       right: 23px;
-  }
-}
-
-@media (min-width: 1920px) {
-  .toggle-icon {
-    padding-right: calc((100% - 1920px) / 2);
   }
 }
