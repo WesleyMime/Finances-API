@@ -83,9 +83,9 @@ export class ReportsComponent implements OnInit {
     let lastMonthDate = new Date(currentDate);
     lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
 
-    const lastYearSummary = await this.getSummaryLastYear(lastMonthDate);
-    const currentMonthSummary = await this.getSummaryByDate(currentDate);
-    const lastMonthSummary = await this.getSummaryByDate(lastMonthDate);
+    const lastYearSummary = await this.getSummaryLastYear();
+    const currentMonthSummary = await this.getSummaryByMonth(currentDate);
+    const lastMonthSummary = await this.getSummaryByMonth(lastMonthDate);
 
     this.updateNetWorth(
       lastYearSummary.totalYearIncome + currentMonthSummary.totalIncome,
@@ -256,14 +256,14 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  private async getSummaryLastYear(date: Date): Promise<SummaryLastYear> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryLastYear(date));
-    console.log('Summary data for', date, summary);
+  private async getSummaryLastYear(): Promise<SummaryLastYear> {
+    const summary = await firstValueFrom(this.reportsService.getSummaryLastYear());
+    console.log('Summary data last year', summary);
     return summary;
   }
 
-  private async getSummaryByDate(date: Date): Promise<SummaryByDate> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryByDate(date));
+  private async getSummaryByMonth(date: Date): Promise<SummaryByDate> {
+    const summary = await firstValueFrom(this.reportsService.getSummaryByMonth(date));
     console.log('Summary data for', date, summary);
     return summary;
   }
