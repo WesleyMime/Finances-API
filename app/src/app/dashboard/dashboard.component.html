@@ -1,4 +1,9 @@
 <app-header></app-header>
+<head>
+  <link rel="preconnect" href="https://finances.marujo.site">
+  <link rel="preload" href="assets/loading-ezgif.gif" as="image"/>
+  <link rel="preload" href="assets/loading-ezgif-takeaway.gif" as="image"/>
+</head>
 <main class="content">
   <section class="page-overview">
     <h1>Dashboard</h1>
@@ -26,50 +31,51 @@
 
     <p class="subtitle">Visão geral da sua saúde financeira</p>
     <div class="cards-grid">
+      <div class="card">
+        <div class="card-label">Taxa de Poupança Média</div>
+        @if (hidden) {
+        <span class="chart-summary">
+            {{ hiddenValue }}
+          </span>
+        } @else {
+        <div class="chart-summary" [style.opacity]="opacity">
+
+            <span class="summary-value">
+              {{ savingsAverage }}
+            </span>
+          <span [ngClass]=getChangeColorGood(savingsTrendPercentage) class="summary-percentage">{{ savingsChange }} {{ savingsTrendPercentage }}</span>
+          <span class="summary-period">Últimos 5 Anos</span>
+        </div>
+        }
+        <div [ngClass]=getChangeColorGood(savingsPercentageFormated) class="pie"
+             [style.--segment1]="100 - savingsPercentage"></div>
+        <div class="innerPie"><b>{{ savingsPercentageFormated }}</b></div>
+      </div>
+      <div class="cards-line-grid">
         <div class="card net-worth-card">
           <div class="card-label">Patrimônio Líquido Total</div>
           <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : netWorth }}
           </div>
         </div>
-      <div class="card">
-        <div class="cards-grid">
-          <div>
-            <div class="card-label">Total de Ativos</div>
-            <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : totalAssets
-              }}
-            </div>
-            </div>
-          <div>
-            <div class="card-label">Total de Passivos</div>
-            <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue :
-              totalLiabilities }}
-            </div>
-            </div>
+        <div class="card">
+          <div class="card-label">Total de Receitas</div>
+          <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue : totalAssets
+            }}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Total de Despesas</div>
+          <div class="card-value" [style.opacity]="opacity">{{ hidden ? hiddenValue :
+            totalLiabilities }}
           </div>
         </div>
       </div>
+    </div>
 
-    <div class="cards-grid">
-      <div class="card">
-        <div class="card-label">Taxa de Poupança Média</div>
-        <div class="chart-summary" [style.opacity]="opacity">
-          @if (hidden) {
-          <span class="summary-value">
-              {{ hiddenValue }}
-            </span>
-          } @else {
-          <span class="summary-value">
-              {{ savingsAverage }}
-            </span>
-          <span class="summary-percentage">{{ savingsTrendPercentage }}</span>
-          }
-          <span class="summary-period">Últimos 5 Anos</span>
-        </div>
-        <div class="pie" [style.--segment1]="100 - savingsPercentage"></div>
-        <div class="innerPie"><b>{{ savingsPercentageFormated }}</b></div>
-      </div>
+    <div class="graphs-grid">
       <div class="card chart-card">
-        <div class="card-label">Tendência do Patrimônio Líquido</div>
+        <div class="card-label">Evolução Financeira</div>
         <div class="chart-summary" [style.opacity]="opacity">
           @if (hidden) {
           <span class="summary-value">
@@ -79,14 +85,18 @@
           <span class="summary-value">
               {{ netWorthTrendChange }}
             </span>
-          <span class="summary-percentage">{{ netWorthTrendPercentage }}</span>
+          <span class="summary-percentage" [ngClass]=getChangeColorGood(netWorthTrendPercentage)>{{ netWorthTrendPercentage }}</span>
           }
-          <span class="summary-period">Últimos 5 Anos</span>
+          <span
+            class="summary-period">Saldo Anual ({{ currentYear - 2 }}-{{ currentYear - 1 }})</span>
         </div>
-
         <div class="line-chart">
-          <svg viewBox="0 0 250 100">
+          <svg viewBox="200 -200 200 350">
             <path class="data-line" [attr.d]="dPath"
+                  fill="none"
+                  stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
+            <path style="stroke: #ffffff"
+                  [attr.d]="dPath2"
                   fill="none"
                   stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
             <defs>
@@ -100,125 +110,11 @@
           </svg>
         </div>
         <div class="chart-labels">
-          <span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span>
-        </div>
-      </div>
-    </div>
-    <div class="charts-grid">
-
-      <div class="card">
-        <div class="card-label">Receitas Passadas</div>
-        <div class="chart-summary" [style.opacity]="opacity">
-          @if (hidden) {
-          <span class="summary-value">
-              {{ hiddenValue }}
-            </span>
-          } @else {
-          <span class="summary-value">
-              {{ lastMonthIncomeValue }}
-            </span>
-          <span class="summary-percentage">{{ lastMonthIncomePercentage }}</span>
-          }
-          <span class="summary-period">Últimos 6 Meses</span>
-        </div>
-        <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of pastIncomeBarHeights"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #48bb78;">
-          </div>
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+          <span>{{ currentYear - 5 }}</span><span>{{ currentYear - 4 }}</span><span>{{ currentYear - 3 }}</span>
+          <span>{{ currentYear - 2 }}</span><span>{{ currentYear - 1 }}</span>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-label">Despesas Passadas</div>
-        <div class="chart-summary" [style.opacity]="opacity">
-          @if (hidden) {
-          <span class="summary-value">
-              {{ hiddenValue }}
-            </span>
-          } @else {
-          <span class="summary-value">
-              {{ lastMonthExpenseValue }}
-            </span>
-          <span class="summary-percentage">{{ lastMonthExpensePercentage }}</span>
-          }
-          <span class="summary-period">Últimos 6 Meses</span>
-        </div>
-        <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of pastExpensesBarHeights"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #fc8181;">
-          </div>
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-        </div>
-      </div>
-    </div>
-    <div class="charts-grid">
-
-      <div class="card">
-        <div class="card-label">Receitas Futuras</div>
-        <div class="chart-summary" [style.opacity]="opacity">
-          @if (hidden) {
-          <span class="summary-value">
-              {{ hiddenValue }}
-            </span>
-          } @else {
-          <span class="summary-value">
-                {{ nextMonthIncomeValue }}
-              </span>
-          <span class="summary-percentage">{{ nextMonthIncomePercentage }}</span>
-          }
-          <span class="summary-period">Próximos 6 Meses</span>
-        </div>
-        <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of futureIncomeBarHeights"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #48bb78;">
-          </div>
-        </div>
-        <div class="chart-labels bar-labels">
-          <!--           TODO deixar automatico: -->
-          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Despesas Futuras</div>
-        <div class="chart-summary" [style.opacity]="opacity">
-          @if (hidden) {
-          <span class="summary-value">
-              {{ hiddenValue }}
-            </span>
-          } @else {
-          <span class="summary-value">
-                {{ nextMonthExpenseValue }}
-              </span>
-          <span class="summary-percentage">{{ nextMonthExpensePercentage }}</span>
-          }
-          <span class="summary-period">Próximos 6 Meses</span>
-        </div>
-        <div class="bar-chart">
-          <div class="bar" *ngFor="let bar of futureExpensesBarHeights"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #fc8181;">
-          </div>
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="graphs-grid">
       <div class="card">
         <div class="card-label">Tendência de Poupança</div>
         <div class="chart-summary" [style.opacity]="opacity">
@@ -228,58 +124,191 @@
             </span>
           } @else {
           <span class="summary-value">
-                {{ netWorthTrendChange }}
-              </span>
-          <span class="summary-percentage">{{ netWorthTrendPercentage }}</span>
+              {{ balanceLastMonth }}
+            </span>
+          <span class="summary-percentage" [ngClass]=getChangeColorGood(netWorthTrendPercentage)>
+              {{ balanceLastMonthPercentage }}
+            </span>
           }
-          <span class="summary-period">Últimos 12 Meses</span>
-          </div>
+          <span class="summary-period">{{ this.months[(this.currentMonth - 2) % 12] }} -
+            {{ this.months[(this.currentMonth - 1) % 12] }}
+          </span>
+        </div>
         <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
              xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent">
         </svg>
       </div>
-      <div class="card">
-        <div class="card-label">Net Worth Trend</div>
+
+      <div class="card"
+           style="background: repeating-linear-gradient(45deg, rgb(200 200 0), transparent 100px);">
+        <div class="card-label">WIP</div>
         <div class="chart-summary" [style.opacity]="opacity">
           @if (hidden) {
           <span class="summary-value">
               {{ hiddenValue }}
             </span>
           } @else {
-          <span class="summary-value">
-                {{ netWorthTrendChange }}
-              </span>
-          <span class="summary-percentage">{{ netWorthTrendPercentage }}</span>
+          <span class="summary-value"></span>
+          <span class="summary-percentage">Em Construção</span>
           }
-            <span class="summary-period">Last 12 Months</span>
-          </div>
+          <span class="summary-period">Últimos 12 Meses</span>
+        </div>
         <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
-               xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent2">
-          </svg>
+             xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent2">
+        </svg>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-label">Receitas Passadas</div>
+        @if (hidden) {
+        <span class="chart-summary">
+            {{ hiddenValue }}
+          </span>
+        } @else {
+        <div class="chart-summary" [style.opacity]="opacity">
+            <span class="summary-value">
+              {{ lastMonthIncomeValue }}
+            </span>
+          <span class="summary-period">Mês Atual: </span>
+          <span [ngClass]=getChangeColorGood(lastMonthIncomePercentage) class="summary-percentage">
+              {{ currentIncomeFormated }} ({{ lastMonthIncomePercentage }})
+            </span>
+        </div>
+        }
+        <div class="bar-chart">
+          <div class="bar" *ngFor="let bar of pastIncomeBarHeights"
+               [style.height]="bar.height + '%'"
+               [title]="bar.value"
+               style="background-color: #48bb78;">
+          </div>
+        </div>
+        <div class="chart-labels bar-labels">
+          <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
+          <span>{{ months[currentMonth - 4 % 12 ] }}</span><span>{{ months[currentMonth - 3 % 12 ] }}</span>
+          <span>{{ months[currentMonth - 2 % 12 ] }}</span><span>{{ months[currentMonth - 1 % 12 ] }}</span>
         </div>
       </div>
-      <section class="recent-transactions">
-        <h2>Transações Recentes</h2>
-        <table class="transactions-table">
-          <thead>
-          <tr>
-            <th>Data</th>
-            <th>Categoria</th>
-            <th>Descrição</th>
-            <th class="amount-header">Valor</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let transaction of recentTransactions">
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.category }}</td>
-            <td>{{ transaction.description }}</td>
-            <td [style.opacity]="opacity">
-              {{ hidden ? hiddenValue : transaction.amount | currency }}
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </section>
+
+      <div class="card">
+        <div class="card-label">Despesas Passadas</div>
+        @if (hidden) {
+        <span class="chart-summary">
+              {{ hiddenValue }}
+            </span>
+        } @else {
+        <div class="chart-summary" [style.opacity]="opacity">
+            <span class="summary-value">
+              {{ lastMonthExpenseValue }}
+            </span>
+          <span class="summary-period">Mês Atual: </span>
+          <span [ngClass]=getChangeColorBad(lastMonthExpensePercentage) class="summary-percentage">
+              {{ currentExpenseFormated }} ({{ lastMonthExpensePercentage }})
+            </span>
+        </div>
+        }
+        <div class="bar-chart">
+          <div class="bar" *ngFor="let bar of pastExpensesBarHeights"
+               [style.height]="bar.height + '%'"
+               [title]="bar.value"
+               style="background-color: #fc8181;">
+          </div>
+        </div>
+        <div class="chart-labels bar-labels">
+          <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
+          <span>{{ months[currentMonth - 4 % 12 ] }}</span><span>{{ months[currentMonth - 3 % 12 ] }}</span>
+          <span>{{ months[currentMonth - 2 % 12 ] }}</span><span>{{ months[currentMonth - 1 % 12 ] }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="charts-grid">
+
+      <div class="card">
+        <div class="card-label">Receitas Futuras</div>
+        @if (hidden) {
+        <span class="chart-summary">
+            {{ hiddenValue }}
+          </span>
+        } @else {
+        <div class="chart-summary" [style.opacity]="opacity">
+            <span class="summary-value">
+              {{ nextMonthIncomeValue }}
+            </span>
+          <span class="summary-period">Mês Atual: </span>
+          <span [ngClass]=getChangeColorGood(nextMonthIncomePercentage) class="summary-percentage">
+              {{ currentIncomeFormated }} ({{ nextMonthIncomePercentage }})
+            </span>
+        </div>
+        }
+        <div class="bar-chart">
+          <div class="bar" *ngFor="let bar of futureIncomeBarHeights"
+               [style.height]="bar.height + '%'"
+               [title]="bar.value"
+               style="background-color: #48bb78;">
+          </div>
+        </div>
+        <div class="chart-labels bar-labels">
+          <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
+          <span>{{ months[(currentMonth + 3) % 12 ] }}</span><span>{{ months[(currentMonth + 4) % 12 ] }}</span>
+          <span>{{ months[(currentMonth + 5) % 12 ] }}</span><span>{{ months[(currentMonth + 6) % 12 ] }}</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Despesas Futuras</div>
+        @if (hidden) {
+        <span class="chart-summary">
+            {{ hiddenValue }}
+          </span>
+        } @else {
+        <div class="chart-summary" [style.opacity]="opacity">
+            <span class="summary-value">
+              {{ nextMonthExpenseValue }}
+            </span>
+          <span class="summary-period">Mês Atual: </span>
+          <span [ngClass]=getChangeColorBad(nextMonthExpensePercentage) class="summary-percentage">
+              {{ currentExpenseFormated }} ({{ nextMonthExpensePercentage }})
+            </span>
+        </div>
+        }
+        <div class="bar-chart">
+          <div class="bar" *ngFor="let bar of futureExpensesBarHeights"
+               [style.height]="bar.height + '%'"
+               [title]="bar.value"
+               style="background-color: #fc8181;">
+          </div>
+        </div>
+        <div class="chart-labels bar-labels">
+          <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
+          <span>{{ months[(currentMonth + 3) % 12 ] }}</span><span>{{ months[(currentMonth + 4) % 12 ] }}</span>
+          <span>{{ months[(currentMonth + 5) % 12 ] }}</span><span>{{ months[(currentMonth + 6) % 12 ] }}</span>
+        </div>
+      </div>
+    </div>
+    <section class="recent-transactions">
+      <h2>Transações Recentes</h2>
+      <table class="transactions-table"
+             style="background: repeating-linear-gradient(45deg, rgb(200 200 0), transparent 100px);">
+        <thead>
+        <tr>
+          <th>Data</th>
+          <th>Categoria</th>
+          <th>Descrição</th>
+          <th class="amount-header">Valor</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let transaction of recentTransactions">
+          <td>{{ transaction.date }}</td>
+          <td>{{ transaction.category }}</td>
+          <td>{{ transaction.description }}</td>
+          <td [style.opacity]="opacity">
+            {{ hidden ? hiddenValue : transaction.amount | currency }}
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </section>
-  </main>
+  </section>
+</main>

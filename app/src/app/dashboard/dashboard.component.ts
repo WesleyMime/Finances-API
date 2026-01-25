@@ -1,15 +1,11 @@
-import { CurrencyPipe, NgClass, NgFor } from '@angular/common';
+import { CurrencyPipe, NgClass, CommonModule } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { ReportsService } from '../reports/reports.service';
-import { SummaryByDate } from '../reports/summary-by-date';
-import { SummaryLastYear } from '../reports/summary-last-year';
 import { SummaryBasic } from './summary-basic';
-import { dateTimestampProvider } from 'rxjs/internal/scheduler/dateTimestampProvider';
 
 interface Transaction {
   date: string;
@@ -20,20 +16,21 @@ interface Transaction {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CurrencyPipe, NgClass, NgFor, HeaderComponent, CommonModule, FormsModule],
+  imports: [CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  // DO NOT JUDGE, CODE TO BE REFACTORED
   svgContent: SafeHtml = "";
   svgContent2: SafeHtml = "";
 
-  // TODO mudar para componente
+  // TODO create componente
   hiddenValue = '*****';
   hidden = false;
   opacity: number = 1;
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private readonly sanitizer: DomSanitizer) {
   }
   netWorth: string = '';
   totalAssets: string = '';
@@ -42,15 +39,24 @@ export class DashboardComponent implements OnInit {
   savingsAverage: string = '0';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
+  savingsChange = '';
   savingsTrendPercentage = '';
 
   lineChartHeights: number[] = [];
   dPath: string = '';
+  dPath2: string = '';
 
   pastIncomeBarHeights = [{ height: '', value: '' }];
   pastExpensesBarHeights = [{ height: '', value: '' }];
   futureIncomeBarHeights = [{ height: '', value: '' }];
   futureExpensesBarHeights = [{ height: '', value: '' }];
+
+  currentDate = new Date();
+  currentYear = this.currentDate.getFullYear();
+  currentMonth = this.currentDate.getMonth() + 12;
+
+  currentIncomeFormated = '';
+  currentExpenseFormated = '';
 
   lastMonthIncomeValue = '';
   lastMonthIncomePercentage = '';
@@ -61,10 +67,8 @@ export class DashboardComponent implements OnInit {
   nextMonthExpenseValue = '';
   nextMonthExpensePercentage = '';
 
-
-
-  incomeExpenseChange: string = '2500';
-  incomeExpensePercentage: string = '15';
+  balanceLastMonth = '';
+  balanceLastMonthPercentage = '';
 
   netWorthTrendChange: string = '';
   netWorthTrendPercentage = '';
@@ -89,22 +93,28 @@ export class DashboardComponent implements OnInit {
   }
   // Mock transaction data
   recentTransactions: Transaction[] = [
-    { date: '2024-07-15', category: 'Groceries', description: 'Supermarket purchase', amount: "-85.50" },
-    { date: '2024-07-14', category: 'Salary', description: 'Monthly paycheck', amount: "5000.00" },
-    { date: '2024-07-12', category: 'Rent', description: 'Apartment rent', amount: "-1500.00" },
-    { date: '2024-07-10', category: 'Dining', description: 'Restaurant dinner', amount: "-60.00" },
-    { date: '2024-07-08', category: 'Utilities', description: 'Electricity bill', amount: "-120.00" },
+    { date: '2024-07-15', category: 'WIP', description: 'Em Construção', amount: "-85.50" },
+    { date: '2024-07-14', category: 'WIP', description: 'Em Construção', amount: "5000.00" },
+    { date: '2024-07-12', category: 'WIP', description: 'Em Construção', amount: "-1500.00" },
+    { date: '2024-07-10', category: 'WIP', description: 'Em Construção', amount: "-60.00" },
+    { date: '2024-07-08', category: 'WIP', description: 'Em Construção', amount: "-120.00" },
   ];
 
-  getAmountClass(amountString: string): string {
-    let amount = Number.parseFloat(amountString);
-    if (amount > 0) {
+  getChangeColorGood(change: string): string {
+    if (change.startsWith('+')) {
       return 'green';
-    }
-    if (amount < 0) {
+    } else if (change.startsWith('-')) {
       return 'red';
     }
-    return '';
+    return 'gray';
+  }
+  getChangeColorBad(change: string): string {
+    if (change.startsWith('+')) {
+      return 'red';
+    } else if (change.startsWith('-')) {
+      return 'green';
+    }
+    return 'gray';
   }
 
   formatAmount(amount: number): string {
@@ -115,9 +125,9 @@ export class DashboardComponent implements OnInit {
     return formatted;
   }
 
-  months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  values = [50, 65, 60, 100, 0, 40, 78, 55, 62, 78, 65, 48];
-  values2 = [30, 45, 80, 60, 20, 90, 40, 70, 50, 85, 40, 60];
+  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  values: number[] = [];
+  values2 = [30, 45, 80, 60, 20, 90, 40, -70, 50, 85, 40, 60];
 
   graphWidth = 500;
   graphHeight = 300;
@@ -141,99 +151,145 @@ export class DashboardComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.updateGraph();
+      // DO NOT JUDGE, CODE TO BE REFACTORED
+    const accountSummary = await this.getAccountSummary();
+    this.netWorth = this.formatCurrency(accountSummary.balance);
+    this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
+    this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
+
     let currentDate = new Date();
     let dateFrom = new Date(currentDate.getFullYear() - 1, 0, 1);
     let dateTo = new Date(currentDate.getFullYear() - 1, 11, 1);
 
-    let balanceList: number[] = [];
-    let savingsPerYear: number[] = [];
+    let balanceYearsList: number[] = [];
     let yearsWithTransactions = 0;
     let totalBalanceFiveYears = 0;
     let totalIncomeFiveYears = 0;
 
     for (let i = 1; i <= 5; i++) {
       const byDateSummary = await this.getSummaryByDate(dateFrom, dateTo);
-      balanceList.push(byDateSummary.balance);
+      balanceYearsList.push(byDateSummary.balance);
       dateFrom.setFullYear(dateFrom.getFullYear() - 1);
       dateTo.setFullYear(dateTo.getFullYear() - 1);
 
       // Savings:
       if (byDateSummary.totalIncome == 0 && byDateSummary.totalExpense == 0) continue;
-      savingsPerYear.push(byDateSummary.balance / byDateSummary.totalIncome);
       totalBalanceFiveYears += byDateSummary.balance;
       totalIncomeFiveYears += byDateSummary.totalIncome;
       yearsWithTransactions++;
     }
 
     if (yearsWithTransactions > 0) {
-      this.savingsAverage = this.formatCurrency(totalBalanceFiveYears / yearsWithTransactions);
+      let totalSavingsAverage = totalBalanceFiveYears / yearsWithTransactions
+      this.savingsAverage = this.formatCurrency(totalSavingsAverage);
       this.savingsPercentage = totalBalanceFiveYears * 100 / totalIncomeFiveYears;
       this.savingsPercentageFormated = this.formatPercentage(this.savingsPercentage);
-      let beforeLastYear = totalBalanceFiveYears - balanceList[0];
-      this.savingsTrendPercentage = this.formatPercentage(this.getPercentageChange(totalBalanceFiveYears, beforeLastYear));
+      let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
+      let savingsPercentageChange = this.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
+      this.savingsChange = this.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
+      this.savingsTrendPercentage = this.formatPercentage(savingsPercentageChange);
     } else {
       this.savingsAverage = this.formatCurrency(0);
       this.savingsPercentage = 100;
       this.savingsPercentageFormated = this.formatPercentage(0);
     }
 
-    // 6 Months:
+    this.getLineChartHeights(balanceYearsList);
+    this.dPath2 = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
+    this.dPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
+      ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
+      ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
+      ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
+    this.netWorthTrendChange = this.formatCurrency(balanceYearsList[0]);
+    this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
+
+    // 12 Months:
     let pastDate = new Date();
-    pastDate.setMonth(pastDate.getMonth() - 6);
+    pastDate.setMonth(pastDate.getMonth() - 12);
     let incomeListPast = [];
     let expenseListPast = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 12; i++) {
       let monthSummary = await this.getSummaryByMonth(pastDate);
       pastDate.setMonth(pastDate.getMonth() + 1);
-      incomeListPast.push(monthSummary.totalIncome);
-      expenseListPast.push(monthSummary.totalExpense);
+
+      let totalIncome = monthSummary.totalIncome;
+      let totalExpense = monthSummary.totalExpense;
+      incomeListPast.push(totalIncome);
+      expenseListPast.push(totalExpense);
+      if (totalIncome > 0 && totalExpense == 0) {
+        this.values.push(100);
+        continue;
+      }
+      if (totalExpense > 0 && totalIncome == 0) {
+        this.values.push(-100);
+        continue;
+      }
+      if (totalExpense == 0 && totalIncome == 0) {
+        this.values.push(0);
+        continue;
+      }
+      let balance = Math.round((totalIncome - totalExpense) * 100 / totalIncome) * 100 / 100;
+      this.values.push(balance);
     }
+    this.updateGraph();
     let futureDate = new Date();
     let incomeListFuture = [];
     let expenseListFuture = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       let monthSummary = await this.getSummaryByMonth(futureDate);
       futureDate.setMonth(futureDate.getMonth() + 1);
       incomeListFuture.push(monthSummary.totalIncome);
       expenseListFuture.push(monthSummary.totalExpense);
     }
-    this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast);
-    this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast);
 
-    this.lastMonthIncomeValue = this.formatCurrency(incomeListPast[5]);
-    this.lastMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[0], incomeListPast[5]));
-    debugger;
-    this.lastMonthExpenseValue = this.formatCurrency(expenseListPast[5]);
-    this.lastMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[0], expenseListPast[5]));
+    let currentIncome = incomeListFuture[0];
+    let currentExpense = expenseListFuture[0];
 
-    this.futureIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListFuture);
-    this.futureExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListFuture);
+    this.currentIncomeFormated = this.formatCurrency(currentIncome);
+    this.currentExpenseFormated = this.formatCurrency(currentExpense);
+
+    // only last 6 months
+    this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast.slice(6, 12));
+    this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
+
+    this.lastMonthIncomeValue = this.formatCurrency(incomeListPast[11]);
+    this.lastMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(currentIncome, incomeListPast[11]))
+
+
+    this.lastMonthExpenseValue = this.formatCurrency(expenseListPast[11]);
+    this.lastMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(currentExpense, expenseListPast[11]));
+
+    let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
+    this.balanceLastMonth = this.formatCurrency(balanceLastMonth);
+    this.balanceLastMonthPercentage = this.formatPercentage(this.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
 
     this.nextMonthIncomeValue = this.formatCurrency(incomeListFuture[1]);
-    this.nextMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[1], incomeListFuture[0]));
+    this.nextMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[1], currentIncome));
     this.nextMonthExpenseValue = this.formatCurrency(expenseListFuture[1]);
-    this.nextMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[1], expenseListFuture[0]));
+    this.nextMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[1], currentExpense));
 
-    const accountSummary = await this.getAccountSummary();
-    this.netWorth = this.formatCurrency(accountSummary.balance);
-    this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
-    this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
-
-    this.getLineChartHeights(balanceList);
-    this.dPath = 'M 25 ' + this.lineChartHeights[4] + ' L 75 ' + this.lineChartHeights[3] + ' L 125 ' + this.lineChartHeights[2] + ' L 175 ' + this.lineChartHeights[1] + ' L 225 ' + this.lineChartHeights[0];
-    this.netWorthTrendChange = this.formatCurrency(balanceList[0] - balanceList[1]);
-    this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceList[0], balanceList[1]));
+    incomeListFuture.shift();
+    expenseListFuture.shift();
+    this.futureIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListFuture);
+    this.futureExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListFuture);
   }
 
   // Get the biggest value and consider it 100%, and then calculate the percentage for each month
   private getLineChartHeights(list: any): void {
     let maxBalance = Math.max(...list);
-    list.map((balance: number) => {
-      // Calculate the percentage height based on the maximum balances
-      let percentage = this.getPercentageChange(balance, maxBalance) * -1;
-      this.lineChartHeights.push(percentage);
-    });
+    if (maxBalance <= 0) {
+      maxBalance = Math.min(...list);
+      list.map((balance: number) => {
+        let percentage = this.getPercentageChange(balance, maxBalance);
+        this.lineChartHeights.push(percentage + 100);
+      });
+    } else {
+      list.map((balance: number) => {
+        // Calculate the percentage height based on the maximum balances
+        let percentage = this.getPercentageChange(balance, maxBalance) * -1;
+        this.lineChartHeights.push(percentage - 100);
+      });
+    }
   }
 
   // Get the biggest value and consider it 100%, and then calculate the percentage for each month
@@ -256,12 +312,12 @@ export class DashboardComponent implements OnInit {
   // TODO refactor to utility service
   getPercentageChange(num1: number, num2: number): number {
     let difference = num1 - num2;
-    return difference * 100 / num2;
+    let percentage = difference * 100 / num2 || 0;
+    return Math.round(percentage * 100) / 100;
   }
 
   formatPercentage(diffPercent: number): string {
-    if (!isFinite(diffPercent)) return '0%';
-    // 2 decimal places for percentage
+    if (!Number.isFinite(diffPercent)) return '0%';
     diffPercent = Math.round(diffPercent * 100) / 100;
     return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
   }
@@ -277,10 +333,9 @@ export class DashboardComponent implements OnInit {
               </filter>
             </defs>`
 
-    // Calculate positions
     const points = values.map((val, i) => ({
       x: this.padding.left + (i * (this.chartWidth / 11)),
-      y: this.padding.top + this.chartHeight - (val / 100 * this.chartHeight)
+      y: this.padding.top + this.chartHeight / 2 - (val / 100 * this.chartHeight / 2)
     }));
 
     // Create smooth curve path
@@ -298,7 +353,7 @@ export class DashboardComponent implements OnInit {
     // Draw points and labels
     points.forEach((point, i) => {
       svg += `<circle cx="${point.x}" cy="${point.y}" r="4" class="data-point"></circle>`;
-      svg += `<text x="${point.x}" y="${this.graphHeight - this.padding.bottom + 15}" class="label" text-anchor="middle">${this.months[i]}</text>`;
+      svg += `<text x="${point.x}" y="${this.graphHeight - this.padding.bottom + 15}" class="label" text-anchor="middle">${this.months[(this.currentMonth + i) % 12]}</text>`;
       svg += `<text x="${point.x}" y="${point.y - 10}" class="label" font-weight="bold" text-anchor="middle">${values[i]}</text>`;
     });
     return this.sanitizer.bypassSecurityTrustHtml(svg);
