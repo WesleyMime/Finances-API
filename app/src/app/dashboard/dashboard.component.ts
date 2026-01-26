@@ -6,6 +6,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { ReportsService } from '../reports/reports.service';
 import { SummaryBasic } from './summary-basic';
+import { LoadingValueComponent } from '../loading-value/loading-value.component';
 
 interface Transaction {
   date: string;
@@ -16,7 +17,7 @@ interface Transaction {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule],
+  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
