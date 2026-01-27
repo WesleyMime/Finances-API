@@ -33,12 +33,12 @@ public interface ExpenseRepository extends GenericRepository<Expense>, JpaReposi
 	List<ExpenseCategoryDTO> totalExpenseByCategory(Integer year, Integer month, Client client);
 
 	@Query("SELECT new br.com.finances.api.expense.ExpenseDTO(i) FROM Expense i WHERE (i.date) BETWEEN ?1 AND ?2 " +
-			"AND i.client = ?3 ORDER BY i.date ASC")
+			"AND i.client = ?3")
 	List<ExpenseDTO> findExpenseByDateBetween(LocalDate from, LocalDate to, Client client);
 
-	@Query("SELECT new br.com.finances.api.expense.ExpenseDTO(i) FROM Expense i WHERE (i.date) <= ?1 " +
+	@Query("SELECT sum(i.value) FROM Expense i WHERE (i.date) <= ?1 " +
 			"AND i.client = ?2")
-	List<ExpenseDTO> findAllExpenseUntilNow(LocalDate date, Client client);
+	BigDecimal sumAllExpenseUntilNow(LocalDate date, Client client);
 
 	default List<Expense> saveList(Set<Expense> toAddList) {
 		return saveAll(toAddList);

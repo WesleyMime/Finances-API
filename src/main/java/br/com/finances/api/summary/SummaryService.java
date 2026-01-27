@@ -188,18 +188,8 @@ public class SummaryService {
 	public SummaryBasicDTO getAccountSummary(LocalDate date, Principal principal) {
 		Client client = getClient();
 
-		List<IncomeDTO> incomeList = incomeRepository.findAllIncomeUntilNow(date, client);
-		List<ExpenseDTO> expenseList = expenseRepository.findAllExpenseUntilNow(date, client);
-
-		BigDecimal totalIncome = BigDecimal.ZERO;
-		BigDecimal totalExpense = BigDecimal.ZERO;
-
-		for (IncomeDTO incomeDTO : incomeList) {
-			totalIncome = totalIncome.add(incomeDTO.getValue());
-		}
-		for (ExpenseDTO expenseDTO : expenseList) {
-			totalExpense = totalExpense.add(expenseDTO.getValue());
-		}
+		BigDecimal totalIncome = incomeRepository.sumAllIncomeUntilNow(date, client);
+		BigDecimal totalExpense = expenseRepository.sumAllExpenseUntilNow(date, client);
 		return new SummaryBasicDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense));
 	}
 
