@@ -17,9 +17,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class SummaryService {
@@ -74,10 +73,10 @@ public class SummaryService {
 
 		LocalDate from = LocalDate.of(date.getYear() - 1, date.getMonthValue(), 1);
 		LocalDate now = LocalDate.now();
-		List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeByDate(from,
+		List<IncomeDTO> incomeFromLastYear = incomeRepository.findIncomeByDateBetween(from,
 				now.minusDays(now.getDayOfMonth()),
 				client);
-		List<ExpenseDTO> expenseFromLastYear = expenseRepository.findExpenseByDate(from,
+		List<ExpenseDTO> expenseFromLastYear = expenseRepository.findExpenseByDateBetween(from,
 				now.minusDays(now.getDayOfMonth()),
 				client);
 
@@ -119,12 +118,12 @@ public class SummaryService {
 
 	@Cacheable(value = "summary-by-date", key = "#principal.name.concat(#yearFromString).concat(#yearToString)",
 			unless = "#result == null")
-	public Optional<SummaryBasicDTO> getSummaryByDate(String yearFromString, String monthFromString,
-													  String yearToString, String monthToString, Principal principal) {
-		Integer yearFrom;
-		Integer monthFrom;
-		Integer yearTo;
-		Integer monthTo;
+	public SummaryPeriodDTO getSummaryByDate(String yearFromString, String monthFromString,
+												   String yearToString, String monthToString, Principal principal) {
+		int yearFrom;
+		int monthFrom;
+		int yearTo;
+		int monthTo;
 		Client client = getClient();
 
 		try {
@@ -133,29 +132,55 @@ public class SummaryService {
 			yearTo = Integer.parseInt(yearToString);
 			monthTo = Integer.parseInt(monthToString);
 		} catch (NumberFormatException _) {
-			return Optional.empty();
+			return null;
 		}
 
 		LocalDate from = LocalDate.of(yearFrom, monthFrom, 1);
 		// Get the last day of the 'to' month
 		LocalDate to = LocalDate.of(yearTo, monthTo, 1).plusMonths(1).minusDays(1);
-		List<IncomeDTO> incomeListByDate = incomeRepository.findIncomeByDate(from, to, client);
-		List<ExpenseDTO> expenseListByDate = expenseRepository.findExpenseByDate(from, to, client);
 
-		BigDecimal balance;
-		BigDecimal totalIncome = BigDecimal.ZERO;
-		BigDecimal totalExpense = BigDecimal.ZERO;
+		List<IncomeDTO> incomeListByDate = incomeRepository.findIncomeByDateBetween(from, to, client);
+		List<ExpenseDTO> expenseListByDate = expenseRepository.findExpenseByDateBetween(from, to, client);
+
+		Map<String, SummaryBasicDTO> monthsMap = new HashMap<>();
+
+		BigDecimal totalIncomePeriod = BigDecimal.ZERO;
+		BigDecimal totalExpensePeriod = BigDecimal.ZERO;
+		BigDecimal totalBalancePeriod = BigDecimal.ZERO;
 
 		for (IncomeDTO incomeDTO : incomeListByDate) {
-			totalIncome = totalIncome.add(incomeDTO.getValue());
+			String dateString = getDateFormatted(incomeDTO.getDate());
+
+			SummaryBasicDTO summaryBasicDTO = monthsMap.getOrDefault(dateString, new SummaryBasicDTO());
+			summaryBasicDTO.increaseTotalIncome(incomeDTO.getValue());
+			summaryBasicDTO.increaseTotalBalance(incomeDTO.getValue());
+			monthsMap.put(dateString, summaryBasicDTO);
+
+			totalIncomePeriod = totalIncomePeriod.add(incomeDTO.getValue());
+			totalBalancePeriod = totalBalancePeriod.add(incomeDTO.getValue());
 		}
+
 		for (ExpenseDTO expenseDTO : expenseListByDate) {
-			totalExpense = totalExpense.add(expenseDTO.getValue());
+			String dateString = getDateFormatted(expenseDTO.getDate());
+
+			SummaryBasicDTO summaryBasicDTO = monthsMap.getOrDefault(dateString, new SummaryBasicDTO());
+			summaryBasicDTO.increaseTotalExpense(expenseDTO.getValue());
+			summaryBasicDTO.decreaseTotalBalance(expenseDTO.getValue());
+			monthsMap.put(dateString, summaryBasicDTO);
+
+			totalExpensePeriod = totalExpensePeriod.add(expenseDTO.getValue());
+			totalBalancePeriod = totalBalancePeriod.subtract(expenseDTO.getValue());
 		}
+		List<SummaryByDateDTO> list = new ArrayList<>(monthsMap.size());
 
-		balance = totalIncome.subtract(totalExpense);
-
-		return Optional.of(new SummaryBasicDTO(totalIncome, totalExpense, balance));
+		// Return list ordered by date with summary from month
+		LocalDate date = from;
+		while (date.isBefore(to)) {
+			String dateString = getDateFormatted(date);
+			list.add(new SummaryByDateDTO(dateString, monthsMap.getOrDefault(dateString, new SummaryBasicDTO())));
+			date = date.plusMonths(1);
+		}
+		return new SummaryPeriodDTO(totalIncomePeriod, totalExpensePeriod, totalBalancePeriod, list);
 	}
 
 	@Cacheable(value = "account-summary", key = "#principal.name.concat(#date.month)",
@@ -182,5 +207,9 @@ public class SummaryService {
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		Optional<Client> client = clientRepository.findByEmail(email);
 		return client.orElse(null);
+	}
+
+	private static String getDateFormatted(LocalDate date) {
+		return date.format(DateTimeFormatter.ofPattern("MM/yyyy"));
 	}
 }

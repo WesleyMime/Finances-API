@@ -123,9 +123,9 @@ class SummaryControllerTest {
 				.andExpectAll(
 						status().is2xxSuccessful(),
 						content().contentType(MediaType.APPLICATION_JSON),
-						jsonPath("$.totalIncome", is(1060000.0)),
-						jsonPath("$.totalExpense", is(507500.0)),
-						jsonPath("$.balance", is(552500.0)))
+						jsonPath("$.totalIncomePeriod", is(1060000.0)),
+						jsonPath("$.totalExpensePeriod", is(507500.0)),
+						jsonPath("$.totalBalancePeriod", is(552500.0)))
 				.andDo(print());
 
 	}
@@ -144,9 +144,9 @@ class SummaryControllerTest {
 				.andExpectAll(
 						status().is2xxSuccessful(),
 						content().contentType(MediaType.APPLICATION_JSON),
-						jsonPath("$.totalIncome", is(0)),
-						jsonPath("$.totalExpense", is(0)),
-						jsonPath("$.balance", is(0)))
+						jsonPath("$.totalIncomePeriod", is(0)),
+						jsonPath("$.totalExpensePeriod", is(0)),
+						jsonPath("$.totalBalancePeriod", is(0)))
 				.andDo(print());
 
 	}
@@ -190,7 +190,7 @@ class SummaryControllerTest {
 						content().contentType(MediaType.APPLICATION_JSON),
 						jsonPath("$.totalIncome", is(1120000.0)),
 						jsonPath("$.totalExpense", is(533000.0)),
-						jsonPath("$.balance", is(587000.0)))
+						jsonPath("$.totalBalance", is(587000.0)))
 				.andDo(print());
 
 	}

@@ -33,17 +33,16 @@ public class SummaryController {
 	}
 
 	@GetMapping
-	public ResponseEntity<SummaryBasicDTO> getSummaryByDate(
+	public ResponseEntity<SummaryPeriodDTO> getSummaryByDate(
 			@RequestParam(name = "yearFrom") String yearFrom,
 			@RequestParam(name = "monthFrom") String monthFrom,
 			@RequestParam(name = "yearTo") String yearTo,
 			@RequestParam(name = "monthTo") String monthTo,
 			Principal principal) {
-		Optional<SummaryBasicDTO> summaryByYear = summaryService.getSummaryByDate(yearFrom, monthFrom,
+		SummaryPeriodDTO summaryByDate = summaryService.getSummaryByDate(yearFrom, monthFrom,
 				yearTo, monthTo, principal);
-		return summaryByYear
-				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.badRequest().build());
+
+		return summaryByDate == null ? ResponseEntity.badRequest().build() : ResponseEntity.ok(summaryByDate);
 	}
 
 	@GetMapping("/account")

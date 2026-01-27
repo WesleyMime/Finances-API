@@ -27,9 +27,9 @@ public interface IncomeRepository extends GenericRepository<Income>, JpaReposito
 			":client")
 	Optional<BigDecimal> totalIncomeMonth(Integer year, Integer month, Client client);
 
-	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) >= ?1 " +
-			"AND (i.date) <= ?2 AND i.client = ?3 ORDER BY i.date ASC")
-	List<IncomeDTO> findIncomeByDate(LocalDate from, LocalDate to, Client client);
+	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) BETWEEN ?1 AND ?2 " +
+			"AND i.client = ?3 ORDER BY i.date ASC")
+	List<IncomeDTO> findIncomeByDateBetween(LocalDate from, LocalDate to, Client client);
 
 	@Query("SELECT new br.com.finances.api.income.IncomeDTO(i) FROM Income i WHERE (i.date) <= ?1 " +
 			"AND i.client = ?2")
