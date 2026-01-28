@@ -33,7 +33,7 @@ public interface IncomeRepository extends GenericRepository<Income>, JpaReposito
 
 	@Query("SELECT sum(i.value) FROM Income i WHERE (i.date) <= ?1 " +
 			"AND i.client = ?2")
-	BigDecimal sumAllIncomeUntilNow(LocalDate date, Client client);
+	Optional<BigDecimal> sumAllIncomeUntilNow(LocalDate date, Client client);
 
 	default List<Income> saveList(Set<Income> toAddList) {
 		return saveAll(toAddList);

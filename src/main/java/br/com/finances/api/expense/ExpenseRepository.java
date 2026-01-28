@@ -38,7 +38,7 @@ public interface ExpenseRepository extends GenericRepository<Expense>, JpaReposi
 
 	@Query("SELECT sum(i.value) FROM Expense i WHERE (i.date) <= ?1 " +
 			"AND i.client = ?2")
-	BigDecimal sumAllExpenseUntilNow(LocalDate date, Client client);
+	Optional<BigDecimal> sumAllExpenseUntilNow(LocalDate date, Client client);
 
 	default List<Expense> saveList(Set<Expense> toAddList) {
 		return saveAll(toAddList);

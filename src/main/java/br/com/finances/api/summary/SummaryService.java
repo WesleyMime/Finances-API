@@ -188,8 +188,8 @@ public class SummaryService {
 	public SummaryBasicDTO getAccountSummary(LocalDate date, Principal principal) {
 		Client client = getClient();
 
-		BigDecimal totalIncome = incomeRepository.sumAllIncomeUntilNow(date, client);
-		BigDecimal totalExpense = expenseRepository.sumAllExpenseUntilNow(date, client);
+		BigDecimal totalIncome = incomeRepository.sumAllIncomeUntilNow(date, client).orElse(BigDecimal.ZERO);
+		BigDecimal totalExpense = expenseRepository.sumAllExpenseUntilNow(date, client).orElse(BigDecimal.ZERO);
 		return new SummaryBasicDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense));
 	}
 
