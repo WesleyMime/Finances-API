@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ReportsService } from '../reports/reports.service';
 import { SummaryBasic } from './summary-basic';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
+import { SummaryPeriod } from './summary-period';
 
 interface Transaction {
   date: string;
@@ -22,7 +23,6 @@ interface Transaction {
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  // DO NOT JUDGE, CODE TO BE REFACTORED
   svgContent: SafeHtml = "";
   svgContent2: SafeHtml = "";
 
@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit {
   totalAssets: string = '';
   totalLiabilities: string = '';
 
-  savingsAverage: string = '0';
+  savingsAverage: string = '';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
   savingsChange = '';
@@ -141,7 +141,7 @@ export class DashboardComponent implements OnInit {
     return summary;
   }
 
-  private async getSummaryByDate(dateFrom: Date, dateTo: Date): Promise<SummaryBasic> {
+  private async getSummaryByDate(dateFrom: Date, dateTo: Date): Promise<SummaryPeriod> {
     const summary = await firstValueFrom(this.reportsService.getSummaryByDate(dateFrom, dateTo));
     return summary;
   }
@@ -152,9 +152,8 @@ export class DashboardComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-      // DO NOT JUDGE, CODE TO BE REFACTORED
     const accountSummary = await this.getAccountSummary();
-    this.netWorth = this.formatCurrency(accountSummary.balance);
+    this.netWorth = this.formatCurrency(accountSummary.totalBalance);
     this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
     this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
 
@@ -168,15 +167,15 @@ export class DashboardComponent implements OnInit {
     let totalIncomeFiveYears = 0;
 
     for (let i = 1; i <= 5; i++) {
-      const byDateSummary = await this.getSummaryByDate(dateFrom, dateTo);
-      balanceYearsList.push(byDateSummary.balance);
+      const summaryPreviousYears = await this.getSummaryByDate(dateFrom, dateTo);
+      balanceYearsList.push(summaryPreviousYears.totalBalancePeriod);
       dateFrom.setFullYear(dateFrom.getFullYear() - 1);
       dateTo.setFullYear(dateTo.getFullYear() - 1);
 
       // Savings:
-      if (byDateSummary.totalIncome == 0 && byDateSummary.totalExpense == 0) continue;
-      totalBalanceFiveYears += byDateSummary.balance;
-      totalIncomeFiveYears += byDateSummary.totalIncome;
+      if (summaryPreviousYears.totalIncomePeriod == 0 && summaryPreviousYears.totalExpensePeriod == 0) continue;
+      totalBalanceFiveYears += summaryPreviousYears.totalBalancePeriod;
+      totalIncomeFiveYears += summaryPreviousYears.totalIncomePeriod;
       yearsWithTransactions++;
     }
 
@@ -204,44 +203,45 @@ export class DashboardComponent implements OnInit {
     this.netWorthTrendChange = this.formatCurrency(balanceYearsList[0]);
     this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
 
-    // 12 Months:
-    let pastDate = new Date();
-    pastDate.setMonth(pastDate.getMonth() - 12);
+    // 12 Months before:
+    let last12Months = new Date();
+    let futureDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 6);
+    last12Months.setMonth(last12Months.getMonth() - 12);
     let incomeListPast = [];
     let expenseListPast = [];
-    for (let i = 0; i < 12; i++) {
-      let monthSummary = await this.getSummaryByMonth(pastDate);
-      pastDate.setMonth(pastDate.getMonth() + 1);
-
-      let totalIncome = monthSummary.totalIncome;
-      let totalExpense = monthSummary.totalExpense;
-      incomeListPast.push(totalIncome);
-      expenseListPast.push(totalExpense);
-      if (totalIncome > 0 && totalExpense == 0) {
-        this.values.push(100);
-        continue;
-      }
-      if (totalExpense > 0 && totalIncome == 0) {
-        this.values.push(-100);
-        continue;
-      }
-      if (totalExpense == 0 && totalIncome == 0) {
-        this.values.push(0);
-        continue;
-      }
-      let balance = Math.round((totalIncome - totalExpense) * 100 / totalIncome) * 100 / 100;
-      this.values.push(balance);
-    }
-    this.updateGraph();
-    let futureDate = new Date();
     let incomeListFuture = [];
     let expenseListFuture = [];
-    for (let i = 0; i <= 6; i++) {
-      let monthSummary = await this.getSummaryByMonth(futureDate);
-      futureDate.setMonth(futureDate.getMonth() + 1);
-      incomeListFuture.push(monthSummary.totalIncome);
-      expenseListFuture.push(monthSummary.totalExpense);
+
+    let summaryRecentMonths = await this.getSummaryByDate(last12Months, futureDate);
+    for (let i = 0; i < summaryRecentMonths.summaryList.length; i++) {
+      let monthSummary = summaryRecentMonths.summaryList[i];
+      if (i < 12) {
+        let totalIncome = monthSummary.summary.totalIncome;
+        let totalExpense = monthSummary.summary.totalExpense;
+        let totalBalance = monthSummary.summary.totalBalance;
+        incomeListPast.push(totalIncome);
+        expenseListPast.push(totalExpense);
+        if (totalIncome > 0 && totalExpense == 0) {
+          this.values.push(100);
+          continue;
+        }
+        if (totalExpense > 0 && totalIncome == 0) {
+          this.values.push(-100);
+          continue;
+        }
+        if (totalExpense == 0 && totalIncome == 0) {
+          this.values.push(0);
+          continue;
+        }
+        let balance = Math.round(totalBalance * 100 / totalIncome) * 100 / 100;
+        this.values.push(balance);
+      } else {
+        incomeListFuture.push(monthSummary.summary.totalIncome);
+        expenseListFuture.push(monthSummary.summary.totalExpense);
+      }
     }
+
+    this.updateGraph();
 
     let currentIncome = incomeListFuture[0];
     let currentExpense = expenseListFuture[0];
