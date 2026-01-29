@@ -118,6 +118,16 @@ export class DashboardComponent implements OnInit {
     return 'gray';
   }
 
+  getChangeColorPie(change: number): string {
+    if (change < 0) {
+      return 'negative';
+    }
+    if (change > 0) {
+      return 'positive';
+    }
+    return 'neutral';
+  }
+
   formatAmount(amount: number): string {
     const formatted = amount.toFixed(2);
     if (amount > 0) {
@@ -190,7 +200,7 @@ export class DashboardComponent implements OnInit {
       this.savingsTrendPercentage = this.formatPercentage(savingsPercentageChange);
     } else {
       this.savingsAverage = this.formatCurrency(0);
-      this.savingsPercentage = 100;
+      this.savingsPercentage = 0;
       this.savingsPercentageFormated = this.formatPercentage(0);
     }
 
@@ -297,6 +307,7 @@ export class DashboardComponent implements OnInit {
   private getIncomeExpenseBarHeights(list: any): any {
     let valueBarHeights: any = [];
     let maxValue = Math.max(...list);
+    if (maxValue == 0) list = [-100, -100, -100, -100, -100, -100]; // To not show bars when empty
     list.map((value: number) => {
       let balanceCurrency = this.formatCurrency(value);
       // Calculate the percentage height based on the maximum balances

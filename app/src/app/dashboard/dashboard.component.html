@@ -37,14 +37,14 @@
           @if (hidden) {
           <span class="summary-value">{{ hiddenValue }} </span>
           } @else {
-            <app-loading-value [value]="savingsChange">
+          <app-loading-value [value]="savingsAverage">
               <span class="summary-value">{{ savingsAverage }} </span>
               <span [ngClass]=getChangeColorGood(savingsTrendPercentage) class="summary-percentage">{{ savingsChange }} {{ savingsTrendPercentage }}</span>
             </app-loading-value>
           }
           <span class="summary-period">Últimos 5 Anos</span>
         </div>
-        <div [ngClass]=getChangeColorGood(savingsPercentageFormated) class="pie"
+        <div [ngClass]=getChangeColorPie(savingsPercentage) class="pie"
              [style.--segment1]="100 - savingsPercentage"></div>
         <div class="innerPie"><b>{{ savingsPercentageFormated }}</b></div>
       </div>
