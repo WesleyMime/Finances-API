@@ -3,9 +3,8 @@ import { HeaderComponent } from "../header/header.component";
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { ReportsService } from '../reports/reports.service';
-import { SummaryBasic } from './summary-basic';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
 import { SummaryPeriod } from './summary-period';
 
@@ -76,22 +75,6 @@ export class DashboardComponent implements OnInit {
 
   reportsService = inject(ReportsService);
 
-  hide() {
-    this.fadeIn();
-    this.hidden = !this.hidden;
-  }
-
-  fadeIn(): void {
-    this.opacity = 0;
-    const step = () => {
-      this.opacity += 0.015;
-      if (this.opacity < 1) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    requestAnimationFrame(step);
-  }
   // Mock transaction data
   recentTransactions: Transaction[] = [
     { date: '2024-07-15', category: 'WIP', description: 'Em Construção', amount: "-85.50" },
@@ -100,41 +83,6 @@ export class DashboardComponent implements OnInit {
     { date: '2024-07-10', category: 'WIP', description: 'Em Construção', amount: "-60.00" },
     { date: '2024-07-08', category: 'WIP', description: 'Em Construção', amount: "-120.00" },
   ];
-
-  getChangeColorGood(change: string): string {
-    if (change.startsWith('+')) {
-      return 'green';
-    } else if (change.startsWith('-')) {
-      return 'red';
-    }
-    return 'gray';
-  }
-  getChangeColorBad(change: string): string {
-    if (change.startsWith('+')) {
-      return 'red';
-    } else if (change.startsWith('-')) {
-      return 'green';
-    }
-    return 'gray';
-  }
-
-  getChangeColorPie(change: number): string {
-    if (change < 0) {
-      return 'negative';
-    }
-    if (change > 0) {
-      return 'positive';
-    }
-    return 'neutral';
-  }
-
-  formatAmount(amount: number): string {
-    const formatted = amount.toFixed(2);
-    if (amount > 0) {
-      return `+${formatted}`;
-    }
-    return formatted;
-  }
 
   months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   values: number[] = [];
@@ -146,26 +94,12 @@ export class DashboardComponent implements OnInit {
   chartWidth = this.graphWidth - this.padding.left - this.padding.right;
   chartHeight = this.graphHeight - this.padding.top - this.padding.bottom;
 
-  private async getSummaryByMonth(date: Date): Promise<SummaryBasic> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryByMonth(date));
-    return summary;
-  }
-
-  private async getSummaryByDate(dateFrom: Date, dateTo: Date): Promise<SummaryPeriod> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryByDate(dateFrom, dateTo));
-    return summary;
-  }
-
-  private async getAccountSummary(): Promise<SummaryBasic> {
-    const summary = await firstValueFrom(this.reportsService.getAccountSummary());
-    return summary;
-  }
-
-  async ngOnInit(): Promise<void> {
-    const accountSummary = await this.getAccountSummary();
-    this.netWorth = this.formatCurrency(accountSummary.totalBalance);
-    this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
-    this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
+  ngOnInit(): void {
+    this.reportsService.getAccountSummary().subscribe((accountSummary) => {
+      this.netWorth = this.formatCurrency(accountSummary.totalBalance);
+      this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
+      this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
+    });
 
     let currentDate = new Date();
     let dateFrom = new Date(currentDate.getFullYear() - 1, 0, 1);
@@ -176,113 +110,120 @@ export class DashboardComponent implements OnInit {
     let totalBalanceFiveYears = 0;
     let totalIncomeFiveYears = 0;
 
+    const requests = [];
     for (let i = 1; i <= 5; i++) {
-      const summaryPreviousYears = await this.getSummaryByDate(dateFrom, dateTo);
-      balanceYearsList.push(summaryPreviousYears.totalBalancePeriod);
+      requests.push(this.reportsService.getSummaryByDate(dateFrom, dateTo));
       dateFrom.setFullYear(dateFrom.getFullYear() - 1);
       dateTo.setFullYear(dateTo.getFullYear() - 1);
-
-      // Savings:
-      if (summaryPreviousYears.totalIncomePeriod == 0 && summaryPreviousYears.totalExpensePeriod == 0) continue;
-      totalBalanceFiveYears += summaryPreviousYears.totalBalancePeriod;
-      totalIncomeFiveYears += summaryPreviousYears.totalIncomePeriod;
-      yearsWithTransactions++;
     }
 
-    if (yearsWithTransactions > 0) {
-      let totalSavingsAverage = totalBalanceFiveYears / yearsWithTransactions
-      this.savingsAverage = this.formatCurrency(totalSavingsAverage);
-      this.savingsPercentage = totalBalanceFiveYears * 100 / totalIncomeFiveYears;
-      this.savingsPercentageFormated = this.formatPercentage(this.savingsPercentage);
-      let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
-      let savingsPercentageChange = this.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
-      this.savingsChange = this.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
-      this.savingsTrendPercentage = this.formatPercentage(savingsPercentageChange);
-    } else {
-      this.savingsAverage = this.formatCurrency(0);
-      this.savingsPercentage = 0;
-      this.savingsPercentageFormated = this.formatPercentage(0);
-    }
+    // Send all http requests and wait
+    forkJoin(requests).subscribe((results: SummaryPeriod[]) => {
+      results.forEach((summaryPreviousYears) => {
+        balanceYearsList.push(summaryPreviousYears.totalBalancePeriod);
+        // Savings:
+        if (summaryPreviousYears.totalIncomePeriod != 0 && summaryPreviousYears.totalExpensePeriod != 0) {
+          totalBalanceFiveYears += summaryPreviousYears.totalBalancePeriod;
+          totalIncomeFiveYears += summaryPreviousYears.totalIncomePeriod;
+          yearsWithTransactions++;
+        }
+      })
+      if (yearsWithTransactions > 0) {
+        let totalSavingsAverage = totalBalanceFiveYears / yearsWithTransactions
+        this.savingsAverage = this.formatCurrency(totalSavingsAverage);
+        this.savingsPercentage = totalBalanceFiveYears * 100 / totalIncomeFiveYears;
+        this.savingsPercentageFormated = this.formatPercentage(this.savingsPercentage);
+        let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
+        let savingsPercentageChange = this.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
+        this.savingsChange = this.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
+        this.savingsTrendPercentage = this.formatPercentage(savingsPercentageChange);
+      } else {
+        this.savingsAverage = this.formatCurrency(0);
+        this.savingsPercentage = 0;
+        this.savingsPercentageFormated = this.formatPercentage(0);
+      }
 
-    this.getLineChartHeights(balanceYearsList);
-    this.dPath2 = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
-    this.dPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
-      ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
-      ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
-      ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
-    this.netWorthTrendChange = this.formatCurrency(balanceYearsList[0]);
-    this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
+      this.getLineChartHeights(balanceYearsList);
+      this.dPath2 = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
+      this.dPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
+        ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
+        ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
+        ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
+      this.netWorthTrendChange = this.formatCurrency(balanceYearsList[0]);
+      this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
+    });
 
     // 12 Months before:
     let last12Months = new Date();
     let futureDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 6);
     last12Months.setMonth(last12Months.getMonth() - 12);
-    let incomeListPast = [];
-    let expenseListPast = [];
-    let incomeListFuture = [];
-    let expenseListFuture = [];
+    let incomeListPast: number[] = [];
+    let expenseListPast: number[] = [];
+    let incomeListFuture: number[] = [];
+    let expenseListFuture: number[] = [];
 
-    let summaryRecentMonths = await this.getSummaryByDate(last12Months, futureDate);
-    for (let i = 0; i < summaryRecentMonths.summaryList.length; i++) {
-      let monthSummary = summaryRecentMonths.summaryList[i];
-      if (i < 12) {
-        let totalIncome = monthSummary.summary.totalIncome;
-        let totalExpense = monthSummary.summary.totalExpense;
-        let totalBalance = monthSummary.summary.totalBalance;
-        incomeListPast.push(totalIncome);
-        expenseListPast.push(totalExpense);
-        if (totalIncome > 0 && totalExpense == 0) {
-          this.values.push(100);
-          continue;
+    this.reportsService.getSummaryByDate(last12Months, futureDate).subscribe((summaryRecentMonths) => {
+      for (let i = 0; i < summaryRecentMonths.summaryList.length; i++) {
+        let monthSummary = summaryRecentMonths.summaryList[i];
+        if (i < 12) {
+          let totalIncome = monthSummary.summary.totalIncome;
+          let totalExpense = monthSummary.summary.totalExpense;
+          let totalBalance = monthSummary.summary.totalBalance;
+          incomeListPast.push(totalIncome);
+          expenseListPast.push(totalExpense);
+          if (totalIncome > 0 && totalExpense == 0) {
+            this.values.push(100);
+            continue;
+          }
+          if (totalExpense > 0 && totalIncome == 0) {
+            this.values.push(-100);
+            continue;
+          }
+          if (totalExpense == 0 && totalIncome == 0) {
+            this.values.push(0);
+            continue;
+          }
+          let balance = Math.round(totalBalance * 100 / totalIncome) * 100 / 100;
+          this.values.push(balance);
+        } else {
+          incomeListFuture.push(monthSummary.summary.totalIncome);
+          expenseListFuture.push(monthSummary.summary.totalExpense);
         }
-        if (totalExpense > 0 && totalIncome == 0) {
-          this.values.push(-100);
-          continue;
-        }
-        if (totalExpense == 0 && totalIncome == 0) {
-          this.values.push(0);
-          continue;
-        }
-        let balance = Math.round(totalBalance * 100 / totalIncome) * 100 / 100;
-        this.values.push(balance);
-      } else {
-        incomeListFuture.push(monthSummary.summary.totalIncome);
-        expenseListFuture.push(monthSummary.summary.totalExpense);
       }
-    }
 
-    this.updateGraph();
+      this.updateGraph();
 
-    let currentIncome = incomeListFuture[0];
-    let currentExpense = expenseListFuture[0];
+      let currentIncome = incomeListFuture[0];
+      let currentExpense = expenseListFuture[0];
 
-    this.currentIncomeFormated = this.formatCurrency(currentIncome);
-    this.currentExpenseFormated = this.formatCurrency(currentExpense);
+      this.currentIncomeFormated = this.formatCurrency(currentIncome);
+      this.currentExpenseFormated = this.formatCurrency(currentExpense);
 
-    // only last 6 months
-    this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast.slice(6, 12));
-    this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
+      // only last 6 months
+      this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast.slice(6, 12));
+      this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
 
-    this.lastMonthIncomeValue = this.formatCurrency(incomeListPast[11]);
-    this.lastMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(currentIncome, incomeListPast[11]))
+      this.lastMonthIncomeValue = this.formatCurrency(incomeListPast[11]);
+      this.lastMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(currentIncome, incomeListPast[11]))
 
 
-    this.lastMonthExpenseValue = this.formatCurrency(expenseListPast[11]);
-    this.lastMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(currentExpense, expenseListPast[11]));
+      this.lastMonthExpenseValue = this.formatCurrency(expenseListPast[11]);
+      this.lastMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(currentExpense, expenseListPast[11]));
 
-    let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
-    this.balanceLastMonth = this.formatCurrency(balanceLastMonth);
-    this.balanceLastMonthPercentage = this.formatPercentage(this.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
+      let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
+      this.balanceLastMonth = this.formatCurrency(balanceLastMonth);
+      this.balanceLastMonthPercentage = this.formatPercentage(this.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
 
-    this.nextMonthIncomeValue = this.formatCurrency(incomeListFuture[1]);
-    this.nextMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[1], currentIncome));
-    this.nextMonthExpenseValue = this.formatCurrency(expenseListFuture[1]);
-    this.nextMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[1], currentExpense));
+      this.nextMonthIncomeValue = this.formatCurrency(incomeListFuture[1]);
+      this.nextMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[1], currentIncome));
+      this.nextMonthExpenseValue = this.formatCurrency(expenseListFuture[1]);
+      this.nextMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[1], currentExpense));
 
-    incomeListFuture.shift();
-    expenseListFuture.shift();
-    this.futureIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListFuture);
-    this.futureExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListFuture);
+      incomeListFuture.shift();
+      expenseListFuture.shift();
+      this.futureIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListFuture);
+      this.futureExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListFuture);
+    });
   }
 
   // Get the biggest value and consider it 100%, and then calculate the percentage for each month
@@ -315,23 +256,6 @@ export class DashboardComponent implements OnInit {
       valueBarHeights.push({ height: percentage, value: balanceCurrency });
     });
     return valueBarHeights;
-  }
-
-  formatCurrency(value: number): string {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  // TODO refactor to utility service
-  getPercentageChange(num1: number, num2: number): number {
-    let difference = num1 - num2;
-    let percentage = difference * 100 / num2 || 0;
-    return Math.round(percentage * 100) / 100;
-  }
-
-  formatPercentage(diffPercent: number): string {
-    if (!Number.isFinite(diffPercent)) return '0%';
-    diffPercent = Math.round(diffPercent * 100) / 100;
-    return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
   }
 
   drawGraph(values: number[]): SafeHtml {
@@ -371,8 +295,68 @@ export class DashboardComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
-  updateGraph(): void {
+  private updateGraph(): void {
     this.svgContent = this.drawGraph(this.values);
     this.svgContent2 = this.drawGraph(this.values2);
+  }
+
+  hide() {
+    this.fadeIn();
+    this.hidden = !this.hidden;
+  }
+
+  fadeIn(): void {
+    this.opacity = 0;
+    const step = () => {
+      this.opacity += 0.015;
+      if (this.opacity < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }
+
+  private formatAmount(amount: number): string {
+    const formatted = amount.toFixed(2);
+    if (amount > 0) return `+${formatted}`;
+    return formatted;
+  }
+
+  formatCurrency(value: number): string {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  // TODO refactor to utility service
+  getPercentageChange(num1: number, num2: number): number {
+    let difference = num1 - num2;
+    let percentage = difference * 100 / num2 || 0;
+    return Math.round(percentage * 100) / 100;
+  }
+
+  formatPercentage(diffPercent: number): string {
+    if (!Number.isFinite(diffPercent)) return '0%';
+    diffPercent = Math.round(diffPercent * 100) / 100;
+    return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
+  }
+
+  getChangeColorGood(change: string): string {
+    if (change.startsWith('+')) {
+      return 'green';
+    } else if (change.startsWith('-')) {
+      return 'red';
+    }
+    return 'gray';
+  }
+  getChangeColorBad(change: string): string {
+    if (change.startsWith('+')) return 'red';
+    if (change.startsWith('-')) return 'green';
+    return 'gray';
+  }
+
+  getChangeColorPie(change: number): string {
+    if (change < 0) return 'negative';
+    if (change > 0) return 'positive';
+    return 'neutral';
   }
 }

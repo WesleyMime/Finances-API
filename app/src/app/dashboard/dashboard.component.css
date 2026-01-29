@@ -1,21 +1,21 @@
 .cards-grid {
-    grid-template-columns: 2fr 3fr;
+  grid-template-columns: 2fr 3fr;
 }
 
 .cards-line-grid {
-    display: grid;
+  display: grid;
 }
 
 .cards-line-grid .card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .charts-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .graphs-grid {
@@ -29,15 +29,6 @@ svg {
   stroke-dasharray: 1250;
   stroke-dashoffset: 1300;
   animation: draw-line 7s linear forwards;
-  animation-delay: 2s;
-}
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes bars {
-  from { height: 0; }
-  to { height: 100; }
 }
 
 .toggle-icon {
@@ -51,54 +42,53 @@ svg {
 }
 
 .chart-summary {
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .chart-summary .summary-value {
-    font-size: 1.6em;
-    font-weight: bold;
+  font-size: 1.6em;
+  font-weight: bold;
 }
 
 .chart-summary .summary-percentage {
-    font-size: 0.9em;
-    font-weight: bold;
+  font-size: 0.9em;
+  font-weight: bold;
 }
 
 .chart-summary .summary-period {
-     font-size: 0.8em;
-     color: #a0aec0;
+  font-size: 0.8em;
+  color: #a0aec0;
 }
 
 .bar-chart {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 150px;
 }
 
 .bar {
-    width: 12px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    margin: 0 2px;
-    animation: bars 3s;
-    animation-delay: 2s;
+  width: 12px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  margin: 0 2px;
+  animation: bars 3s;
 }
 
 .line-chart {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
 .line-chart svg {
-    width: 100%;
-    height: 160px;
+  width: 100%;
+  height: 160px;
 }
 
 
@@ -107,64 +97,64 @@ svg {
 }
 
 .chart-labels {
-    display: flex;
-    justify-content: space-around;
-    font-size: 0.8em;
-    color: #a0aec0;
-    margin-top: 5px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.8em;
+  color: #a0aec0;
+  margin-top: 5px;
 }
 .chart-labels span {
-    text-align: center;
-    flex-grow: 1;
+  text-align: center;
+  flex-grow: 1;
 }
 
 
 .recent-transactions h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    color: #ffffff;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  color: #ffffff;
 }
 
 .transactions-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #1a202c;
-    border: 1px solid #2d3748;
-    border-radius: 8px;
-    overflow: hidden; /* Ensures border radius works */
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a202c;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  overflow: hidden; /* Ensures border radius works */
 }
 
 .transactions-table th,
 .transactions-table td {
-    padding: 15px 20px;
-    text-align: left;
-    border-bottom: 1px solid #2d3748;
+  padding: 15px 20px;
+  text-align: left;
+  border-bottom: 1px solid #2d3748;
 }
 
 .transactions-table th {
-    background-color: #2d3748;
-    font-size: 0.9em;
-    color: #a0aec0;
-    font-weight: normal;
-    text-transform: uppercase;
+  background-color: #2d3748;
+  font-size: 0.9em;
+  color: #a0aec0;
+  font-weight: normal;
+  text-transform: uppercase;
 }
 
 .transactions-table td {
-    font-size: 0.95em;
-    color: #cbd5e0;
+  font-size: 0.95em;
+  color: #cbd5e0;
 }
 
 .transactions-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .transactions-table .amount-header {
-    text-align: right;
+  text-align: right;
 }
 
 .transactions-table td:last-child {
-    text-align: right;
-    font-weight: bold;
+  text-align: right;
+  font-weight: bold;
 }
 
 :host ::ng-deep .data-line {
@@ -195,7 +185,6 @@ svg {
   height: 250px;
   border-radius: 50%;
   animation: pie 3s ease-in-out;
-  animation-delay: 2s;
 }
 
 .positive {
@@ -219,15 +208,6 @@ svg {
   );
 }
 
-@keyframes pie {
-  from {
-    margin-top: 30px;
-    width: 0;
-    height: 0;
-    font-size: 0em;
-  }
-}
-
 .innerPie {
   display: flex;
   justify-self: center;
@@ -241,7 +221,24 @@ svg {
   font-size: 2.5em;
   margin-bottom: 30px;
   animation: pie 3s ease-out;
-  animation-delay: 2s;
+}
+
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pie {
+  from {
+    margin-top: 30px;
+    width: 0;
+    height: 0;
+    font-size: 0em;
+  }
+}
+
+@keyframes bars {
+  from { height: 0; }
+  to { height: 100; }
 }
 
 @media (min-width: 1920px) {
@@ -252,7 +249,7 @@ svg {
 
 @media (max-width: 1049px) {
   .graphs-grid {
-      grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .line-chart svg {
@@ -265,10 +262,6 @@ svg {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    background-image: conic-gradient(
-      #2d3748 calc(3.6deg * var(--segment1, 0)),
-      #48bb78 0
-    );
   }
 
   .innerPie {
@@ -290,7 +283,7 @@ svg {
 
 @media (max-width: 900px) {
   .cards-grid {
-      grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 2fr;
   }
 
   .graphs-grid svg {
@@ -304,10 +297,6 @@ svg {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background-image: conic-gradient(
-      #2d3748 calc(3.6deg * var(--segment1, 0)),
-      #48bb78 0
-    );
   }
 
   .innerPie {
@@ -326,21 +315,21 @@ svg {
 
 @media (max-width: 750px) {
   .cards-grid {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 
   .graphs-grid {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 
   .line-chart svg {
-     height: 350px;
+    height: 350px;
   }
 }
 
 @media (max-width: 640px) {
   .summary-cards-grid {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 
   .charts-grid {
@@ -348,7 +337,7 @@ svg {
   }
 
   .bar-chart {
-      height: 100px;
+    height: 100px;
   }
 
   .line-chart svg {
@@ -373,8 +362,8 @@ svg {
   }
   .transactions-table th,
   .transactions-table td {
-      font-size: 0.8em;
-      padding: 5px 5px;
+    font-size: 0.8em;
+    padding: 5px 5px;
   }
 
   :host ::ng-deep .label {
@@ -382,11 +371,11 @@ svg {
   }
 
   .line-chart svg {
-     height: 200px;
+    height: 200px;
   }
 
   .toggle-icon {
-      top: 100px;
-      right: 23px;
+    top: 100px;
+    right: 23px;
   }
 }
