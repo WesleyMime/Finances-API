@@ -25,15 +25,20 @@
 }
 
 svg {
-     font-size: 0.8em;
+  font-size: 0.8em;
   stroke-dasharray: 1250;
   stroke-dashoffset: 1300;
-  animation: draw 3s linear forwards;
+  animation: draw-line 7s linear forwards;
+  animation-delay: 2s;
 }
-@keyframes draw {
+@keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }
 
+@keyframes bars {
+  from { height: 0; }
+  to { height: 100; }
+}
 
 .toggle-icon {
   cursor: pointer;
@@ -80,6 +85,8 @@ svg {
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     margin: 0 2px;
+    animation: bars 3s;
+    animation-delay: 2s;
 }
 
 .line-chart {
@@ -187,10 +194,38 @@ svg {
   width: 250px;
   height: 250px;
   border-radius: 50%;
+  animation: pie 3s ease-in-out;
+  animation-delay: 2s;
+}
+
+.positive {
   background-image: conic-gradient(
     #2d3748 calc(3.6deg * var(--segment1, 0)),
     #48bb78 0
   );
+}
+
+.negative {
+  background-image: conic-gradient(
+    #2d3748 calc(3.6deg * (100 - (var(--segment1, 0) - 100))),
+    #fc8181 0
+  );
+}
+
+.neutral {
+  background-image: conic-gradient(
+    #2d3748 calc(3.6deg * var(--segment1, 0)),
+    #a0aec0 0
+  );
+}
+
+@keyframes pie {
+  from {
+    margin-top: 30px;
+    width: 0;
+    height: 0;
+    font-size: 0em;
+  }
 }
 
 .innerPie {
@@ -205,6 +240,8 @@ svg {
   align-items: center;
   font-size: 2.5em;
   margin-bottom: 30px;
+  animation: pie 3s ease-out;
+  animation-delay: 2s;
 }
 
 @media (min-width: 1920px) {
