@@ -34,6 +34,9 @@ export class ReportsComponent implements OnInit {
   // Data for Month-over-Month Comparison
   incomeCurrentMonth = '';
   expenseCurrentMonth = '';
+  incomeLastMonth = '';
+  expenseLastMonth = '';
+  expenseLastLastMonth = '';
   incomeValueDifference = '';
   expenseValueDifference = '';
   incomeChangePercentage = '';
@@ -41,19 +44,22 @@ export class ReportsComponent implements OnInit {
   monthComparisonTakeaway = '';
 
   months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  currentDate = new Date();
+  currentMonth = this.months[this.currentDate.getMonth() % 12];
 
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
   incomeExpensePercentage = '';
   lastMonth = '';
+  lastLastMonth = '';
   monthOrderIncomeExpenseComparison: string[] = [];
   incomeExpenseBarHeights = [{ height: '', value: '' }];
   currentYear = 0;
   financialBalanceTakeaway = '';
   // Data for Spending by Category
-  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
+  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueBefore: 0, valueCurrency: '', valueBeforeCurrency: '', percentage: '0%', percentageBefore: '0%' }));
   spendingByCategoriesMonthTakeaway = '';
-  spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueCurrency: '', percentage: '0%' }));
+  spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueBefore: 0, valueCurrency: '', percentage: '0%' }));
   spendingByCategoriesYearTakeaway = '';
 
   savingsRate = '';
@@ -79,23 +85,26 @@ export class ReportsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    let currentDate = new Date();
-    let lastMonthDate = new Date(currentDate);
+    let lastMonthDate = new Date(this.currentDate);
     lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
 
+    let lastLastMonthDate = new Date(this.currentDate);
+    lastLastMonthDate.setMonth(lastLastMonthDate.getMonth() - 2);
+
     const lastYearSummary = await this.getSummaryLastYear();
-    const currentMonthSummary = await this.getSummaryByMonth(currentDate);
+    const currentMonthSummary = await this.getSummaryByMonth(this.currentDate);
     const lastMonthSummary = await this.getSummaryByMonth(lastMonthDate);
+    const lastLastMonthSummary = await this.getSummaryByMonth(lastLastMonthDate);
 
     this.updateNetWorth(
-      lastYearSummary.totalYearIncome + currentMonthSummary.totalIncome,
-      lastYearSummary.totalYearExpense + currentMonthSummary.totalExpense);
+      lastYearSummary.totalYearIncome,
+      lastYearSummary.totalYearExpense);
 
-    this.getMonthOverMonthComparison(currentDate, currentMonthSummary, lastMonthSummary);
+    this.getMonthOverMonthComparison(this.currentDate, currentMonthSummary, lastMonthSummary);
 
-    this.updateFinancialBalance(currentDate, lastYearSummary);
+    this.updateFinancialBalance(this.currentDate, lastYearSummary);
 
-    this.updateSpendingByCategoryLastMonth(lastYearSummary, lastMonthSummary, currentDate);
+    this.updateSpendingByCategoryLastMonth(lastYearSummary, lastMonthSummary, lastLastMonthSummary, this.currentDate);
 
     this.updateSpendingByCategoryYear(lastYearSummary.expenses);
 
@@ -131,6 +140,9 @@ export class ReportsComponent implements OnInit {
     let incomeLastMonth = lastMonthSummary.totalIncome;
     let expenseLastMonth = lastMonthSummary.totalExpense;
 
+    this.incomeLastMonth = this.formatCurrency(incomeLastMonth);
+    this.expenseLastMonth = this.formatCurrency(expenseLastMonth);
+
     let incomeValueDifference = incomeCurrentMonth - incomeLastMonth;
     let expenseValueDifference = (expenseLastMonth - expenseCurrentMonth) * -1; // To not show a negative number
 
@@ -165,12 +177,15 @@ export class ReportsComponent implements OnInit {
     })
   }
 
-  private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByDate, currentDate: Date): void {
+  private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByDate, lastLastMonthSummary: SummaryByDate, currentDate: Date): void {
     let month = currentDate.getMonth() - 1;
     if (month < 0)
       month = 11;
 
     this.lastMonth = this.months[month];
+    this.lastLastMonth = this.months[month - 1];
+
+    this.expenseLastLastMonth = this.formatCurrency(lastLastMonthSummary.totalExpense);
 
     let diffBalancePercent = this.getPercentageChange(
       lastYearSummary.finalBalanceEachMonth[11], lastYearSummary.finalBalanceEachMonth[10]) * -1; // Invert the sign
@@ -179,6 +194,11 @@ export class ReportsComponent implements OnInit {
     lastMonthSummary.totalExpenseByCategory.forEach((item) => {
       this.spendingCategoriesMonth.forEach((category) => {
         if (item.category === category.name) category.value += item.totalValue;
+      })
+    });
+    lastLastMonthSummary.totalExpenseByCategory.forEach((item) => {
+      this.spendingCategoriesMonth.forEach((category) => {
+        if (item.category === category.name) category.valueBefore += item.totalValue;
       })
     });
     this.getValuesForLineChart(this.spendingCategoriesMonth);
@@ -249,10 +269,13 @@ export class ReportsComponent implements OnInit {
     let maxValue = 1; // To make the percentage math works when no value
     list.forEach((category) => {
       if (category.value > maxValue) maxValue = category.value;
+      if (category.valueBefore > maxValue) maxValue = category.valueBefore;
     });
     list.forEach((category) => {
       category.valueCurrency = this.formatCurrency(category.value);
+      category.valueBeforeCurrency = this.formatCurrency(category.valueBefore);
       category.percentage = (100 + this.getPercentageChange(category.value, maxValue)) + '%';
+      category.percentageBefore = (100 + this.getPercentageChange(category.valueBefore, maxValue)) + '%';
     });
   }
 

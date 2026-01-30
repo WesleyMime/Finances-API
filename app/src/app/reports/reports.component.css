@@ -25,6 +25,7 @@
 .metric-info {
     font-size: 0.9em;
     color: #a0aec0;
+    margin-top: 0.3rem;
 }
 
 .metric-info span {
@@ -69,8 +70,9 @@
 .income-expense-chart .bar {
   flex-grow: 1;
   width: 50px;
-  background-color: #364669;
   border-top: 2px solid #a0aec0;
+  background: linear-gradient(180deg, #364669, transparent 100%);
+  animation: bars 3s;
 }
 
 
@@ -83,7 +85,7 @@
 
 .spending-chart .spending-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
 .spending-chart .category-name {
@@ -99,21 +101,37 @@
   overflow: hidden;
 }
 
-.spending-chart .category-bar {
+.spending-chart-metrics {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.category-bar {
   height: 100%;
   max-width: 99%;
-  background-color: #364669;
   border-right: 2px solid #a0aec0;
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
+  background: repeating-linear-gradient(270deg, #364669, transparent 100%);
+  animation: category-bars 9s;
+}
+
+.category-bar-old {
+  height: 100%;
+  max-width: 99%;
+  border-right: 2px solid #a0aec0;
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+  background: repeating-linear-gradient(45deg, #36466971, transparent 10px);
+  animation: category-bars 7s;
 }
 
 .spending-chart .category-value {
+  margin: 0.3rem;
   text-align: right;
-  flex-shrink: 0;
-  margin-left: 10px;
   font-size: 0.9em;
-  color: #a0aec0;
 }
 
 
@@ -131,6 +149,17 @@
 
 .key-takeaway p {
     margin: 0;
+}
+
+
+@keyframes bars {
+  from { height: 0; }
+  to { height: 100; }
+}
+
+@keyframes category-bars {
+  from { width: 0; }
+  to { width: 100; }
 }
 
 @media (min-width: 1920px) {
