@@ -27,7 +27,15 @@
       }
     </button>
 
-    <p class="subtitle">Visão geral da sua saúde financeira</p>
+    <p>Visão geral da sua saúde financeira.</p>
+    @if (noTransactions) {
+      <div class="card welcome">
+        <h2>Bem-Vindo(a)!</h2>
+        <p>Para começar, adicione suas receitas e despesas, utilizando o botão "Transação" no topo da tela ou clicando aqui:</p>
+        <button [routerLink]="['/add-transaction']" class="btn primary">Adicionar Transação</button>
+      </div>
+    }
+
     <div class="cards-grid">
       <div class="card">
         <div class="card-label">Taxa de Poupança Média</div>

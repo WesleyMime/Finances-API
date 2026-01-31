@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { ReportsService } from '../reports/reports.service';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
 import { SummaryPeriod } from './summary-period';
+import { RouterLink } from '@angular/router';
 
 interface Transaction {
   date: string;
@@ -17,7 +18,7 @@ interface Transaction {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule],
+  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -35,6 +36,8 @@ export class DashboardComponent implements OnInit {
   netWorth: string = '';
   totalAssets: string = '';
   totalLiabilities: string = '';
+
+  noTransactions = false;
 
   savingsAverage: string = '';
   savingsPercentage = 0;
@@ -99,6 +102,9 @@ export class DashboardComponent implements OnInit {
       this.netWorth = this.formatCurrency(accountSummary.totalBalance);
       this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
       this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
+      if (accountSummary.totalIncome == 0 && accountSummary.totalExpense == 0) {
+        this.noTransactions = true;
+      }
     });
 
     let currentDate = new Date();
