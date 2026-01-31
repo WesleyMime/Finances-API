@@ -4,12 +4,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
-import { ReportsService } from '../reports/reports.service';
+import { SummaryService } from '../summary/summary.service';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
-import { SummaryPeriod } from './summary-period';
+import { SummaryPeriod } from '../summary/summary-period';
 import { RouterLink } from '@angular/router';
 import { HideValueComponent } from "../hide-value/hide-value.component";
 import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
+import { UtilsService } from '../utils/utils.service';
 
 interface Transaction {
   date: string;
@@ -28,7 +29,6 @@ export class DashboardComponent implements OnInit {
   svgContent: SafeHtml = "";
   svgContent2: SafeHtml = "";
 
-  // TODO create componente
   hiddenValue = '*****';
   hidden = false;
   opacity: number = 1;
@@ -78,7 +78,9 @@ export class DashboardComponent implements OnInit {
   netWorthTrendChange: string = '';
   netWorthTrendPercentage = '';
 
-  reportsService = inject(ReportsService);
+  reportsService = inject(SummaryService);
+  toggleService = inject(ToggleVisibilityService);
+  utilsService = inject(UtilsService);
 
   // Mock transaction data
   recentTransactions: Transaction[] = [
@@ -101,9 +103,9 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.reportsService.getAccountSummary().subscribe((accountSummary) => {
-      this.netWorth = this.formatCurrency(accountSummary.totalBalance);
-      this.totalAssets = this.formatCurrency(accountSummary.totalIncome);
-      this.totalLiabilities = this.formatCurrency(accountSummary.totalExpense);
+      this.netWorth = this.utilsService.formatCurrency(accountSummary.totalBalance);
+      this.totalAssets = this.utilsService.formatCurrency(accountSummary.totalIncome);
+      this.totalLiabilities = this.utilsService.formatCurrency(accountSummary.totalExpense);
       if (accountSummary.totalIncome == 0 && accountSummary.totalExpense == 0) {
         this.noTransactions = true;
       }
@@ -138,17 +140,17 @@ export class DashboardComponent implements OnInit {
       })
       if (yearsWithTransactions > 0) {
         let totalSavingsAverage = totalBalanceFiveYears / yearsWithTransactions
-        this.savingsAverage = this.formatCurrency(totalSavingsAverage);
+        this.savingsAverage = this.utilsService.formatCurrency(totalSavingsAverage);
         this.savingsPercentage = totalBalanceFiveYears * 100 / totalIncomeFiveYears;
-        this.savingsPercentageFormated = this.formatPercentage(this.savingsPercentage);
+        this.savingsPercentageFormated = this.utilsService.formatPercentage(this.savingsPercentage);
         let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
-        let savingsPercentageChange = this.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
-        this.savingsChange = this.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
-        this.savingsTrendPercentage = this.formatPercentage(savingsPercentageChange);
+        let savingsPercentageChange = this.utilsService.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
+        this.savingsChange = this.utilsService.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
+        this.savingsTrendPercentage = this.utilsService.formatPercentage(savingsPercentageChange);
       } else {
-        this.savingsAverage = this.formatCurrency(0);
+        this.savingsAverage = this.utilsService.formatCurrency(0);
         this.savingsPercentage = 0;
-        this.savingsPercentageFormated = this.formatPercentage(0);
+        this.savingsPercentageFormated = this.utilsService.formatPercentage(0);
       }
 
       this.getLineChartHeights(balanceYearsList);
@@ -157,8 +159,8 @@ export class DashboardComponent implements OnInit {
         ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
         ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
         ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
-      this.netWorthTrendChange = this.formatCurrency(balanceYearsList[0]);
-      this.netWorthTrendPercentage = this.formatPercentage(this.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
+      this.netWorthTrendChange = this.utilsService.formatCurrency(balanceYearsList[0]);
+      this.netWorthTrendPercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
     });
 
     // 12 Months before:
@@ -204,28 +206,28 @@ export class DashboardComponent implements OnInit {
       let currentIncome = incomeListFuture[0];
       let currentExpense = expenseListFuture[0];
 
-      this.currentIncomeFormated = this.formatCurrency(currentIncome);
-      this.currentExpenseFormated = this.formatCurrency(currentExpense);
+      this.currentIncomeFormated = this.utilsService.formatCurrency(currentIncome);
+      this.currentExpenseFormated = this.utilsService.formatCurrency(currentExpense);
 
       // only last 6 months
       this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast.slice(6, 12));
       this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
 
-      this.lastMonthIncomeValue = this.formatCurrency(incomeListPast[11]);
-      this.lastMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(currentIncome, incomeListPast[11]))
+      this.lastMonthIncomeValue = this.utilsService.formatCurrency(incomeListPast[11]);
+      this.lastMonthIncomePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(currentIncome, incomeListPast[11]))
 
 
-      this.lastMonthExpenseValue = this.formatCurrency(expenseListPast[11]);
-      this.lastMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(currentExpense, expenseListPast[11]));
+      this.lastMonthExpenseValue = this.utilsService.formatCurrency(expenseListPast[11]);
+      this.lastMonthExpensePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(currentExpense, expenseListPast[11]));
 
       let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
-      this.balanceLastMonth = this.formatCurrency(balanceLastMonth);
-      this.balanceLastMonthPercentage = this.formatPercentage(this.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
+      this.balanceLastMonth = this.utilsService.formatCurrency(balanceLastMonth);
+      this.balanceLastMonthPercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
 
-      this.nextMonthIncomeValue = this.formatCurrency(incomeListFuture[1]);
-      this.nextMonthIncomePercentage = this.formatPercentage(this.getPercentageChange(incomeListFuture[1], currentIncome));
-      this.nextMonthExpenseValue = this.formatCurrency(expenseListFuture[1]);
-      this.nextMonthExpensePercentage = this.formatPercentage(this.getPercentageChange(expenseListFuture[1], currentExpense));
+      this.nextMonthIncomeValue = this.utilsService.formatCurrency(incomeListFuture[1]);
+      this.nextMonthIncomePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(incomeListFuture[1], currentIncome));
+      this.nextMonthExpenseValue = this.utilsService.formatCurrency(expenseListFuture[1]);
+      this.nextMonthExpensePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(expenseListFuture[1], currentExpense));
 
       incomeListFuture.shift();
       expenseListFuture.shift();
@@ -240,13 +242,13 @@ export class DashboardComponent implements OnInit {
     if (maxBalance <= 0) {
       maxBalance = Math.min(...list);
       list.map((balance: number) => {
-        let percentage = this.getPercentageChange(balance, maxBalance);
+        let percentage = this.utilsService.getPercentageChange(balance, maxBalance);
         this.lineChartHeights.push(percentage + 100);
       });
     } else {
       list.map((balance: number) => {
         // Calculate the percentage height based on the maximum balances
-        let percentage = this.getPercentageChange(balance, maxBalance) * -1;
+        let percentage = this.utilsService.getPercentageChange(balance, maxBalance) * -1;
         this.lineChartHeights.push(percentage - 100);
       });
     }
@@ -258,9 +260,9 @@ export class DashboardComponent implements OnInit {
     let maxValue = Math.max(...list);
     if (maxValue == 0) list = [-100, -100, -100, -100, -100, -100]; // To not show bars when empty
     list.map((value: number) => {
-      let balanceCurrency = this.formatCurrency(value);
+      let balanceCurrency = this.utilsService.formatCurrency(value);
       // Calculate the percentage height based on the maximum balances
-      let percentage = (100 + this.getPercentageChange(value, maxValue));
+      let percentage = (100 + this.utilsService.getPercentageChange(value, maxValue));
       valueBarHeights.push({ height: percentage, value: balanceCurrency });
     });
     return valueBarHeights;
@@ -325,41 +327,12 @@ export class DashboardComponent implements OnInit {
     requestAnimationFrame(step);
   }
 
-  private formatAmount(amount: number): string {
-    const formatted = amount.toFixed(2);
-    if (amount > 0) return `+${formatted}`;
-    return formatted;
-  }
-
-  formatCurrency(value: number): string {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  // TODO refactor to utility service
-  getPercentageChange(num1: number, num2: number): number {
-    let difference = num1 - num2;
-    let percentage = difference * 100 / num2 || 0;
-    return Math.round(percentage * 100) / 100;
-  }
-
-  formatPercentage(diffPercent: number): string {
-    if (!Number.isFinite(diffPercent)) return '0%';
-    diffPercent = Math.round(diffPercent * 100) / 100;
-    return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
-  }
-
   getChangeColorGood(change: string): string {
-    if (change.startsWith('+')) {
-      return 'green';
-    } else if (change.startsWith('-')) {
-      return 'red';
-    }
-    return 'gray';
+    return this.utilsService.getChangeColorGood(change);
   }
+
   getChangeColorBad(change: string): string {
-    if (change.startsWith('+')) return 'red';
-    if (change.startsWith('-')) return 'green';
-    return 'gray';
+    return this.utilsService.getChangeColorBad(change);
   }
 
   getChangeColorPie(change: number): string {

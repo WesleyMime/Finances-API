@@ -1,4 +1,4 @@
-export interface SummaryByDate {
+export interface SummaryByMonth {
     totalIncome: number;
     totalExpense: number;
     finalBalance: number;

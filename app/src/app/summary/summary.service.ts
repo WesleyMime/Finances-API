@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class ReportsService {
+export class SummaryService {
 
   private readonly API_URL = environment.API_URL
   private readonly SUMMARY_ENDPOINT = '/summary';
