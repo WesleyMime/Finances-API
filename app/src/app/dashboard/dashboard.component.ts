@@ -8,6 +8,8 @@ import { ReportsService } from '../reports/reports.service';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
 import { SummaryPeriod } from './summary-period';
 import { RouterLink } from '@angular/router';
+import { HideValueComponent } from "../hide-value/hide-value.component";
+import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
 
 interface Transaction {
   date: string;
@@ -18,7 +20,7 @@ interface Transaction {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule, RouterLink],
+  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule, RouterLink, HideValueComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -306,9 +308,9 @@ export class DashboardComponent implements OnInit {
     this.svgContent2 = this.drawGraph(this.values2);
   }
 
-  hide() {
+  toggleValues() {
+    this.hidden = this.toggleService.isHidden;
     this.fadeIn();
-    this.hidden = !this.hidden;
   }
 
   fadeIn(): void {

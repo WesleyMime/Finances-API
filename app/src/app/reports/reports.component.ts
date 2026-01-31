@@ -9,10 +9,12 @@ import { categoriesEnum } from '../category';
 import { AiService } from './ai.service';
 import { AiMessage } from './ai-message';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
+import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
+import { HideValueComponent } from '../hide-value/hide-value.component';
 
 @Component({
   selector: 'app-reports',
-  imports: [NgClass, NgStyle, HeaderComponent, LoadingValueComponent],
+  imports: [NgClass, NgStyle, HeaderComponent, LoadingValueComponent, HideValueComponent],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })
@@ -66,25 +68,7 @@ export class ReportsComponent implements OnInit {
   savingsTakeaway = '';
   reportsService = inject(ReportsService);
   aiService = inject(AiService);
-
-  hide() {
-    this.fadeIn();
-    this.hidden = !this.hidden;
-  }
-
-  fadeIn(): void {
-    this.opacity = 0;
-    const step = () => {
-      this.opacity += 0.015;
-      if (this.opacity < 1) {
-        requestAnimationFrame(step);
-      }
-    };
-
-    requestAnimationFrame(step);
-  }
-
-  async ngOnInit(): Promise<void> {
+  toggleService = inject(ToggleVisibilityService);
     let lastMonthDate = new Date(this.currentDate);
     lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
 
@@ -279,19 +263,23 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  private async getSummaryLastYear(): Promise<SummaryLastYear> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryLastYear());
-    console.log('Summary data last year', summary);
-    return summary;
+  toggleValues() {
+    this.hidden = this.toggleService.isHidden;
+    this.fadeIn();
   }
 
-  private async getSummaryByMonth(date: Date): Promise<SummaryByDate> {
-    const summary = await firstValueFrom(this.reportsService.getSummaryByMonth(date));
-    console.log('Summary data for', date, summary);
-    return summary;
+  fadeIn(): void {
+    this.opacity = 0;
+    const step = () => {
+      this.opacity += 0.015;
+      if (this.opacity < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
   }
 
-  // Helper to determine text color for percentage change
   getChangeColorGood(change: string): string {
     if (change.startsWith('+')) {
       return 'green';

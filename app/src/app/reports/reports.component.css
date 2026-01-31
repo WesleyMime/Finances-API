@@ -1,13 +1,3 @@
-.toggle-icon {
-  cursor: pointer;
-  user-select: none;
-  position: fixed;
-  top: 100px;
-  right: 45px;
-  border: none;
-  background-color: unset;
-}
-
 /* Metrics */
 .metrics {
     display: flex;
@@ -162,12 +152,6 @@
   to { width: 100; }
 }
 
-@media (min-width: 1920px) {
-  .toggle-icon {
-    padding-right: calc((100% - 1920px) / 2);
-  }
-}
-
 
 @media (max-width: 640px) {
   .report-section {
@@ -184,10 +168,6 @@
   }
   .spending-list .spending-item {
     display: block;
-  }
-  .toggle-icon {
-    top: 100px;
-    right: 45px;
   }
 }
 
@@ -207,9 +187,5 @@
   }
   .chart-labels {
       gap: 0px;
-  }
-  .toggle-icon {
-      top: 100px;
-      right: 23px;
   }
 }

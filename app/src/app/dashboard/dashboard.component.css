@@ -35,16 +35,6 @@ svg {
   animation: draw-line 7s linear forwards;
 }
 
-.toggle-icon {
-  cursor: pointer;
-  user-select: none;
-  position: fixed;
-  top: 100px;
-  right: 45px;
-  border: none;
-  background-color: unset;
-}
-
 .chart-summary {
   margin-bottom: 20px;
   display: flex;
@@ -245,12 +235,6 @@ svg {
   to { height: 100; }
 }
 
-@media (min-width: 1920px) {
-  .toggle-icon {
-    padding-right: calc((100% - 1920px) / 2);
-  }
-}
-
 @media (max-width: 1049px) {
   .graphs-grid {
     grid-template-columns: 1fr 1fr;
@@ -351,11 +335,6 @@ svg {
   svg {
     font-size: 1em;
   }
-
-  .toggle-icon {
-    top: 100px;
-    right: 45px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -376,10 +355,5 @@ svg {
 
   .line-chart svg {
     height: 200px;
-  }
-
-  .toggle-icon {
-    top: 100px;
-    right: 23px;
   }
 }

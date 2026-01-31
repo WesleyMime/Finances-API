@@ -1,0 +1,29 @@
+.toggle-icon {
+  cursor: pointer;
+  user-select: none;
+  position: fixed;
+  top: 100px;
+  right: 45px;
+  border: none;
+  background-color: unset;
+}
+
+@media (min-width: 1920px) {
+  .toggle-icon {
+    padding-right: calc((100% - 1920px) / 2);
+  }
+}
+
+@media (max-width: 640px) {
+  .toggle-icon {
+    top: 100px;
+    right: 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toggle-icon {
+    top: 100px;
+    right: 23px;
+  }
+}
