@@ -60,7 +60,15 @@ export class ReportsComponent implements OnInit {
   currentYear = 0;
   financialBalanceTakeaway = '';
   // Data for Spending by Category
-  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category, value: 0, valueBefore: 0, valueCurrency: '', valueBeforeCurrency: '', percentage: '0%', percentageBefore: '0%' }));
+  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category,
+    value: 0, 
+    valueBefore: 0, 
+    valueCurrency: '', 
+    valueBeforeCurrency: '', 
+    percentage: '0%', 
+    percentageBefore: '0%',
+    percentageDifference: '0%'
+  }));
   spendingByCategoriesMonthTakeaway = '';
   spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueBefore: 0, valueCurrency: '', percentage: '0%' }));
   spendingByCategoriesYearTakeaway = '';
@@ -264,6 +272,8 @@ export class ReportsComponent implements OnInit {
       category.valueBeforeCurrency = this.utilsService.formatCurrency(category.valueBefore);
       category.percentage = (100 + this.utilsService.getPercentageChange(category.value, maxValue)) + '%';
       category.percentageBefore = (100 + this.utilsService.getPercentageChange(category.valueBefore, maxValue)) + '%';
+      category.percentageDifference = this.utilsService.formatPercentage(
+        this.utilsService.getPercentageChange(category.value, category.valueBefore));
     });
   }
 

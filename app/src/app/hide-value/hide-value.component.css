@@ -3,27 +3,26 @@
   user-select: none;
   position: fixed;
   top: 100px;
-  right: 45px;
+  right: 38px;
   border: none;
   background-color: unset;
 }
 
 @media (min-width: 1920px) {
   .toggle-icon {
-    padding-right: calc((100% - 1920px) / 2);
+    padding-right: calc((100% - 1910px) / 2);
   }
 }
 
 @media (max-width: 640px) {
   .toggle-icon {
     top: 100px;
-    right: 45px;
   }
 }
 
 @media (max-width: 480px) {
   .toggle-icon {
     top: 100px;
-    right: 23px;
+    right: 18px;
   }
 }

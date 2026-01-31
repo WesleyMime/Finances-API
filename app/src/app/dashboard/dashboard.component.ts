@@ -44,7 +44,6 @@ export class DashboardComponent implements OnInit {
   savingsAverage: string = '';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
-  savingsChange = '';
   savingsTrendPercentage = '';
 
   lineChartHeights: number[] = [];
@@ -145,7 +144,6 @@ export class DashboardComponent implements OnInit {
         this.savingsPercentageFormated = this.utilsService.formatPercentage(this.savingsPercentage);
         let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
         let savingsPercentageChange = this.utilsService.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
-        this.savingsChange = this.utilsService.formatCurrency(totalSavingsAverage - savingsBeforeLastYear);
         this.savingsTrendPercentage = this.utilsService.formatPercentage(savingsPercentageChange);
       } else {
         this.savingsAverage = this.utilsService.formatCurrency(0);

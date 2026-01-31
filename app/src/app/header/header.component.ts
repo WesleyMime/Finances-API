@@ -17,6 +17,7 @@ interface HeaderConfig {
   showAppNav: boolean;
   showLoginAction: boolean;
   showRegisterAction: boolean;
+  showTestAction: boolean;
   showProfileActions: boolean;
   activeNavGroup: 'app' | null; // Indicates which nav list is potentially active
   activeNavLink?: string; // The specific link (from the active group) to mark as active
@@ -30,10 +31,10 @@ interface HeaderConfig {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  // --- Component Properties (managed by updateHeaderState) ---
   showAppNav: boolean = false;
   showLoginAction: boolean = false;
   showRegisterAction: boolean = false;
+  showTestAction: boolean = false;
   showProfileActions: boolean = false;
 
   appNavItems: NavItem[] = [
@@ -53,6 +54,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: true,
       activeNavGroup: 'app',
       activeNavLink: '/dashboard',
+      showTestAction: false
     },
     {
       routePattern: '/add-transaction',
@@ -62,6 +64,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: true,
       activeNavGroup: 'app',
       activeNavLink: '/add-transaction',
+      showTestAction: false
     },
     {
       routePattern: '/transactions/edit',
@@ -71,6 +74,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: true,
       activeNavGroup: 'app',
       activeNavLink: '/search',
+      showTestAction: false
     },
     {
       routePattern: '/reports',
@@ -80,6 +84,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: true,
       activeNavGroup: 'app',
       activeNavLink: '/reports',
+      showTestAction: false
     },
     {
       routePattern: '/search',
@@ -89,6 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: true,
       activeNavGroup: 'app',
       activeNavLink: '/search',
+      showTestAction: false
     },
     {
       routePattern: '/login',
@@ -97,6 +103,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showRegisterAction: true,
       showProfileActions: false,
       activeNavGroup: null,
+      showTestAction: true
     },
     {
       routePattern: '/register',
@@ -104,7 +111,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showLoginAction: true,
       showRegisterAction: false,
       showProfileActions: false,
-      activeNavGroup: null
+      activeNavGroup: null,
+      showTestAction: true
     },
     {
       routePattern: '/client/edit',
@@ -112,7 +120,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showLoginAction: false,
       showRegisterAction: false,
       showProfileActions: true,
-      activeNavGroup: null
+      activeNavGroup: null,
+      showTestAction: false
     },
     {
       routePattern: '/',
@@ -120,7 +129,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showLoginAction: false,
       showRegisterAction: false,
       showProfileActions: false,
-      activeNavGroup: null
+      activeNavGroup: null,
+      showTestAction: true
     },
     // Fallback configuration if no pattern matches (e.g., 404 page)
     // This config won't have a routePattern, or could have an empty string pattern.
@@ -146,7 +156,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Clean up the subscription
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -164,6 +173,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       showProfileActions: false,
       activeNavGroup: null,
       activeNavLink: undefined,
+      showTestAction: false
     };
 
     const finalConfig = matchedConfig || fallbackConfig;
@@ -172,6 +182,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showLoginAction = finalConfig.showLoginAction;
     this.showRegisterAction = finalConfig.showRegisterAction;
     this.showProfileActions = finalConfig.showProfileActions;
+    this.showTestAction = finalConfig.showTestAction;
 
     this.updateNavActiveState(finalConfig.activeNavGroup, finalConfig.activeNavLink);
   }
@@ -196,6 +207,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       next: (response) => {
         console.log('Login successful', response);
         this.router.navigate(['/dashboard']);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.log('Login failed', error);
+        alert("Falha ao entrar, tente novamente mais tarde.");
+        this.router.navigate(['/']);
         this.isLoading = false;
       }
     });

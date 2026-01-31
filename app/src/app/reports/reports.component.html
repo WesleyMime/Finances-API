@@ -147,6 +147,9 @@
               </div>
               <span class="category-value gray" [style.opacity]="opacity">
                 {{ hidden ? hiddenValue : category.valueCurrency }}
+                <span [ngClass]="getChangeColorBad(category.percentageDifference)">
+                  ({{ category.percentageDifference }})
+                </span>
               </span>
               <div class="category-bar-container">
                 <div class="category-bar-old"

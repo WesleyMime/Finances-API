@@ -105,7 +105,10 @@
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
   background: repeating-linear-gradient(270deg, #364669, transparent 100%);
-  animation: category-bars 9s;
+}
+
+.category-bar-container .category-bar {
+  animation: category-bars 7s;
 }
 
 .category-bar-old {
@@ -115,6 +118,9 @@
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
   background: repeating-linear-gradient(45deg, #36466971, transparent 10px);
+}
+
+.category-bar-container .category-bar-old {
   animation: category-bars 7s;
 }
 

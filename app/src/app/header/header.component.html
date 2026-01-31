@@ -18,12 +18,12 @@
   }
 
   <div>
-    @if (showLoginAction || showRegisterAction) {
+    @if (showTestAction) {
     <button class="btn secondary btn-header" (click)="demoAccount()" [disabled]="isLoading">
       @if (isLoading) {
       Entrando...
       } @else {
-      Conta Demo
+      Conta Teste
       }
     </button>
     }

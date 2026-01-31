@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators'; // Used to side-effect (store token) without changing the observable
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
 import { environment } from '../environments/environment';
@@ -28,7 +28,8 @@ export class AuthService {
         if (response?.token) {
           this.setCookie(this.TOKEN_KEY, response.token);
         }
-      })
+      }),
+      catchError(this.handleError),
     );
   }
 
@@ -86,8 +87,8 @@ export class AuthService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if (error.status == 422) errorMessage = "Falha no registro. Por favor verifique suas credenciais.";
+    let errorMessage = 'Falha na comunicação com o sistema, tente novamente mais tarde.';
+    if (error.status == 422) errorMessage = "Falha na operação. Por favor verifique suas credenciais.";
     if (error.status == 409) errorMessage = "Já existe um cliente cadastrado com esse email.";
     return throwError(() => new Error(errorMessage));
   }

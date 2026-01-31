@@ -38,7 +38,7 @@ export class LoginComponent {
       error: (error: Error) => {
         console.error('Login failed', error);
         this.isLoading = false;
-        this.errorMessage = 'Falha no Login. Por favor verifique suas credenciais.';
+        this.errorMessage = error.message;
       }
     });
   }

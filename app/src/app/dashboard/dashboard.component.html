@@ -24,7 +24,7 @@
           } @else {
           <app-loading-value [value]="savingsAverage">
               <span class="summary-value">{{ savingsAverage }} </span>
-              <span [ngClass]=getChangeColorGood(savingsTrendPercentage) class="summary-percentage">{{ savingsChange }} {{ savingsTrendPercentage }}</span>
+              <span [ngClass]=getChangeColorGood(savingsTrendPercentage) class="summary-percentage">{{ savingsTrendPercentage }}</span>
             </app-loading-value>
           }
           <span class="summary-period">Últimos 5 Anos</span>
@@ -110,7 +110,7 @@
           } @else {
             <app-loading-value [value]="balanceLastMonth">
               <span class="summary-value">{{ balanceLastMonth }}</span>
-              <span class="summary-percentage" [ngClass]=getChangeColorGood(netWorthTrendPercentage)>
+              <span class="summary-percentage" [ngClass]=getChangeColorGood(balanceLastMonthPercentage)>
                 {{ balanceLastMonthPercentage }}
               </span>
             </app-loading-value>

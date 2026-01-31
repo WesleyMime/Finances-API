@@ -83,7 +83,7 @@ export class TransactionService {
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
-    if (error.status == 422) errorMessage = "Falha no envio. Por favor verifique as informações.";
+    if (error.status == 422 || error.status == 400) errorMessage = "Falha no envio. Por favor verifique as informações.";
     if (error.status == 409) errorMessage = "Uma transação com esta descrição já foi registrada neste mês.";
     return throwError(() => new Error(errorMessage));
   }

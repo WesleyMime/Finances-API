@@ -63,7 +63,6 @@ export class AddTransactionManuallyComponent implements OnInit {
       next: (response) => {
         this.successMessage = 'Despesa adicionada com sucesso!';
         console.log('Expense added successfully:', response);
-        this.transaction = emptyTransaction;
         this.isLoading = false;
       },
       error: (error) => {
@@ -99,7 +98,6 @@ export class AddTransactionManuallyComponent implements OnInit {
       next: (response) => {
         this.successMessage = 'Receita adicionada com sucesso!';
         console.log('Income added successfully:', response);
-        this.transaction = emptyTransaction;
         this.isLoading = false;
       },
       error: (error) => {
