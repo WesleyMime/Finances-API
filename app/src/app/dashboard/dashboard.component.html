@@ -77,11 +77,11 @@
         </div>
         <div class="line-chart">
           <svg viewBox="200 -200 200 350">
-            <path class="data-line" [attr.d]="dPath"
+            <path class="data-line" [attr.d]="mainPath"
                   fill="none"
                   stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
             <path style="stroke: #ffffff"
-                  [attr.d]="dPath2"
+                  [attr.d]="zeroPath"
                   fill="none"
                   stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
             <defs>
@@ -115,8 +115,7 @@
               </span>
             </app-loading-value>
           }
-          <span class="summary-period">{{ this.months[(this.currentMonth - 2) % 12] }} -
-            {{ this.months[(this.currentMonth - 1) % 12] }}
+          <span class="summary-period">{{ this.getRelativeMonthName(-2) }} - {{ this.getRelativeMonthName(-1) }}
           </span>
         </div>
         <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
@@ -170,9 +169,9 @@
           }
         </div>
         <div class="chart-labels bar-labels">
-          <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
-          <span>{{ months[currentMonth - 4 % 12 ] }}</span><span>{{ months[currentMonth - 3 % 12 ] }}</span>
-          <span>{{ months[currentMonth - 2 % 12 ] }}</span><span>{{ months[currentMonth - 1 % 12 ] }}</span>
+          <span>{{ this.getRelativeMonthName(-6) }}</span><span>{{ this.getRelativeMonthName(-5) }}</span>
+          <span>{{ this.getRelativeMonthName(-4) }}</span><span>{{ this.getRelativeMonthName(-3) }}</span>
+          <span>{{ this.getRelativeMonthName(-2) }}</span><span>{{ this.getRelativeMonthName(-1) }}</span>
         </div>
       </div>
 
@@ -201,9 +200,9 @@
           }
         </div>
         <div class="chart-labels bar-labels">
-          <span>{{ months[currentMonth - 6 % 12 ] }}</span><span>{{ months[currentMonth - 5 % 12 ] }}</span>
-          <span>{{ months[currentMonth - 4 % 12 ] }}</span><span>{{ months[currentMonth - 3 % 12 ] }}</span>
-          <span>{{ months[currentMonth - 2 % 12 ] }}</span><span>{{ months[currentMonth - 1 % 12 ] }}</span>
+          <span>{{ this.getRelativeMonthName(-6) }}</span><span>{{ this.getRelativeMonthName(-5) }}</span>
+          <span>{{ this.getRelativeMonthName(-4) }}</span><span>{{ this.getRelativeMonthName(-3) }}</span>
+          <span>{{ this.getRelativeMonthName(-2) }}</span><span>{{ this.getRelativeMonthName(-1) }}</span>
         </div>
       </div>
     </div>
@@ -234,9 +233,9 @@
           }
         </div>
         <div class="chart-labels bar-labels">
-          <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
-          <span>{{ months[(currentMonth + 3) % 12 ] }}</span><span>{{ months[(currentMonth + 4) % 12 ] }}</span>
-          <span>{{ months[(currentMonth + 5) % 12 ] }}</span><span>{{ months[(currentMonth + 6) % 12 ] }}</span>
+          <span>{{ this.getRelativeMonthName(1) }}</span><span>{{ this.getRelativeMonthName(2) }}</span>
+          <span>{{ this.getRelativeMonthName(3) }}</span><span>{{ this.getRelativeMonthName(4) }}</span>
+          <span>{{ this.getRelativeMonthName(5) }}</span><span>{{ this.getRelativeMonthName(6) }}</span>
         </div>
       </div>
 
@@ -265,9 +264,9 @@
           }
         </div>
         <div class="chart-labels bar-labels">
-          <span>{{ months[(currentMonth + 1) % 12 ] }}</span><span>{{ months[(currentMonth + 2) % 12 ] }}</span>
-          <span>{{ months[(currentMonth + 3) % 12 ] }}</span><span>{{ months[(currentMonth + 4) % 12 ] }}</span>
-          <span>{{ months[(currentMonth + 5) % 12 ] }}</span><span>{{ months[(currentMonth + 6) % 12 ] }}</span>
+          <span>{{ this.getRelativeMonthName(1) }}</span><span>{{ this.getRelativeMonthName(2) }}</span>
+          <span>{{ this.getRelativeMonthName(3) }}</span><span>{{ this.getRelativeMonthName(4) }}</span>
+          <span>{{ this.getRelativeMonthName(5) }}</span><span>{{ this.getRelativeMonthName(6) }}</span>
         </div>
       </div>
     </div>

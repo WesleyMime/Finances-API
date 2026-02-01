@@ -1,7 +1,6 @@
-import { CurrencyPipe, NgClass, CommonModule } from '@angular/common';
+import { NgClass, CommonModule } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
 import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { SummaryService } from '../summary/summary.service';
@@ -11,17 +10,12 @@ import { RouterLink } from '@angular/router';
 import { HideValueComponent } from "../hide-value/hide-value.component";
 import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
 import { UtilsService } from '../utils/utils.service';
+import { DateService } from '../utils/date.service';
 
-interface Transaction {
-  date: string;
-  category: string;
-  description: string;
-  amount: string;
-}
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoadingValueComponent, CurrencyPipe, NgClass, HeaderComponent, CommonModule, FormsModule, RouterLink, HideValueComponent],
+  imports: [LoadingValueComponent, NgClass, HeaderComponent, CommonModule, RouterLink, HideValueComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -33,35 +27,37 @@ export class DashboardComponent implements OnInit {
   hidden = false;
   opacity: number = 1;
 
-  constructor(private readonly sanitizer: DomSanitizer) {
-  }
-  netWorth: string = '';
-  totalAssets: string = '';
-  totalLiabilities: string = '';
-
   noTransactions = false;
 
+  // Pie chart
   savingsAverage: string = '';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
   savingsTrendPercentage = '';
 
-  lineChartHeights: number[] = [];
-  dPath: string = '';
-  dPath2: string = '';
+  // Net worth
+  netWorth: string = '';
+  totalAssets: string = '';
+  totalLiabilities: string = '';
 
+  // Line graph
+  lineChartHeights: number[] = [];
+  mainPath: string = '';
+  zeroPath: string = '';
+  netWorthTrendChange: string = '';
+  netWorthTrendPercentage = '';
+
+  // Savings Trend graph
+  balanceLastMonth = '';
+  balanceLastMonthPercentage = '';
+
+  // Bar graphs
   pastIncomeBarHeights = [{ height: '', value: '' }];
   pastExpensesBarHeights = [{ height: '', value: '' }];
   futureIncomeBarHeights = [{ height: '', value: '' }];
   futureExpensesBarHeights = [{ height: '', value: '' }];
-
-  currentDate = new Date();
-  currentYear = this.currentDate.getFullYear();
-  currentMonth = this.currentDate.getMonth() + 12;
-
   currentIncomeFormated = '';
   currentExpenseFormated = '';
-
   lastMonthIncomeValue = '';
   lastMonthIncomePercentage = '';
   nextMonthIncomeValue = '';
@@ -71,26 +67,6 @@ export class DashboardComponent implements OnInit {
   nextMonthExpenseValue = '';
   nextMonthExpensePercentage = '';
 
-  balanceLastMonth = '';
-  balanceLastMonthPercentage = '';
-
-  netWorthTrendChange: string = '';
-  netWorthTrendPercentage = '';
-
-  reportsService = inject(SummaryService);
-  toggleService = inject(ToggleVisibilityService);
-  utilsService = inject(UtilsService);
-
-  // Mock transaction data
-  recentTransactions: Transaction[] = [
-    { date: '2024-07-15', category: 'WIP', description: 'Em Construção', amount: "-85.50" },
-    { date: '2024-07-14', category: 'WIP', description: 'Em Construção', amount: "5000.00" },
-    { date: '2024-07-12', category: 'WIP', description: 'Em Construção', amount: "-1500.00" },
-    { date: '2024-07-10', category: 'WIP', description: 'Em Construção', amount: "-60.00" },
-    { date: '2024-07-08', category: 'WIP', description: 'Em Construção', amount: "-120.00" },
-  ];
-
-  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   values: number[] = [];
   values2 = [30, 45, 80, 60, 20, 90, 40, -70, 50, 85, 40, 60];
 
@@ -100,31 +76,48 @@ export class DashboardComponent implements OnInit {
   chartWidth = this.graphWidth - this.padding.left - this.padding.right;
   chartHeight = this.graphHeight - this.padding.top - this.padding.bottom;
 
+  // Mock transaction data
+  recentTransactions = [
+    { date: '2024-07-15', category: 'WIP', description: 'Em Construção', amount: "-85.50" },
+    { date: '2024-07-14', category: 'WIP', description: 'Em Construção', amount: "5000.00" },
+    { date: '2024-07-12', category: 'WIP', description: 'Em Construção', amount: "-1500.00" },
+    { date: '2024-07-10', category: 'WIP', description: 'Em Construção', amount: "-60.00" },
+    { date: '2024-07-08', category: 'WIP', description: 'Em Construção', amount: "-120.00" },
+  ];
+
+  currentDate = new Date();
+  currentYear = this.currentDate.getFullYear();
+  currentMonth = this.currentDate.getMonth();
+
+  toggleService = inject(ToggleVisibilityService);
+  reportsService = inject(SummaryService);
+  utilsService = inject(UtilsService);
+  dateService = inject(DateService);
+  sanitizer = inject(DomSanitizer);
+  
   ngOnInit(): void {
     this.reportsService.getAccountSummary().subscribe((accountSummary) => {
       this.netWorth = this.utilsService.formatCurrency(accountSummary.totalBalance);
       this.totalAssets = this.utilsService.formatCurrency(accountSummary.totalIncome);
       this.totalLiabilities = this.utilsService.formatCurrency(accountSummary.totalExpense);
-      if (accountSummary.totalIncome == 0 && accountSummary.totalExpense == 0) {
+      if (accountSummary.totalIncome == 0 && accountSummary.totalExpense == 0)
         this.noTransactions = true;
-      }
     });
 
-    let currentDate = new Date();
-    let dateFrom = new Date(currentDate.getFullYear() - 1, 0, 1);
-    let dateTo = new Date(currentDate.getFullYear() - 1, 11, 1);
+    let startDate = new Date(this.currentDate.getFullYear(), 0, 1);
+    let dateFrom = this.dateService.removeMonths(startDate, 12);
+    let dateTo = this.dateService.removeMonths(startDate, 1);
+    const requests = [];
+    for (let i = 1; i <= 5; i++) {
+      requests.push(this.reportsService.getSummaryByDate(dateFrom, dateTo));
+      dateFrom = this.dateService.removeMonths(dateFrom, 12);
+      dateTo = this.dateService.removeMonths(dateTo, 12);
+    }
 
     let balanceYearsList: number[] = [];
     let yearsWithTransactions = 0;
     let totalBalanceFiveYears = 0;
     let totalIncomeFiveYears = 0;
-
-    const requests = [];
-    for (let i = 1; i <= 5; i++) {
-      requests.push(this.reportsService.getSummaryByDate(dateFrom, dateTo));
-      dateFrom.setFullYear(dateFrom.getFullYear() - 1);
-      dateTo.setFullYear(dateTo.getFullYear() - 1);
-    }
 
     // Send all http requests and wait
     forkJoin(requests).subscribe((results: SummaryPeriod[]) => {
@@ -140,11 +133,10 @@ export class DashboardComponent implements OnInit {
       if (yearsWithTransactions > 0) {
         let totalSavingsAverage = totalBalanceFiveYears / yearsWithTransactions
         this.savingsAverage = this.utilsService.formatCurrency(totalSavingsAverage);
-        this.savingsPercentage = totalBalanceFiveYears * 100 / totalIncomeFiveYears;
+        this.savingsPercentage = this.utilsService.getPercentage(totalBalanceFiveYears, totalIncomeFiveYears);
         this.savingsPercentageFormated = this.utilsService.formatPercentage(this.savingsPercentage);
         let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
-        let savingsPercentageChange = this.utilsService.getPercentageChange(totalSavingsAverage, savingsBeforeLastYear);
-        this.savingsTrendPercentage = this.utilsService.formatPercentage(savingsPercentageChange);
+        this.savingsTrendPercentage = this.utilsService.percentageChangeFormated(totalSavingsAverage, savingsBeforeLastYear);
       } else {
         this.savingsAverage = this.utilsService.formatCurrency(0);
         this.savingsPercentage = 0;
@@ -152,19 +144,18 @@ export class DashboardComponent implements OnInit {
       }
 
       this.getLineChartHeights(balanceYearsList);
-      this.dPath2 = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
-      this.dPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
+      this.zeroPath = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
+      this.mainPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
         ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
         ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
         ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
       this.netWorthTrendChange = this.utilsService.formatCurrency(balanceYearsList[0]);
-      this.netWorthTrendPercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(balanceYearsList[0], balanceYearsList[1]));
+      this.netWorthTrendPercentage = this.utilsService.percentageChangeFormated(balanceYearsList[0], balanceYearsList[1]);
     });
 
     // 12 Months before:
-    let last12Months = new Date();
-    let futureDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 6);
-    last12Months.setMonth(last12Months.getMonth() - 12);
+    let last12Months = this.dateService.removeMonths(this.currentDate, 12);
+    let futureDate = this.dateService.addMonths(this.currentDate, 6);
     let incomeListPast: number[] = [];
     let expenseListPast: number[] = [];
     let incomeListFuture: number[] = [];
@@ -191,7 +182,7 @@ export class DashboardComponent implements OnInit {
             this.values.push(0);
             continue;
           }
-          let balance = Math.round(totalBalance * 100 / totalIncome) * 100 / 100;
+          let balance = Math.round(this.utilsService.getPercentage(totalBalance, totalIncome));
           this.values.push(balance);
         } else {
           incomeListFuture.push(monthSummary.summary.totalIncome);
@@ -212,20 +203,20 @@ export class DashboardComponent implements OnInit {
       this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
 
       this.lastMonthIncomeValue = this.utilsService.formatCurrency(incomeListPast[11]);
-      this.lastMonthIncomePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(currentIncome, incomeListPast[11]))
+      this.lastMonthIncomePercentage = this.utilsService.percentageChangeFormated(currentIncome, incomeListPast[11]);
 
 
       this.lastMonthExpenseValue = this.utilsService.formatCurrency(expenseListPast[11]);
-      this.lastMonthExpensePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(currentExpense, expenseListPast[11]));
+      this.lastMonthExpensePercentage = this.utilsService.percentageChangeFormated(currentExpense, expenseListPast[11]);
 
       let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
       this.balanceLastMonth = this.utilsService.formatCurrency(balanceLastMonth);
-      this.balanceLastMonthPercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(balanceLastMonth, incomeListPast[10] - expenseListPast[10]));
+      this.balanceLastMonthPercentage = this.utilsService.percentageChangeFormated(balanceLastMonth, incomeListPast[10] - expenseListPast[10]);
 
       this.nextMonthIncomeValue = this.utilsService.formatCurrency(incomeListFuture[1]);
-      this.nextMonthIncomePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(incomeListFuture[1], currentIncome));
+      this.nextMonthIncomePercentage = this.utilsService.percentageChangeFormated(incomeListFuture[1], currentIncome);
       this.nextMonthExpenseValue = this.utilsService.formatCurrency(expenseListFuture[1]);
-      this.nextMonthExpensePercentage = this.utilsService.formatPercentage(this.utilsService.getPercentageChange(expenseListFuture[1], currentExpense));
+      this.nextMonthExpensePercentage = this.utilsService.percentageChangeFormated(expenseListFuture[1], currentExpense);
 
       incomeListFuture.shift();
       expenseListFuture.shift();
@@ -296,9 +287,13 @@ export class DashboardComponent implements OnInit {
 
     // Draw points and labels
     points.forEach((point, i) => {
-      svg += `<circle cx="${point.x}" cy="${point.y}" r="4" class="data-point"></circle>`;
-      svg += `<text x="${point.x}" y="${this.graphHeight - this.padding.bottom + 15}" class="label" text-anchor="middle">${this.months[(this.currentMonth + i) % 12]}</text>`;
-      svg += `<text x="${point.x}" y="${point.y - 10}" class="label" font-weight="bold" text-anchor="middle">${values[i]}</text>`;
+      svg += `<circle cx="${point.x}" cy="${point.y}" r="4" class="data-point"></circle>
+              <text x="${point.x}" y="${this.graphHeight - this.padding.bottom + 15}" class="label" text-anchor="middle">
+                ${this.dateService.getRelativeMonthName(this.currentMonth + i - 1)}
+              </text>
+              <text x="${point.x}" y="${point.y - 10}" class="label" font-weight="bold" text-anchor="middle">
+                ${values[i]}
+              </text>`;
     });
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
@@ -338,4 +333,8 @@ export class DashboardComponent implements OnInit {
     if (change > 0) return 'positive';
     return 'neutral';
   }
+
+  getRelativeMonthName(n: number) : string {
+    return this.dateService.getRelativeMonthName(n);
+  }  
 }

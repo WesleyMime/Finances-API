@@ -127,15 +127,15 @@
               {{ hidden ? hiddenValue : expenseLastMonth }}
             </div>
             <div class="metric-info">
-              {{ lastLastMonth }}:
+              {{ getRelativeMonthName(-2) }}:
             </div>
             <div class="metric-info" [style.opacity]="opacity">
               {{ hidden ? hiddenValue : expenseLastLastMonth }}
             </div>
           </div>
         </app-loading-value>
-        <div class="metric-info category-bar">{{ lastMonth }}</div>
-        <div class="metric-info category-bar-old">{{ lastLastMonth }}</div>
+        <div class="metric-info category-bar">{{ getRelativeMonthName(-1) }}</div>
+        <div class="metric-info category-bar-old">{{ getRelativeMonthName(-2) }}</div>
       </div>
       <div class="chart spending-chart">
         <div class="spending-list">

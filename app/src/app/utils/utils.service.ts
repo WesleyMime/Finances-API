@@ -25,15 +25,29 @@ export class UtilsService {
   formatCurrency(value: number): string {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
+  
+  getPercentage(num1: number, num2: number): number {
+    return num1 * 100 / num2;
+  }
 
   getPercentageChange(num1: number, num2: number): number {
     let difference = num1 - num2;
     return difference * 100 / num2;
   }
 
-  formatPercentage(diffPercent: number): string {
-    if (!isFinite(diffPercent)) return '0%';
-    diffPercent = Math.round(diffPercent * 100) / 100;
-    return diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
+  percentageFormated(num1: number, num2: number): string {
+    let percentage = this.getPercentage(num1, num2);
+    return this.formatPercentage(percentage);
+  }
+
+  percentageChangeFormated(num1: number, num2: number): string {
+    let change = this.getPercentageChange(num1, num2);
+    return this.formatPercentage(change);
+  }
+
+  formatPercentage(percentage: number): string {
+    if (!isFinite(percentage)) return '0%';
+    percentage = Math.round(percentage * 100) / 100;
+    return percentage > 0 ? `+${percentage}%` : `${percentage}%`;
   }
 }

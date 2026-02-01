@@ -12,6 +12,7 @@ import { LoadingValueComponent } from '../loading-value/loading-value.component'
 import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
 import { HideValueComponent } from '../hide-value/hide-value.component';
 import { UtilsService } from '../utils/utils.service';
+import { DateService } from '../utils/date.service';
 
 @Component({
   selector: 'app-reports',
@@ -46,21 +47,18 @@ export class ReportsComponent implements OnInit {
   expenseChangePercentage = '';
   monthComparisonTakeaway = '';
 
-  months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   currentDate = new Date();
-  currentMonth = this.months[this.currentDate.getMonth() % 12];
 
   // Data for Income vs. Expenses
   incomeExpenseTotal = '';
-  incomeExpensePercentage = '';
-  lastMonth = '';
-  lastLastMonth = '';
   monthOrderIncomeExpenseComparison: string[] = [];
   incomeExpenseBarHeights = [{ height: '', value: '' }];
   currentYear = 0;
   financialBalanceTakeaway = '';
+
   // Data for Spending by Category
-  spendingCategoriesMonth = categoriesEnum.map(category => ({ ...category,
+  spendingCategoriesMonth = categoriesEnum.map(category => ({ 
+    ...category,
     value: 0, 
     valueBefore: 0, 
     valueCurrency: '', 
@@ -75,19 +73,16 @@ export class ReportsComponent implements OnInit {
 
   savingsRate = '';
   savingsTakeaway = '';
+
   summaryService = inject(SummaryService);
   aiService = inject(AiService);
   toggleService = inject(ToggleVisibilityService);
   utilsService = inject(UtilsService);
+  dateService = inject(DateService);
 
   ngOnInit() {
-    let lastMonthDate = new Date(this.currentDate);
-    lastMonthDate.setDate(1);
-    lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
-
-    let lastLastMonthDate = new Date(this.currentDate);
-    lastLastMonthDate.setDate(1);
-    lastLastMonthDate.setMonth(lastLastMonthDate.getMonth() - 2);
+    let lastMonthDate = this.dateService.removeMonths(this.currentDate, 1);
+    let lastLastMonthDate = this.dateService.removeMonths(this.currentDate, 2);
 
     forkJoin({
       lastYearSummary: this.summaryService.getSummaryLastYear(),
@@ -98,9 +93,9 @@ export class ReportsComponent implements OnInit {
       next: (s) => {
         this.updateNetWorth(s.lastYearSummary.totalYearIncome, s.lastYearSummary.totalYearExpense);
         this.updateFinancialBalance(this.currentDate, s.lastYearSummary);
-        this.getMonthOverMonthComparison(this.currentDate, s.currentMonthSummary, s.lastMonthSummary);
+        this.getMonthOverMonthComparison(s.currentMonthSummary, s.lastMonthSummary);
         this.updateSpendingByCategoryLastMonth(
-          s.lastYearSummary, s.lastMonthSummary, s.lastLastMonthSummary, this.currentDate);
+          s.lastYearSummary, s.lastMonthSummary, s.lastLastMonthSummary);
         this.updateSpendingByCategoryYear(s.lastYearSummary.expenses);
         this.savingsRate = s.lastYearSummary.percentageSavingsRate;
       }
@@ -124,8 +119,8 @@ export class ReportsComponent implements OnInit {
     this.totalLiabilities = this.utilsService.formatCurrency(this.totalLiabilitiesValue);
   }
 
-  private getMonthOverMonthComparison(currentDate: Date, currentMonthSummary: SummaryByMonth, lastMonthSummary: SummaryByMonth): void {
-    this.getMonthOrderForIncomeExpenseComparison(currentDate);
+  private getMonthOverMonthComparison(currentMonthSummary: SummaryByMonth, lastMonthSummary: SummaryByMonth): void {
+    this.getMonthOrderForIncomeExpenseComparison();
 
     let incomeCurrentMonth = currentMonthSummary.totalIncome;
     let expenseCurrentMonth = currentMonthSummary.totalExpense;
@@ -173,20 +168,9 @@ export class ReportsComponent implements OnInit {
     })
   }
 
-  private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByMonth, lastLastMonthSummary: SummaryByMonth, currentDate: Date): void {
-    let month = currentDate.getMonth() - 1;
-    if (month < 0)
-      month = 11;
-
-    this.lastMonth = this.months[month];
-    this.lastLastMonth = this.months[month - 1];
-
+  private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByMonth, lastLastMonthSummary: SummaryByMonth): void {
     this.expenseLastLastMonth = this.utilsService.formatCurrency(lastLastMonthSummary.totalExpense);
-
-    let diffBalancePercent = this.utilsService.getPercentageChange(
-      lastYearSummary.finalBalanceEachMonth[11], lastYearSummary.finalBalanceEachMonth[10]) * -1; // Invert the sign
-    this.incomeExpensePercentage = this.utilsService.formatPercentage(diffBalancePercent);
-
+    
     lastMonthSummary.totalExpenseByCategory.forEach((item) => {
       this.spendingCategoriesMonth.forEach((category) => {
         if (item.category === category.name) category.value += item.totalValue;
@@ -227,13 +211,10 @@ export class ReportsComponent implements OnInit {
     });;
   }
 
-  private getMonthOrderForIncomeExpenseComparison(currentDate: Date) {
-    let month = currentDate.getMonth();
+  private getMonthOrderForIncomeExpenseComparison() {
     let result = [];
-
-    let j = 0;
-    for (let i: number = month; j < 12; i++, j++) {
-      result.push(this.months[i % 12]);
+    for (let i = 0; i < 12; i++) {
+      result.push(this.dateService.getRelativeMonthName(i));
     }
     this.monthOrderIncomeExpenseComparison = result;
   }
@@ -243,10 +224,8 @@ export class ReportsComponent implements OnInit {
     if (isNaN(incomeCurrentMonthValue) || isNaN(incomeLastMonthValue) ||
       isNaN(expenseCurrentMonthValue) || isNaN(expenseLastMonthValue)) return;
 
-    let incomeChangePercentageValue = this.utilsService.getPercentageChange(incomeCurrentMonthValue, incomeLastMonthValue);
-    let expenseChangePercentageValue = this.utilsService.getPercentageChange(expenseCurrentMonthValue, expenseLastMonthValue);
-    this.incomeChangePercentage = this.utilsService.formatPercentage(incomeChangePercentageValue);
-    this.expenseChangePercentage = this.utilsService.formatPercentage(expenseChangePercentageValue);
+    this.incomeChangePercentage = this.utilsService.percentageChangeFormated(incomeCurrentMonthValue, incomeLastMonthValue);
+    this.expenseChangePercentage = this.utilsService.percentageChangeFormated(expenseCurrentMonthValue, expenseLastMonthValue);
   }
 
   // Get the biggest value and consider it 100%, and then calculate the percentage for each month
@@ -272,8 +251,7 @@ export class ReportsComponent implements OnInit {
       category.valueBeforeCurrency = this.utilsService.formatCurrency(category.valueBefore);
       category.percentage = (100 + this.utilsService.getPercentageChange(category.value, maxValue)) + '%';
       category.percentageBefore = (100 + this.utilsService.getPercentageChange(category.valueBefore, maxValue)) + '%';
-      category.percentageDifference = this.utilsService.formatPercentage(
-        this.utilsService.getPercentageChange(category.value, category.valueBefore));
+      category.percentageDifference = this.utilsService.percentageChangeFormated(category.value, category.valueBefore);
     });
   }
 
@@ -301,4 +279,8 @@ export class ReportsComponent implements OnInit {
   getChangeColorBad(change: string): string {
     return this.utilsService.getChangeColorBad(change);
   }
+
+  getRelativeMonthName(n: number) : string {
+    return this.dateService.getRelativeMonthName(n);
+  }  
 }
