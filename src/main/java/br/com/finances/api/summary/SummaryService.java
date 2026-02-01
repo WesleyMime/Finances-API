@@ -116,8 +116,8 @@ public class SummaryService {
 				finalBalanceEachMonth, incomeFromLastYear, expenseFromLastYear);
 	}
 
-	@Cacheable(value = "summary-by-date", key = "#principal.name.concat(#yearFromString).concat(#yearToString)",
-			unless = "#result == null")
+	@Cacheable(value = "summary-by-date", key = "#principal.name.concat(#yearFromString).concat(#monthFromString)" +
+			".concat(#yearToString).concat(#monthToString)", unless = "#result == null")
 	public SummaryPeriodDTO getSummaryByDate(String yearFromString, String monthFromString,
 												   String yearToString, String monthToString, Principal principal) {
 		int yearFrom;
