@@ -138,7 +138,7 @@
           <span class="summary-period">Últimos 12 Meses</span>
         </div>
         <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
-             xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent2">
+             xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContentTemp">
         </svg>
       </div>
     </div>
@@ -289,7 +289,7 @@
           <td>{{ transaction.category }}</td>
           <td>{{ transaction.description }}</td>
           <td [style.opacity]="opacity">
-            {{ hidden ? hiddenValue : transaction.amount | currency }}
+            {{ hidden ? hiddenValue : transaction.amount }}
           </td>
         </tr>
         }
