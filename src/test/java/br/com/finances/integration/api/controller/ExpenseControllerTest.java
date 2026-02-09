@@ -49,6 +49,7 @@ class ExpenseControllerTest {
 	private static Client client = SecurityContextFactory.setClient();
 	private static Long id;
 	private static final String ENDPOINT = "/expense";
+	private static LocalDate lastExpenseDate;
 
 	private RedisServer redisServer;
 
@@ -66,6 +67,17 @@ class ExpenseControllerTest {
 		expense.setClient(client);
 		Expense saved = expenseRepository.save(expense);
 		id = saved.getId();
+
+		LocalDate now = LocalDate.now();
+		for (int i = 10; i > 0; i--) {
+			LocalDate date = LocalDate.of(now.getYear(), i, 1);
+			Expense newExpense = new Expense(DESCRIPTION + " " + i, VALUE, date, Category.SERVICES);
+			newExpense.setClient(client);
+			saved = expenseRepository.save(newExpense);
+			if (i == 1) {
+				lastExpenseDate = saved.getDate();
+			}
+		}
 	}
 
 	@BeforeEach
@@ -84,17 +96,32 @@ class ExpenseControllerTest {
 	void shouldReturnAllExpenses() throws Exception {
 		mockMvc.perform(get(ENDPOINT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(lastExpenseDate.toString())));
 	}
 	
 	@Test
 	void shouldReturnExpenseByDescription() throws Exception {
-		mockMvc.perform(get(ENDPOINT + "?description=Description"))
-				.andExpect(status().isOk());
 		mockMvc.perform(get(ENDPOINT + "?description=description"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 		mockMvc.perform(get(ENDPOINT + "?description=cript"))
-				.andExpect(status().isOk());
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(lastExpenseDate.toString())));
+		mockMvc.perform(get(ENDPOINT + "?description=1"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.hasNext", is(false)))
+				.andExpect(jsonPath("$.lastId", is(nullValue())))
+				.andExpect(jsonPath("$.lastDate", is(nullValue())));
 	}
 	
 	@Test

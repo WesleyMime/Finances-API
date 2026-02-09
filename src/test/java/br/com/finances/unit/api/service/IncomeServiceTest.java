@@ -3,12 +3,16 @@ package br.com.finances.unit.api.service;
 import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
+import br.com.finances.api.generic.ScrollDTO;
 import br.com.finances.api.income.*;
 import br.com.finances.config.CacheEvictionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +21,15 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntFunction;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.ScrollPosition.keyset;
 
 class IncomeServiceTest {
 
@@ -59,29 +66,71 @@ class IncomeServiceTest {
 	}
 	
 	//GET
-	
+
 	@Test
 	void shouldReturnAllIncome() {
-		when(incomeRepository.findByClient(CLIENT))
-		.thenReturn(List.of(INCOME));
-		List<IncomeDTO> all = incomeService.getAll(null, PRINCIPAL);
-		Assertions.assertFalse(all.isEmpty());
-		assertEquals(DESCRIPTION, all.getFirst().getDescription());
+		List<Income> mockData = List.of(INCOME);
+
+		when(incomeRepository.findFirst10ByClientOrderByDateDesc(CLIENT, keyset())).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, null, null, PRINCIPAL);
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
+
 	}
-	
+
+	@Test
+	void shouldReturnIncomeForPosition() {
+		List<Income> mockData = List.of(INCOME);
+		KeysetScrollPosition position = ScrollPosition.of(Map.of("id", 1, "date", LocalDate.now()),
+				ScrollPosition.Direction.FORWARD);
+
+		when(incomeRepository.findFirst10ByClientOrderByDateDesc(CLIENT, position)).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, 1, LocalDate.now(), PRINCIPAL);
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
+
+	}
+
 	@Test
 	void shouldReturnIncomeByDescription() {
-		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(any(), any()))
-				.thenReturn(List.of(INCOME));
-		List<IncomeDTO> all = incomeService.getAll(DESCRIPTION, PRINCIPAL);
-		Assertions.assertFalse(all.isEmpty());
-		assertEquals(DESCRIPTION, all.getFirst().getDescription());
+		List<Income> mockData = List.of(INCOME);
+
+		when(incomeRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION, CLIENT,
+				keyset())).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(DESCRIPTION, null, null, PRINCIPAL);
+		System.out.println(result.getData());
+		System.out.println(result.getLastDate());
+		System.out.println(result.getLastId());
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
 	}
-	
+
 	@Test
 	void shouldNotFindIncomeByDescription() {
-		List<IncomeDTO> all = incomeService.getAll("", PRINCIPAL);
-		Assertions.assertTrue(all.isEmpty());
+		when(incomeRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
+				keyset())).thenReturn(
+				Window.from(List.of(), new KeysetScrollPositionProvider()));
+
+		ScrollDTO<IncomeDTO> result = incomeService.getAll("a", null, null, PRINCIPAL);
+		assertTrue(result.getData().isEmpty());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
 	}
 	
 	@Test
@@ -196,5 +245,12 @@ class IncomeServiceTest {
 		ResponseEntity<?> delete = incomeService.delete("a", PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
 	}
-	
+
+	// Helper class to provide a KeysetScrollPosition for testing
+	static class KeysetScrollPositionProvider implements IntFunction<ScrollPosition> {
+		@Override
+		public ScrollPosition apply(int value) {
+			return ScrollPosition.keyset();
+		}
+	}
 }

@@ -4,11 +4,15 @@ import br.com.finances.SecurityContextFactory;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.*;
+import br.com.finances.api.generic.ScrollDTO;
 import br.com.finances.config.CacheEvictionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +21,14 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntFunction;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.ScrollPosition.keyset;
 
 class ExpenseServiceTest {
 
@@ -57,29 +64,69 @@ class ExpenseServiceTest {
 	}
 	
 	//GET
-	
+
 	@Test
 	void shouldReturnAllExpense() {
-		when(expenseRepository.findByClient(CLIENT))
-		.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(null, PRINCIPAL);
-		Assertions.assertFalse(all.isEmpty());
-		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
+		List<Expense> mockData = List.of(EXPENSE);
+
+		when(expenseRepository.findFirst10ByClientOrderByDateDesc(CLIENT, keyset())).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, null, null, PRINCIPAL);
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
+
+	}
+
+	@Test
+	void shouldReturnExpenseForPosition() {
+		List<Expense> mockData = List.of(EXPENSE);
+		KeysetScrollPosition position = ScrollPosition.of(Map.of("id", 1, "date", LocalDate.now()),
+				ScrollPosition.Direction.FORWARD);
+
+		when(expenseRepository.findFirst10ByClientOrderByDateDesc(CLIENT, position)).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, 1, LocalDate.now(), PRINCIPAL);
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
+
 	}
 	
 	@Test
 	void shouldReturnExpenseByDescription() {
-		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION, CLIENT))
-				.thenReturn(List.of(EXPENSE));
-		List<ExpenseDTO> all = expenseService.getAll(DESCRIPTION, PRINCIPAL);
-		Assertions.assertFalse(all.isEmpty());
-		assertEquals(EXPENSE.getDescription(), all.getFirst().getDescription());
+		List<Expense> mockData = List.of(EXPENSE);
+
+		when(expenseRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION,
+				CLIENT,
+				keyset())).thenReturn(
+				Window.from(mockData, new KeysetScrollPositionProvider()));
+
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(DESCRIPTION, null, null, PRINCIPAL);
+
+		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
 	}
 	
 	@Test
 	void shouldNotFindExpenseByDescription() {
-		List<ExpenseDTO> all = expenseService.getAll("a", PRINCIPAL);
-		Assertions.assertTrue(all.isEmpty());
+		when(expenseRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
+				keyset())).thenReturn(
+				Window.from(List.of(), new KeysetScrollPositionProvider()));
+
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll("a", null, null, PRINCIPAL);
+		assertTrue(result.getData().isEmpty());
+		assertFalse(result.getHasNext());
+		assertNull(result.getLastId());
+		assertNull(result.getLastDate());
 	}
 	
 	@Test
@@ -202,5 +249,12 @@ class ExpenseServiceTest {
 		ResponseEntity<?> delete = expenseService.delete("a", PRINCIPAL);
 		assertEquals(HttpStatus.BAD_REQUEST, delete.getStatusCode());
 	}
-	
+
+	// Helper class to provide a KeysetScrollPosition for testing
+	static class KeysetScrollPositionProvider implements IntFunction<ScrollPosition> {
+		@Override
+		public ScrollPosition apply(int value) {
+			return ScrollPosition.keyset();
+		}
+	}
 }
