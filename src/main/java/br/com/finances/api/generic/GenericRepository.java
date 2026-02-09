@@ -20,9 +20,6 @@ public interface GenericRepository<T> {
 
 	Optional<T> findByIdAndClient(Long id, Client client);
 
-	Optional<T> findByDescriptionAndDate(String description, Integer year, Integer month,
-										 Client client);
-
 	List<T> findByYearAndMonth(Integer year, Integer month, Client client);
 
 	void deleteById(long l);

@@ -24,7 +24,7 @@ services:
     ]
 
   db:
-    image: postgres
+    image: postgres:17
     environment:
       POSTGRES_DB: finances-api
       POSTGRES_USER: finances-api

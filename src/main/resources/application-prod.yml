@@ -1,0 +1,37 @@
+finances:
+  jwt:
+    expiration: 1800000
+    secret: ${JWT_SECRET:ME7SXkNLos9X6azj8/SMMLXxiq7Wg32PBzTNNohxZ+ykIwKVKMeWmtMwJNl6zhi8QgvcWCmjWu9m4fQagyW0IQ==}
+spring:
+  sql:
+    init:
+      mode: ALWAYS
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: ${POSTGRES_PASSWORD:finances-api}
+    url: jdbc:postgresql://${POSTGRES_URL:localhost:5432/finances-api}
+    username: ${POSTGRES_USERNAME:finances-api}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  ai:
+    openai:
+      api-key: ${AI_API_KEY}
+      base-url: ${AI_BASE_URL:https://api.groq.com/openai}
+      chat:
+        options:
+          model: ${AI_MODEL:qwen/qwen3-32b}
+
+  data:
+    redis:
+      host: ${REDIS_URL:localhost}
+
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    org:
+      springframework: INFO

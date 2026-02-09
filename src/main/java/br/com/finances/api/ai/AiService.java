@@ -74,7 +74,7 @@ public class AiService {
 				habits. The summary should include:
 				A statement of which categories account for the largest portion of the user's spending
 				A recommendation for reviewing and optimizing the user's spending in these categories
-				to identify potential savings.
+				to identify potential savings. Don't use ** to bold words.
 				""";
 		String data = "Expenses for last month divided by category: " + spendingByCategoryMonth;
 		String response = this.chatClient.prompt(prompt + data)
