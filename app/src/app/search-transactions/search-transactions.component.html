@@ -24,7 +24,7 @@
         </select>
       </div>
 
-      <button class="btn primary search" (click)="onSearch()">Pesquisar</button>
+      <button class="btn primary search" (click)="onSearch(true)">Pesquisar</button>
     </div>
     <div class="card">
       <div class="list">
@@ -42,7 +42,7 @@
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
             <div class="spending-item">{{ transaction.type }}</div>
             <div class="spending-item">{{ transaction.category }}</div>
-            <div class="spending-item">{{ transaction.value | currency: 'BRL' }}</div>
+            <div class="spending-item">{{ transaction.value | currency: 'BRL'}}</div>
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {
               <div class="spending-btn">
@@ -69,7 +69,7 @@
 
       @if (searchResults.length === 0 && !searching) {
         <div class="no-results">
-            Nenhuma transação encontrada.
+          Nenhuma transação encontrada.
         </div>
       }
     </div>

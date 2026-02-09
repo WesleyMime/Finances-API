@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -26,16 +26,30 @@ export class SearchService {
     );
   }
 
-  searchIncomeByDescription(description: string): Observable<any> {
-    return this.http.get(this.API_URL + this.INCOME_ENDPOINT + "?description=" + description).pipe(
+  searchIncomeByDescription(description: string | null, lastId: number | null, lastDate: string | null): Observable<any> {
+    let params = new HttpParams();
+    params = this.getParams(description, lastId, lastDate, params);
+    return this.http.get(this.API_URL + this.INCOME_ENDPOINT, { params }).pipe(
       catchError(this.handleError)
     );
   }
 
-  searchExpenseByDescription(description: string): Observable<any> {
-    return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT + "?description=" + description).pipe(
+  searchExpenseByDescription(description: string | null, lastId: number | null, lastDate: string | null): Observable<any> {
+    let params = new HttpParams();
+    params = this.getParams(description, lastId, lastDate, params);
+    return this.http.get(this.API_URL + this.EXPENSE_ENDPOINT, { params }).pipe(
       catchError(this.handleError)
     );
+  }
+
+  private getParams(description: string | null, lastId: number | null, lastDate: string | null, params: HttpParams) {
+    if (description)
+      params = params.set("description", description);
+    if (lastId && lastDate) {
+      params = params.set("lastId", lastId);
+      params = params.set("lastDate", lastDate);
+    }
+    return params;
   }
 
   private handleError(error: HttpErrorResponse) {

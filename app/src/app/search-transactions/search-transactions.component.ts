@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -8,6 +8,7 @@ import { SearchService } from './search.service';
 import { RemoveTransactionComponent } from "./remove-transaction/remove-transaction.component";
 import { TransactionService } from '../add-transaction/transaction.service';
 import { Router, RouterLink } from '@angular/router';
+import { Scroll } from './scroll';
 
 @Component({
   selector: 'app-search-transactions',
@@ -15,28 +16,34 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
-export class SearchTransactionsComponent {
-
+export class SearchTransactionsComponent implements AfterViewInit{
   date: string | null = null;
   description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
 
   categories = categoriesEnum;
 
-  searchResults: Transaction[] = [];
+  router = inject(Router);
   searchService = inject(SearchService);
   transactionService = inject(TransactionService);
 
   transactionPendingRemoval: Transaction | null = null;
   searching = false;
-  router: Router;
-  constructor(router: Router) {
-    this.router = router;
-  }
+  searchResults: Transaction[] = [];
 
-  onSearch(): void {
+  hasNextIncome: boolean = false;
+  hasNextExpense: boolean = false;
+  lastDateIncome: string | null = null;
+  lastDateExpense: string | null = null;
+  lastIdIncome: number | null = null;
+  lastIdExpense: number | null = null;
+
+  onSearch(firstSearch: boolean): void {
     this.searching = true;
-    this.searchResults = [];
+    if (firstSearch) {
+      this.clearSearch();
+    }
+
     if (this.date) {
       let date = this.date.replace("-", "/");
       if (this.incomeIsSelected()) {
@@ -47,30 +54,38 @@ export class SearchTransactionsComponent {
       }
       return;
     }
-    if (!this.description && !this.date) {
-      this.description = " ";
-    }
-    if (this.description) {
-      if (this.incomeIsSelected()) {
+    if (this.description || !this.date) {
+      if (this.incomeIsSelected() && (firstSearch || this.hasNextIncome)) {
         this.searchIncomeByDescription(this.description);
       }
 
-      if (this.expenseIsSelected()) {
+      if (this.expenseIsSelected() && (firstSearch || this.hasNextExpense)) {
         this.searchExpenseByDescription(this.description);
       }
     }
     this.transactionPendingRemoval = null;
   }
 
-  private searchIncomeByDescription(description: string) {
-    this.searchService.searchIncomeByDescription(description)
+  private clearSearch() {
+    this.searchResults = [];
+    this.lastDateIncome = null;
+    this.lastDateExpense = null;
+    this.lastIdIncome = null;
+    this.lastIdExpense = null;
+  }
+
+  private searchIncomeByDescription(description: string | null) {
+    this.searchService.searchIncomeByDescription(description, this.lastIdIncome, this.lastDateIncome)
       .subscribe({
-        next: (result: Transaction[]) => {
-          result.forEach((transaction) => {
+        next: (result: Scroll) => {
+          result.data.forEach((transaction) => {
             transaction.type = "Receita";
           });
-          this.searchResults.push(...result);
+          this.searchResults.push(...result.data);
           this.sort();
+          this.lastIdIncome = result.lastId;
+          this.lastDateIncome = result.lastDate;
+          this.hasNextIncome = result.hasNext;
           this.searching = false;
         },
         error: (error) => {
@@ -99,17 +114,20 @@ export class SearchTransactionsComponent {
       });
   }
 
-  private searchExpenseByDescription(description: string) {
-    this.searchService.searchExpenseByDescription(description)
+  private searchExpenseByDescription(description: string | null) {
+    this.searchService.searchExpenseByDescription(description, this.lastIdExpense, this.lastDateExpense)
       .subscribe({
-        next: (result: Transaction[]) => {
-          result.forEach((transaction) => {
+        next: (result: Scroll) => {
+          result.data.forEach((transaction) => {
             transaction.type = "Despesa";
             transaction.category = getCategoryNameInPortuguese(transaction.category);
             transaction.value = transaction.value * -1;
           });
-          this.searchResults.push(...result);
+          this.searchResults.push(...result.data);
           this.sort();
+          this.lastIdExpense = result.lastId;
+          this.lastDateExpense = result.lastDate;
+          this.hasNextExpense = result.hasNext;
           this.searching = false;
         },
         error: (error) => {
@@ -212,4 +230,28 @@ export class SearchTransactionsComponent {
       return -1;
     });
   }
+
+  ngAfterViewInit(): void {
+    this.addScrollListener();
+  }
+
+  addScrollListener() {
+    window.addEventListener('scroll', () => {
+      if (this.searchResults.length == 0 || !this.hasNextIncome && !this.hasNextExpense || this.searching)
+        return;
+
+      const scrollPosition = window.scrollY;
+      const totalHeightOfPage = document.documentElement.scrollHeight;
+      const thresholdHeight = totalHeightOfPage - (window.innerHeight * 1.1);
+      if (scrollPosition >= thresholdHeight && !this.isSearching) {
+        this.isSearching = true;
+        this.onSearch(false);
+        setTimeout(() => {
+          this.isSearching = false;
+        }, 1000);
+      }
+    });
+  }
+
+  isSearching: boolean = false;
 }
