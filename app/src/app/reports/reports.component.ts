@@ -57,13 +57,13 @@ export class ReportsComponent implements OnInit {
   financialBalanceTakeaway = '';
 
   // Data for Spending by Category
-  spendingCategoriesMonth = categoriesEnum.map(category => ({ 
+  spendingCategoriesMonth = categoriesEnum.map(category => ({
     ...category,
-    value: 0, 
-    valueBefore: 0, 
-    valueCurrency: '', 
-    valueBeforeCurrency: '', 
-    percentage: '0%', 
+    value: 0,
+    valueBefore: 0,
+    valueCurrency: '',
+    valueBeforeCurrency: '',
+    percentage: '0%',
     percentageBefore: '0%',
     percentageDifference: '0%'
   }));
@@ -98,14 +98,14 @@ export class ReportsComponent implements OnInit {
           s.lastYearSummary, s.lastMonthSummary, s.lastLastMonthSummary);
         this.updateSpendingByCategoryYear(s.lastYearSummary.expenses);
         this.savingsRate = s.lastYearSummary.percentageSavingsRate;
+        this.aiService.getSavingsTakeaway(this.savingsRate).subscribe({
+          next: (response: AiMessage) => {
+            this.savingsTakeaway = response.message;
+          }
+        })
       }
     });
 
-    this.aiService.getSavingsTakeaway(this.savingsRate).subscribe({
-      next: (response: AiMessage) => {
-        this.savingsTakeaway = response.message;
-      }
-    })
   }
 
   private updateNetWorth(incomeValue: number, expenseValue: number): void {
@@ -170,7 +170,7 @@ export class ReportsComponent implements OnInit {
 
   private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByMonth, lastLastMonthSummary: SummaryByMonth): void {
     this.expenseLastLastMonth = this.utilsService.formatCurrency(lastLastMonthSummary.totalExpense);
-    
+
     lastMonthSummary.totalExpenseByCategory.forEach((item) => {
       this.spendingCategoriesMonth.forEach((category) => {
         if (item.category === category.name) category.value += item.totalValue;
@@ -282,5 +282,5 @@ export class ReportsComponent implements OnInit {
 
   getRelativeMonthName(n: number) : string {
     return this.dateService.getRelativeMonthName(n);
-  }  
+  }
 }
