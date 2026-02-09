@@ -3,15 +3,16 @@ package br.com.finances.api.generic;
 import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.config.CacheEvictionService;
+import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class GenericServiceImpl
@@ -33,17 +34,28 @@ public class GenericServiceImpl
 		this.evictionService = evictionService;
 	}
 
-	public List<S> getAll(String description, Principal principal) {
+	public ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal) {
 		Client client = getClient();
-
-		if (description != null) {
-			List<T> list = repository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(description,
-					client);
-			if (list.isEmpty()) return List.of();
-
-			return list.stream().map(dtoMapper::map).toList();
+		KeysetScrollPosition position = ScrollPosition.keyset();
+		if (lastId != null && lastDate != null) {
+			position = ScrollPosition.of(Map.of("id", lastId, "date", lastDate), ScrollPosition.Direction.FORWARD);
 		}
-		return repository.findByClient(client).stream().map(dtoMapper::map).toList();
+		Window<T> window;
+		if (description != null) {
+			window = repository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(description,
+					client, position);
+		} else {
+			window = repository.findFirst10ByClientOrderByDateDesc(client, position);
+		}
+
+		List<S> list = window.stream().map(dtoMapper::map).toList();
+		ScrollDTO<S> scrollDTO = new ScrollDTO<>(list, window.hasNext());
+		if (window.hasNext()) {
+			T last = window.getContent().getLast();
+			scrollDTO.setLastId(last.getId());
+			scrollDTO.setLastDate(last.getDate());
+		}
+		return scrollDTO;
 	}
 
 	public ResponseEntity<S> getOne(String id) {

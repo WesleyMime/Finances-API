@@ -1,10 +1,12 @@
 package br.com.finances.api.expense;
 
+import br.com.finances.api.generic.ScrollDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,10 +20,13 @@ public class ExpenseController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<ExpenseDTO>> getAllExpenses(
-			@RequestParam(required = false, name = "description") String description, Principal principal) {
-		List<ExpenseDTO> all = expenseService.getAll(description, principal);
-		return all.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(all);
+	public ResponseEntity<ScrollDTO<ExpenseDTO>> getAllExpenses(
+			@RequestParam(required = false, name = "description") String description,
+			@RequestParam(required = false, name = "lastId") Integer lastId,
+			@RequestParam(required = false, name = "lastDate") LocalDate lastDate,
+			Principal principal) {
+		ScrollDTO<ExpenseDTO> scrollDTO = expenseService.getAll(description, lastId, lastDate, principal);
+		return scrollDTO.getData().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(scrollDTO);
 	}	
 	
 	@GetMapping("{id}")

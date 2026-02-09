@@ -3,12 +3,13 @@ package br.com.finances.api.expense;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.generic.GenericService;
 import br.com.finances.api.generic.GenericServiceImpl;
+import br.com.finances.api.generic.ScrollDTO;
 import br.com.finances.config.CacheEvictionService;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -25,10 +26,8 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 	}
 
 	@Override
-	@Cacheable(value = "getAllExpenses", key = "#description == null ? #principal.name" +
-			" : #principal.name.concat(#description)")
-	public List<ExpenseDTO> getAll(String description, Principal principal) {
-		return genericServiceImpl.getAll(description, principal);
+	public ScrollDTO<ExpenseDTO> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal) {
+		return genericServiceImpl.getAll(description, lastId, lastDate, principal);
 	}
 
 	@Override

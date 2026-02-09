@@ -3,13 +3,16 @@ package br.com.finances.api.generic;
 import org.springframework.http.ResponseEntity;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.BiFunction;
 
 public interface GenericService<T extends GenericModel, S extends GenericDTO, U extends GenericForm> {
 
-    List<S> getAll(String description, Principal principal);
+    ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal);
+
     ResponseEntity<S> getOne(String id);
+
     ResponseEntity<List<S>> getByDate(String yearString, String monthString);
 
     ResponseEntity<S> post(U form, Principal principal);

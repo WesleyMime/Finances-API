@@ -1,6 +1,9 @@
 package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
+import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,9 +11,12 @@ import java.util.Set;
 
 public interface GenericRepository<T> {
 
-	List<T> findByClient(Client client);
+	Window<T> findFirst10ByClientOrderByDateDesc(Client client,
+												 ScrollPosition position);
 
-	List<T> findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(String description, Client client);
+	Window<T> findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(String description, Client client,
+																				   KeysetScrollPosition position);
+
 
 	Optional<T> findByIdAndClient(Long id, Client client);
 
