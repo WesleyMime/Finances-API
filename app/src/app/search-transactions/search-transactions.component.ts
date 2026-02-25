@@ -66,14 +66,6 @@ export class SearchTransactionsComponent implements AfterViewInit{
     this.transactionPendingRemoval = null;
   }
 
-  private clearSearch() {
-    this.searchResults = [];
-    this.lastDateIncome = null;
-    this.lastDateExpense = null;
-    this.lastIdIncome = null;
-    this.lastIdExpense = null;
-  }
-
   private searchIncomeByDescription(description: string | null) {
     this.searchService.searchIncomeByDescription(description, this.lastIdIncome, this.lastDateIncome)
       .subscribe({
@@ -229,6 +221,16 @@ export class SearchTransactionsComponent implements AfterViewInit{
         return 0;
       return -1;
     });
+  }
+
+  private clearSearch() {
+    this.searchResults = [];
+    this.lastDateIncome = null;
+    this.lastDateExpense = null;
+    this.lastIdIncome = null;
+    this.lastIdExpense = null;
+    this.hasNextIncome = false;
+    this.hasNextExpense = false;
   }
 
   ngAfterViewInit(): void {
