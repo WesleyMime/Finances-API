@@ -49,7 +49,7 @@
 /* Income vs. Expenses Chart */
 .income-expense-chart .chart-bars {
   display: flex;
-  align-items: flex-end; /* Bars start from the bottom */
+  align-items: flex-end;
   height: 120px;
   gap: 8px;
   padding: 0 5px;
@@ -60,6 +60,8 @@
 .income-expense-chart .bar {
   flex-grow: 1;
   width: 50px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
   border-top: 2px solid #a0aec0;
   background: linear-gradient(180deg, #364669, transparent 100%);
   animation: bars 3s;
@@ -170,7 +172,7 @@
      margin-left: 0px;
   }
   .cards-grid {
-      grid-template-columns: 1fr; /* Stack cards on smaller screens */
+      grid-template-columns: 1fr;
   }
   .spending-list .spending-item {
     display: block;

@@ -28,7 +28,7 @@
   gap: 20px;
 }
 
-svg {
+.animate {
   font-size: 0.8em;
   stroke-dasharray: 1250;
   stroke-dashoffset: 1300;
@@ -66,7 +66,7 @@ svg {
 }
 
 .bar {
-  width: 12px;
+  width: 15px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   margin: 0 2px;
@@ -82,7 +82,7 @@ svg {
 
 .line-chart svg {
   width: 100%;
-  height: 160px;
+  height: 170px;
 }
 
 
@@ -209,7 +209,7 @@ svg {
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background-image: conic-gradient(#1a202c 0);
+  background-color: #1a202c;
   justify-content: center;
   align-items: center;
   font-size: 2.5em;
@@ -235,13 +235,20 @@ svg {
   to { height: 100; }
 }
 
+@media (min-width: 1049px) {
+  .line-chart svg {
+    max-height: 200px;
+  }
+}
+
+
 @media (max-width: 1049px) {
   .graphs-grid {
     grid-template-columns: 1fr 1fr;
   }
 
   .line-chart svg {
-     height: 250px;
+     height: 25vw;
   }
 
   .pie {
@@ -260,7 +267,7 @@ svg {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background-image: conic-gradient(#1a202c 0);
+    background-color: #1a202c 0;
     justify-content: center;
     align-items: center;
     font-size: 2em;
@@ -272,11 +279,6 @@ svg {
 @media (max-width: 900px) {
   .cards-grid {
     grid-template-columns: 1fr 2fr;
-  }
-
-  .graphs-grid svg {
-    width: 100%;
-    height: 200px;
   }
 
 
@@ -294,7 +296,7 @@ svg {
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    background-image: conic-gradient(#1a202c 0);
+  background-color: #1a202c;
     justify-content: center;
     align-items: center;
     font-size: 1.5em;
@@ -311,7 +313,7 @@ svg {
   }
 
   .line-chart svg {
-    height: 350px;
+    height: 50vw;
   }
 }
 
@@ -326,10 +328,6 @@ svg {
 
   .bar-chart {
     height: 100px;
-  }
-
-  .line-chart svg {
-     height: 250px;
   }
 
   svg {
@@ -351,9 +349,5 @@ svg {
 
   :host ::ng-deep .label {
     font-size: 1.2em;
-  }
-
-  .line-chart svg {
-    height: 200px;
   }
 }

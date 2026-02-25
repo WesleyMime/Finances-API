@@ -23,6 +23,7 @@ import { DrawGraphService } from '../utils/draw-graph.service';
 export class DashboardComponent implements OnInit {
   svgContent: SafeHtml = "";
   svgContentTemp: SafeHtml = "";
+  mainPath: SafeHtml = '';
 
   hiddenValue = '*****';
   hidden = false;
@@ -43,7 +44,6 @@ export class DashboardComponent implements OnInit {
 
   // Line graph
   lineChartHeights: number[] = [];
-  mainPath: string = '';
   zeroPath: string = '';
   netWorthTrendChange: string = '';
   netWorthTrendPercentage = '';
@@ -72,7 +72,7 @@ export class DashboardComponent implements OnInit {
   valuesTemp = [30, 45, 80, 60, 20, 90, 40, -70, 50, 85, 40, 60];
 
   graphWidth = 500;
-  graphHeight = 300;
+  graphHeight = 350;
 
   // Mock transaction data
   recentTransactions = [
@@ -183,11 +183,15 @@ export class DashboardComponent implements OnInit {
 
   private updateNetworthTrendChart(balanceLastFiveYearsList: number[]) {
     this.getLineChartHeights(balanceLastFiveYearsList);
-    this.zeroPath = 'M 25 0 L 75 0.001 L 125 0 L 175 0 L 225 0 L 275 0 L 325 0 L 375 0 L 425 0 L 475 0 L 525 0 L 575 0';
-    this.mainPath = `M 25 ${this.lineChartHeights[4]} L 75 ${this.lineChartHeights[4]} L 125 ${this.lineChartHeights[4]}` +
-      ` L 175 ${this.lineChartHeights[3]} L 225 ${this.lineChartHeights[3]} L 275 ${this.lineChartHeights[2]}` +
-      ` L 325 ${this.lineChartHeights[2]} L 375 ${this.lineChartHeights[1]} L 425 ${this.lineChartHeights[1]}` +
-      ` L 475 ${this.lineChartHeights[1]} L 525 ${this.lineChartHeights[0]} L 575 ${this.lineChartHeights[0]}`;
+    let startPosition = 25;
+    
+    this.mainPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
+    this.zeroPath = `M ${startPosition} 0`;
+    for (let i = 4.90; i > 0; i -= 0.19) {
+      startPosition += 20;
+      this.mainPath += ` L ${startPosition + ' ' +  this.lineChartHeights[Math.floor(i)]}`;
+      this.zeroPath += ` L ${startPosition} 0`;
+    }
     this.netWorthTrendChange = this.utilsService.formatCurrency(balanceLastFiveYearsList[0]);
     this.netWorthTrendPercentage = this.utilsService.percentageChangeFormated(balanceLastFiveYearsList[0], balanceLastFiveYearsList[1]);
   }

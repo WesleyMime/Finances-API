@@ -77,13 +77,13 @@
         </div>
         <div class="line-chart">
           <svg viewBox="200 -200 200 350">
-            <path class="data-line" [attr.d]="mainPath"
+            <path class="data-line animate" [attr.d]="mainPath"
                   fill="none"
                   stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
-            <path style="stroke: #ffffff"
+            <path style="stroke: #a0aec0"
                   [attr.d]="zeroPath"
-                  fill="none"
-                  stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
+                  stroke-dasharray="15, 15"
+                  stroke-width="3"/>
             <defs>
               <filter id="f1" y="0">
                 <feOffset in="SourceGraphic" dx="0" dy="7"/>
@@ -118,7 +118,7 @@
           <span class="summary-period">{{ this.getRelativeMonthName(-2) }} - {{ this.getRelativeMonthName(-1) }}
           </span>
         </div>
-        <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
+        <svg class="animate" [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
              xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent">
         </svg>
       </div>
