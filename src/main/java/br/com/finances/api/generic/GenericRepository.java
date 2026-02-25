@@ -17,6 +17,7 @@ public interface GenericRepository<T> {
 	Window<T> findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(String description, Client client,
 																				   KeysetScrollPosition position);
 
+	List<T> findFirst5ByClientAndDateLessThanEqualOrderByDateDesc(Client client, LocalDate date);
 
 	Optional<T> findByIdAndClient(Long id, Client client);
 

@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
 import { Component, OnInit, inject } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
@@ -12,11 +12,12 @@ import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service
 import { UtilsService } from '../utils/utils.service';
 import { DateService } from '../utils/date.service';
 import { DrawGraphService } from '../utils/draw-graph.service';
+import { Transaction } from '../add-transaction/transaction';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoadingValueComponent, NgClass, HeaderComponent, RouterLink, HideValueComponent],
+  imports: [LoadingValueComponent, NgClass, HeaderComponent, RouterLink, HideValueComponent, DatePipe, CurrencyPipe],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -74,33 +75,27 @@ export class DashboardComponent implements OnInit {
   graphWidth = 500;
   graphHeight = 350;
 
-  // Mock transaction data
-  recentTransactions = [
-    { date: '2024-07-15', category: 'WIP', description: 'Em Construção', amount: "-85.50" },
-    { date: '2024-07-14', category: 'WIP', description: 'Em Construção', amount: "5000.00" },
-    { date: '2024-07-12', category: 'WIP', description: 'Em Construção', amount: "-1500.00" },
-    { date: '2024-07-10', category: 'WIP', description: 'Em Construção', amount: "-60.00" },
-    { date: '2024-07-08', category: 'WIP', description: 'Em Construção', amount: "-120.00" },
-  ];
+  recentTransactions: Transaction[] = [];
+
 
   currentDate = new Date();
   currentYear = this.currentDate.getFullYear();
   currentMonth = this.currentDate.getMonth();
 
-  reportsService = inject(SummaryService);
+  summaryService = inject(SummaryService);
   toggleService = inject(ToggleVisibilityService);
   graphService = inject(DrawGraphService);
   utilsService = inject(UtilsService);
   dateService = inject(DateService);
-  
+
   ngOnInit(): void {
     this.updateTotalNetworth();
-    
+
     let balanceLastFiveYearsList: number[] = [];
     let yearsWithTransactions = 0;
     let totalBalanceFiveYears = 0;
     let totalIncomeFiveYears = 0;
-    
+
     // Send all http requests and wait
     const requests = this.requestsForLastFiveYears();
     forkJoin(requests).subscribe((results: SummaryPeriod[]) => {
@@ -120,10 +115,10 @@ export class DashboardComponent implements OnInit {
     let expenseListPast: number[] = [];
     let incomeListFuture: number[] = [];
     let expenseListFuture: number[] = [];
-    
+
     let lastTwelveMonths = this.dateService.removeMonths(this.currentDate, 12);
     let sixMonthsInTheFuture = this.dateService.addMonths(this.currentDate, 6);
-    this.reportsService.getSummaryByDate(lastTwelveMonths, sixMonthsInTheFuture).subscribe((summaryRecentMonths) => {
+    this.summaryService.getSummaryByDate(lastTwelveMonths, sixMonthsInTheFuture).subscribe((summaryRecentMonths) => {
       for (let i = 0; i < summaryRecentMonths.summaryList.length; i++) {
         let monthSummary = summaryRecentMonths.summaryList[i];
         if (i < 12) {
@@ -137,14 +132,15 @@ export class DashboardComponent implements OnInit {
           incomeListFuture.push(monthSummary.summary.totalIncome);
           expenseListFuture.push(monthSummary.summary.totalExpense);
         }
-      }      
+      }
       this.updateSavingsTrendGraph();
       this.updateMonthCharts(incomeListPast, expenseListPast, incomeListFuture, expenseListFuture);
     });
+    this.getLastFiveTransactions();
   }
 
   private updateTotalNetworth() {
-    this.reportsService.getAccountSummary().subscribe((accountSummary) => {
+    this.summaryService.getAccountSummary().subscribe((accountSummary) => {
       this.netWorth = this.utilsService.formatCurrency(accountSummary.totalBalance);
       this.totalAssets = this.utilsService.formatCurrency(accountSummary.totalIncome);
       this.totalLiabilities = this.utilsService.formatCurrency(accountSummary.totalExpense);
@@ -159,7 +155,7 @@ export class DashboardComponent implements OnInit {
     let dateTo = this.dateService.removeMonths(startDate, 1);
     const requests = [];
     for (let i = 1; i <= 5; i++) {
-      requests.push(this.reportsService.getSummaryByDate(dateFrom, dateTo));
+      requests.push(this.summaryService.getSummaryByDate(dateFrom, dateTo));
       dateFrom = this.dateService.removeMonths(dateFrom, 12);
       dateTo = this.dateService.removeMonths(dateTo, 12);
     }
@@ -184,10 +180,10 @@ export class DashboardComponent implements OnInit {
   private updateNetworthTrendChart(balanceLastFiveYearsList: number[]) {
     this.getLineChartHeights(balanceLastFiveYearsList);
     let startPosition = 25;
-    
+
     this.mainPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
     this.zeroPath = `M ${startPosition} 0`;
-    for (let i = 4.90; i > 0; i -= 0.19) {
+    for (let i = 4.9; i > 0; i -= 0.19) {
       startPosition += 20;
       this.mainPath += ` L ${startPosition + ' ' +  this.lineChartHeights[Math.floor(i)]}`;
       this.zeroPath += ` L ${startPosition} 0`;
@@ -288,6 +284,30 @@ export class DashboardComponent implements OnInit {
     return valueBarHeights;
   }
 
+  private getLastFiveTransactions() {
+    let size = 5;
+    let results: any[] = [];
+    let transactions: Transaction[] = [];
+    this.summaryService.getRecentTransactions().subscribe(
+      result => {
+        result.income.forEach((income: Transaction) => {
+          income.type = 'Receita';
+        });
+        transactions.push(...result.income);
+
+        result.expense.forEach((expense: Transaction) => {
+          expense.type = 'Despesa';
+          expense.value = expense.value * -1;
+        });
+        transactions.push(...result.expense);
+
+        transactions.sort((a: Transaction, b: Transaction) =>
+          new Date(b.date).getTime() - new Date(a.date).getTime());
+        results = transactions.slice(0, size);
+        this.recentTransactions.push(...results);
+      });
+  }
+
   toggleValues() {
     this.hidden = this.toggleService.isHidden;
     this.fadeIn();
@@ -321,5 +341,5 @@ export class DashboardComponent implements OnInit {
 
   getRelativeMonthName(n: number) : string {
     return this.dateService.getRelativeMonthName(n);
-  }  
+  }
 }

@@ -12,6 +12,7 @@ export class SummaryService {
   private readonly SUMMARY_ENDPOINT = '/summary';
   private readonly LAST_YEAR_ENDPOINT = '/last-year';
   private readonly ACCOUNT_ENDPOINT = '/account';
+  private readonly RECENT_ENDPOINT = '/recent-transactions';
 
   constructor(readonly http: HttpClient) { }
 
@@ -38,6 +39,11 @@ export class SummaryService {
   }
   getAccountSummary(): Observable<any> {
     return this.http.get(this.API_URL + this.SUMMARY_ENDPOINT + this.ACCOUNT_ENDPOINT).pipe(
+      catchError(this.handleError)
+    );
+  }
+  getRecentTransactions(): Observable<any> {
+    return this.http.get(this.API_URL + this.SUMMARY_ENDPOINT + this.RECENT_ENDPOINT).pipe(
       catchError(this.handleError)
     );
   }

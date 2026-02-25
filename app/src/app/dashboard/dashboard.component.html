@@ -272,29 +272,28 @@
     </div>
     <section class="recent-transactions">
       <h2>Transações Recentes</h2>
-      <table class="transactions-table"
-             style="background: repeating-linear-gradient(45deg, rgb(200 200 0), transparent 100px);">
-        <thead>
-        <tr>
-          <th>Data</th>
-          <th>Categoria</th>
-          <th>Descrição</th>
-          <th class="amount-header">Valor</th>
-        </tr>
-        </thead>
-        <tbody>
-        @for (transaction of recentTransactions; track transaction) {
-        <tr>
-          <td>{{ transaction.date }}</td>
-          <td>{{ transaction.category }}</td>
-          <td>{{ transaction.description }}</td>
-          <td [style.opacity]="opacity">
-            {{ hidden ? hiddenValue : transaction.amount }}
-          </td>
-        </tr>
+      <div class="card">
+        <div class="list">
+          <div class="spending-header">
+            <div style="text-align: center">Data</div>
+            <div>Tipo</div>
+            <div>Descrição</div>
+            <div style="text-align: right;">Valor</div>
+          </div>
+        </div>
+        @for (transaction of recentTransactions; track transaction.id) {
+        <div class="list">
+          <div class="spending-list">
+            <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
+            <div class="spending-item">{{ transaction.type }}</div>
+            <div class="spending-item">{{ transaction.description }}</div>
+            <div class="spending-item" [style.opacity]="opacity">
+              {{ hidden ? hiddenValue : transaction.value | currency: 'BRL'}}
+            </div>
+          </div>
+        </div>
         }
-        </tbody>
-      </table>
+      </div>
     </section>
   </section>
 </main>

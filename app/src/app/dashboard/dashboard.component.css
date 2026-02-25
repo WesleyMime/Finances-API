@@ -217,6 +217,39 @@
   animation: pie 3s ease-out;
 }
 
+.card .list {
+  padding: 20px;
+  border-bottom: 1px solid #2d3748;
+}
+
+.spending-list,
+.spending-header {
+    display: grid;
+    /* Define columns: Date, Type, Amount, Description  */
+    grid-template-columns: 90px 65px 1fr 1fr;
+    gap: 15px;
+}
+
+.spending-header {
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.spending-item {
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spending-item:nth-child(1) { /* The 1th item is the date */
+    text-align: center;
+}
+.spending-item:nth-child(4) { /* The 4th item is the amount */
+    text-align: right;
+}
+
+
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }
@@ -332,6 +365,17 @@
 
   svg {
     font-size: 1em;
+  }
+
+  .spending-list,
+  .spending-header {
+      display: contents;
+  }
+  .card .list {
+      background-color: #1a202c;
+      border-bottom: 1px solid #2d3748;
+      border-radius: 0px;
+      gap: 20px;
   }
 }
 

@@ -49,4 +49,9 @@ public class SummaryController {
 	public ResponseEntity<SummaryBasicDTO> getAccountSummary(Principal principal) {
 		return ResponseEntity.ok(summaryService.getAccountSummary(LocalDate.now(), principal));
 	}
+
+	@GetMapping("/recent-transactions")
+	public ResponseEntity<RecentTransactionsDTO> getRecentTransactions(Principal principal) {
+		return ResponseEntity.ok(summaryService.recentTransactions());
+	}
 }

@@ -4,6 +4,7 @@ import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.ExpenseCategoryDTO;
 import br.com.finances.api.expense.ExpenseDTO;
+import br.com.finances.api.expense.ExpenseDtoMapper;
 import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.Income;
 import br.com.finances.api.income.IncomeDTO;
@@ -29,14 +30,18 @@ public class SummaryService {
 
 	private final ClientRepository clientRepository;
 
-	private final IncomeDtoMapper dtoMapper;
+	private final IncomeDtoMapper incomeDtoMapper;
+
+	private final ExpenseDtoMapper expenseDtoMapper;
 
 	public SummaryService(IncomeRepository incomeRepository, ExpenseRepository expenseRepository,
-						  ClientRepository clientRepository, IncomeDtoMapper dtoMapper) {
+						  ClientRepository clientRepository, IncomeDtoMapper incomeDtoMapper,
+						  ExpenseDtoMapper expenseDtoMapper) {
 		this.incomeRepository = incomeRepository;
 		this.expenseRepository = expenseRepository;
 		this.clientRepository = clientRepository;
-		this.dtoMapper = dtoMapper;
+		this.incomeDtoMapper = incomeDtoMapper;
+		this.expenseDtoMapper = expenseDtoMapper;
 	}
 
 	@Cacheable(value = "summary-by-month", key = "#principal.name.concat(#yearString).concat(#monthString)",
@@ -60,7 +65,7 @@ public class SummaryService {
 		List<ExpenseCategoryDTO> totalExpenseByCategory = expenseRepository.totalExpenseByCategory(year, month,
 				client);
 
-		List<IncomeDTO> incomeListDto = incomeList.stream().map(dtoMapper::map).toList();
+		List<IncomeDTO> incomeListDto = incomeList.stream().map(incomeDtoMapper::map).toList();
 		return Optional.of(
 				new SummaryDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense), incomeListDto,
 						totalExpenseByCategory));
@@ -191,6 +196,25 @@ public class SummaryService {
 		BigDecimal totalIncome = incomeRepository.sumAllIncomeUntilNow(date, client).orElse(BigDecimal.ZERO);
 		BigDecimal totalExpense = expenseRepository.sumAllExpenseUntilNow(date, client).orElse(BigDecimal.ZERO);
 		return new SummaryBasicDTO(totalIncome, totalExpense, totalIncome.subtract(totalExpense));
+	}
+
+	public RecentTransactionsDTO recentTransactions() {
+		Client client = getClient();
+		LocalDate now = LocalDate.now();
+
+		List<IncomeDTO> recentIncome = incomeRepository.findFirst5ByClientAndDateLessThanEqualOrderByDateDesc(client,
+						now)
+				.stream()
+				.map(incomeDtoMapper::map)
+				.toList();
+
+		List<ExpenseDTO> recentExpenses = expenseRepository.findFirst5ByClientAndDateLessThanEqualOrderByDateDesc(
+						client, now)
+				.stream()
+				.map(expenseDtoMapper::map)
+				.toList();
+
+		return new RecentTransactionsDTO(recentIncome, recentExpenses);
 	}
 
 	private Client getClient() {
