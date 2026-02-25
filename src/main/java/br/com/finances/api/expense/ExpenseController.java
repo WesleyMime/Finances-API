@@ -24,8 +24,9 @@ public class ExpenseController {
 			@RequestParam(required = false, name = "description") String description,
 			@RequestParam(required = false, name = "lastId") Integer lastId,
 			@RequestParam(required = false, name = "lastDate") LocalDate lastDate,
+			@RequestParam(required = false, name = "size") Integer size,
 			Principal principal) {
-		ScrollDTO<ExpenseDTO> scrollDTO = expenseService.getAll(description, lastId, lastDate, principal);
+		ScrollDTO<ExpenseDTO> scrollDTO = expenseService.getAll(description, lastId, lastDate, size, principal);
 		return scrollDTO.getData().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(scrollDTO);
 	}	
 	

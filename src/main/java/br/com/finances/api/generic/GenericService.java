@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 
 public interface GenericService<T extends GenericModel, S extends GenericDTO, U extends GenericForm> {
 
-    ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal);
+    ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Integer size, Principal principal);
 
     ResponseEntity<S> getOne(String id);
 

@@ -2,20 +2,23 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Window;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface GenericRepository<T> {
 
-	Window<T> findFirst10ByClientOrderByDateDesc(Client client,
-												 ScrollPosition position);
+	Window<T> findByClientOrderByDateDesc(Client client,
+										  ScrollPosition position, Limit limit);
 
-	Window<T> findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(String description, Client client,
-																				   KeysetScrollPosition position);
+	Window<T> findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(String description, Client client,
+																			KeysetScrollPosition position,
+																			Limit limit);
 
 	List<T> findFirst5ByClientAndDateLessThanEqualOrderByDateDesc(Client client, LocalDate date);
 

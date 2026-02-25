@@ -26,8 +26,9 @@ public class ExpenseService implements GenericService<Expense, ExpenseDTO, Expen
 	}
 
 	@Override
-	public ScrollDTO<ExpenseDTO> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal) {
-		return genericServiceImpl.getAll(description, lastId, lastDate, principal);
+	public ScrollDTO<ExpenseDTO> getAll(String description, Integer lastId, LocalDate lastDate, Integer size,
+										Principal principal) {
+		return genericServiceImpl.getAll(description, lastId, lastDate, size, principal);
 	}
 
 	@Override

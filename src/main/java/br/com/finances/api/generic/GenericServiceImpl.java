@@ -4,6 +4,7 @@ import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.config.CacheEvictionService;
 import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
@@ -34,18 +35,20 @@ public class GenericServiceImpl
 		this.evictionService = evictionService;
 	}
 
-	public ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Principal principal) {
+	public ScrollDTO<S> getAll(String description, Integer lastId, LocalDate lastDate, Integer size,
+							   Principal principal) {
 		Client client = getClient();
 		KeysetScrollPosition position = ScrollPosition.keyset();
+		Limit limit = Limit.of(size != null ? size : 10);
 		if (lastId != null && lastDate != null) {
 			position = ScrollPosition.of(Map.of("id", lastId, "date", lastDate), ScrollPosition.Direction.FORWARD);
 		}
 		Window<T> window;
 		if (description != null) {
-			window = repository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(description,
-					client, position);
+			window = repository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(description,
+					client, position, limit);
 		} else {
-			window = repository.findFirst10ByClientOrderByDateDesc(client, position);
+			window = repository.findByClientOrderByDateDesc(client, position, limit);
 		}
 
 		List<S> list = window.stream().map(dtoMapper::map).toList();
