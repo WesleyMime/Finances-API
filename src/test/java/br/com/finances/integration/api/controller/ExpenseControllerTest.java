@@ -97,28 +97,43 @@ class ExpenseControllerTest {
 		mockMvc.perform(get(ENDPOINT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(10)))
 				.andExpect(jsonPath("$.hasNext", is(true)))
 				.andExpect(jsonPath("$.lastId", is(notNullValue())))
 				.andExpect(jsonPath("$.lastDate", is(lastExpenseDate.toString())));
+	}
+
+	@Test
+	void shouldReturnAllExpensesLimitBy5() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "?size=5"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", hasSize(5)))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(notNullValue())));
 	}
 	
 	@Test
 	void shouldReturnExpenseByDescription() throws Exception {
 		mockMvc.perform(get(ENDPOINT + "?description=description"))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-		mockMvc.perform(get(ENDPOINT + "?description=cript"))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(10)))
 				.andExpect(jsonPath("$.hasNext", is(true)))
 				.andExpect(jsonPath("$.lastId", is(notNullValue())))
 				.andExpect(jsonPath("$.lastDate", is(lastExpenseDate.toString())));
-		mockMvc.perform(get(ENDPOINT + "?description=1"))
+		mockMvc.perform(get(ENDPOINT + "?description=cript&size=5"))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(5)))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(notNullValue())));
+		mockMvc.perform(get(ENDPOINT + "?description=5"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", hasSize(1)))
 				.andExpect(jsonPath("$.hasNext", is(false)))
 				.andExpect(jsonPath("$.lastId", is(nullValue())))
 				.andExpect(jsonPath("$.lastDate", is(nullValue())));

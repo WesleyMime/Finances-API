@@ -96,28 +96,43 @@ class IncomeControllerTest {
 		mockMvc.perform(get(ENDPOINT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(10)))
 				.andExpect(jsonPath("$.hasNext", is(true)))
 				.andExpect(jsonPath("$.lastId", is(notNullValue())))
 				.andExpect(jsonPath("$.lastDate", is(lastIncomeDate.toString())));
+	}
+
+	@Test
+	void shouldReturnAllIncomeLimitBy5() throws Exception {
+		mockMvc.perform(get(ENDPOINT + "?size=5"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", hasSize(5)))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(notNullValue())));
 	}
 	
 	@Test
 	void shouldReturnIncomeByDescription() throws Exception {
 		mockMvc.perform(get(ENDPOINT + "?description=description"))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-		mockMvc.perform(get(ENDPOINT + "?description=cript"))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(10)))
 				.andExpect(jsonPath("$.hasNext", is(true)))
 				.andExpect(jsonPath("$.lastId", is(notNullValue())))
 				.andExpect(jsonPath("$.lastDate", is(lastIncomeDate.toString())));
-		mockMvc.perform(get(ENDPOINT + "?description=1"))
+		mockMvc.perform(get(ENDPOINT + "?description=cript&size=5"))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data", is(not(empty()))))
+				.andExpect(jsonPath("$.data", hasSize(5)))
+				.andExpect(jsonPath("$.hasNext", is(true)))
+				.andExpect(jsonPath("$.lastId", is(notNullValue())))
+				.andExpect(jsonPath("$.lastDate", is(notNullValue())));
+		mockMvc.perform(get(ENDPOINT + "?description=5"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data", hasSize(1)))
 				.andExpect(jsonPath("$.hasNext", is(false)))
 				.andExpect(jsonPath("$.lastId", is(nullValue())))
 				.andExpect(jsonPath("$.lastDate", is(nullValue())));
@@ -204,11 +219,6 @@ class IncomeControllerTest {
 						jsonPath("[*].date", contains(DATE.toString(), DATE.toString())),
 						status().isCreated())
 				.andDo(print());
-		LocalDate date = LocalDate.of(2023, 1, 1);
-		mockMvc.perform(post(ENDPOINT)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(new IncomeForm("Income1", VALUE, date).toString()))
-				.andExpect(status().isCreated());
     }
 
     @Test

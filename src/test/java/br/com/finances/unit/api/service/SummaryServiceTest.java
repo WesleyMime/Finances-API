@@ -5,6 +5,7 @@ import br.com.finances.api.client.Client;
 import br.com.finances.api.client.ClientRepository;
 import br.com.finances.api.expense.Category;
 import br.com.finances.api.expense.ExpenseCategoryDTO;
+import br.com.finances.api.expense.ExpenseDtoMapper;
 import br.com.finances.api.expense.ExpenseRepository;
 import br.com.finances.api.income.IncomeDtoMapper;
 import br.com.finances.api.income.IncomeRepository;
@@ -43,8 +44,9 @@ class SummaryServiceTest {
         this.expenseRepository = Mockito.mock(ExpenseRepository.class);
         this.clientRepository = Mockito.mock(ClientRepository.class);
 		IncomeDtoMapper incomeDtoMapper = new IncomeDtoMapper();
+		ExpenseDtoMapper expenseDtoMapper = new ExpenseDtoMapper();
         this.summaryService = new SummaryService(incomeRepository, expenseRepository,
-				clientRepository, incomeDtoMapper);
+				clientRepository, incomeDtoMapper, expenseDtoMapper);
     }
 
     @BeforeEach

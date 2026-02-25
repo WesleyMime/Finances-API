@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
@@ -69,10 +70,11 @@ class ExpenseServiceTest {
 	void shouldReturnAllExpense() {
 		List<Expense> mockData = List.of(EXPENSE);
 
-		when(expenseRepository.findFirst10ByClientOrderByDateDesc(CLIENT, keyset())).thenReturn(
+		Limit limit = Limit.of(10);
+		when(expenseRepository.findByClientOrderByDateDesc(CLIENT, keyset(), limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, null, null, PRINCIPAL);
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, null, null, null, PRINCIPAL);
 
 		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
 		assertFalse(result.getHasNext());
@@ -87,10 +89,11 @@ class ExpenseServiceTest {
 		KeysetScrollPosition position = ScrollPosition.of(Map.of("id", 1, "date", LocalDate.now()),
 				ScrollPosition.Direction.FORWARD);
 
-		when(expenseRepository.findFirst10ByClientOrderByDateDesc(CLIENT, position)).thenReturn(
+		Limit limit = Limit.of(10);
+		when(expenseRepository.findByClientOrderByDateDesc(CLIENT, position, limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, 1, LocalDate.now(), PRINCIPAL);
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(null, 1, LocalDate.now(), null, PRINCIPAL);
 
 		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
 		assertFalse(result.getHasNext());
@@ -103,12 +106,13 @@ class ExpenseServiceTest {
 	void shouldReturnExpenseByDescription() {
 		List<Expense> mockData = List.of(EXPENSE);
 
-		when(expenseRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION,
+		Limit limit = Limit.of(10);
+		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION,
 				CLIENT,
-				keyset())).thenReturn(
+				keyset(), limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<ExpenseDTO> result = expenseService.getAll(DESCRIPTION, null, null, PRINCIPAL);
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll(DESCRIPTION, null, null, null, PRINCIPAL);
 
 		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
 		assertFalse(result.getHasNext());
@@ -118,11 +122,13 @@ class ExpenseServiceTest {
 	
 	@Test
 	void shouldNotFindExpenseByDescription() {
-		when(expenseRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
-				keyset())).thenReturn(
+
+		Limit limit = Limit.of(10);
+		when(expenseRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
+				keyset(), limit)).thenReturn(
 				Window.from(List.of(), new KeysetScrollPositionProvider()));
 
-		ScrollDTO<ExpenseDTO> result = expenseService.getAll("a", null, null, PRINCIPAL);
+		ScrollDTO<ExpenseDTO> result = expenseService.getAll("a", null, null, null, PRINCIPAL);
 		assertTrue(result.getData().isEmpty());
 		assertFalse(result.getHasNext());
 		assertNull(result.getLastId());

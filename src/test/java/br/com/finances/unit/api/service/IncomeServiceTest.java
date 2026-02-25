@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.KeysetScrollPosition;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Window;
 import org.springframework.http.HttpStatus;
@@ -71,10 +72,11 @@ class IncomeServiceTest {
 	void shouldReturnAllIncome() {
 		List<Income> mockData = List.of(INCOME);
 
-		when(incomeRepository.findFirst10ByClientOrderByDateDesc(CLIENT, keyset())).thenReturn(
+		Limit limit = Limit.of(10);
+		when(incomeRepository.findByClientOrderByDateDesc(CLIENT, keyset(), limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, null, null, PRINCIPAL);
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, null, null, null, PRINCIPAL);
 
 		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
 		assertFalse(result.getHasNext());
@@ -89,10 +91,11 @@ class IncomeServiceTest {
 		KeysetScrollPosition position = ScrollPosition.of(Map.of("id", 1, "date", LocalDate.now()),
 				ScrollPosition.Direction.FORWARD);
 
-		when(incomeRepository.findFirst10ByClientOrderByDateDesc(CLIENT, position)).thenReturn(
+		Limit limit = Limit.of(10);
+		when(incomeRepository.findByClientOrderByDateDesc(CLIENT, position, limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, 1, LocalDate.now(), PRINCIPAL);
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(null, 1, LocalDate.now(), null, PRINCIPAL);
 
 		assertEquals(DESCRIPTION, result.getData().getFirst().getDescription());
 		assertFalse(result.getHasNext());
@@ -105,11 +108,12 @@ class IncomeServiceTest {
 	void shouldReturnIncomeByDescription() {
 		List<Income> mockData = List.of(INCOME);
 
-		when(incomeRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION, CLIENT,
-				keyset())).thenReturn(
+		Limit limit = Limit.of(10);
+		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc(DESCRIPTION, CLIENT,
+				keyset(), limit)).thenReturn(
 				Window.from(mockData, new KeysetScrollPositionProvider()));
 
-		ScrollDTO<IncomeDTO> result = incomeService.getAll(DESCRIPTION, null, null, PRINCIPAL);
+		ScrollDTO<IncomeDTO> result = incomeService.getAll(DESCRIPTION, null, null, null, PRINCIPAL);
 		System.out.println(result.getData());
 		System.out.println(result.getLastDate());
 		System.out.println(result.getLastId());
@@ -122,11 +126,13 @@ class IncomeServiceTest {
 
 	@Test
 	void shouldNotFindIncomeByDescription() {
-		when(incomeRepository.findFirst10ByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
-				keyset())).thenReturn(
+
+		Limit limit = Limit.of(10);
+		when(incomeRepository.findByDescriptionContainingIgnoreCaseAndClientOrderByDateDesc("a", CLIENT,
+				keyset(), limit)).thenReturn(
 				Window.from(List.of(), new KeysetScrollPositionProvider()));
 
-		ScrollDTO<IncomeDTO> result = incomeService.getAll("a", null, null, PRINCIPAL);
+		ScrollDTO<IncomeDTO> result = incomeService.getAll("a", null, null, null, PRINCIPAL);
 		assertTrue(result.getData().isEmpty());
 		assertFalse(result.getHasNext());
 		assertNull(result.getLastId());
