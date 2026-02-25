@@ -29,9 +29,24 @@
           }
           <span class="summary-period">Últimos 5 Anos</span>
         </div>
-        <div [ngClass]=getChangeColorPie(savingsPercentage) class="pie"
-             [style.--segment1]="100 - savingsPercentage"></div>
-        <div class="innerPie"><b>{{ savingsPercentageFormated }}</b></div>
+        <svg class="donut neutral" height="76%" viewBox="0 0 300 300"
+             xmlns="http://www.w3.org/2000/svg">
+          <circle
+            r="135" cx="150" cy="150"
+            stroke-width="30"
+            fill="transparent"
+          />
+          <circle
+            [ngClass]="'progress-donut ' + getChangeColorDonut(savingsPercentage)"
+            r="135" cx="150" cy="150"
+            fill="transparent"
+            stroke-width="30"
+            [attr.stroke-dasharray]="circumference"
+            [attr.stroke-dashoffset]="getStrokeDashOffset(savingsPercentage)"
+            transform="rotate(-90 150 150)"
+          />
+          <text class="percentage-text" x="150" y="150">{{ savingsPercentageFormated }}</text>
+        </svg>
       </div>
       <div class="cards-line-grid">
         <div class="card net-worth-card">
@@ -91,7 +106,6 @@
                 <feBlend in="SourceGraphic" in2="blurOut"/>
               </filter>
             </defs>
-            `
           </svg>
         </div>
         <div class="chart-labels">

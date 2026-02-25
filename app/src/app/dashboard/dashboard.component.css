@@ -102,53 +102,8 @@
   flex-grow: 1;
 }
 
-
-.recent-transactions h2 {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-  color: #ffffff;
-}
-
-.transactions-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #1a202c;
-  border: 1px solid #2d3748;
-  border-radius: 8px;
-  overflow: hidden; /* Ensures border radius works */
-}
-
-.transactions-table th,
-.transactions-table td {
-  padding: 15px 20px;
-  text-align: left;
-  border-bottom: 1px solid #2d3748;
-}
-
-.transactions-table th {
-  background-color: #2d3748;
-  font-size: 0.9em;
-  color: #a0aec0;
-  font-weight: normal;
-  text-transform: uppercase;
-}
-
-.transactions-table td {
-  font-size: 0.95em;
-  color: #cbd5e0;
-}
-
-.transactions-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.transactions-table .amount-header {
-  text-align: right;
-}
-
-.transactions-table td:last-child {
-  text-align: right;
-  font-weight: bold;
+.recent-transactions .card {
+  padding: 0;
 }
 
 :host ::ng-deep .data-line {
@@ -172,49 +127,35 @@
   fill: #a0aec0;
 }
 
-.pie {
+.donut {
+  margin: 0 auto;
+  display: block;
+  max-width: 240px;
+}
+
+.progress-donut {
   justify-self: center;
   margin-top: 30px;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  animation: pie 3s ease-in-out;
+  animation: fillDonut 3s ease-in-out;
+}
+.percentage-text {
+  font-size: 3em;
+  font-weight: bold;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: middle;
 }
 
 .positive {
-  background-image: conic-gradient(
-    #2d3748 calc(3.6deg * var(--segment1, 0)),
-    #48bb78 0
-  );
+  stroke: #48bb78;
 }
 
 .negative {
-  background-image: conic-gradient(
-    #2d3748 calc(3.6deg * (100 - (var(--segment1, 0) - 100))),
-    #fc8181 0
-  );
+  stroke: #fc8181;
 }
 
 .neutral {
-  background-image: conic-gradient(
-    #2d3748 calc(3.6deg * var(--segment1, 0)),
-    #a0aec0 0
-  );
-}
-
-.innerPie {
-  display: flex;
-  justify-self: center;
-  margin-top: -225px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background-color: #1a202c;
-  justify-content: center;
-  align-items: center;
-  font-size: 2.5em;
-  margin-bottom: 30px;
-  animation: pie 3s ease-out;
+  stroke:#2d3748;
 }
 
 .card .list {
@@ -232,7 +173,6 @@
 
 .spending-header {
     font-weight: bold;
-    color: #ffffff;
     margin-bottom: 2px;
 }
 
@@ -254,12 +194,9 @@
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes pie {
+@keyframes fillDonut {
   from {
-    margin-top: 30px;
-    width: 0;
-    height: 0;
-    font-size: 0em;
+    stroke-dashoffset: 848.23; /* circunference */
   }
 }
 
@@ -283,62 +220,19 @@
   .line-chart svg {
      height: 25vw;
   }
-
-  .pie {
-    justify-self: center;
-    margin-top: 0px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-  }
-
-  .innerPie {
-    margin-bottom: 20px;
-    display: flex;
-    justify-self: center;
-    margin-top: -175px;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background-color: #1a202c 0;
-    justify-content: center;
-    align-items: center;
-    font-size: 2em;
-   }
 }
-
 
 
 @media (max-width: 900px) {
   .cards-grid {
     grid-template-columns: 1fr 2fr;
   }
-
-
-  .pie {
-    justify-self: center;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-  }
-
-  .innerPie {
-    display: flex;
-    justify-self: center;
-    margin-top: -130px;
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-  background-color: #1a202c;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5em;
-  }
 }
 
 @media (max-width: 750px) {
   .cards-grid {
     grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .graphs-grid {
@@ -347,6 +241,10 @@
 
   .line-chart svg {
     height: 50vw;
+  }
+
+  .donut {
+    max-width: 340px;
   }
 }
 
@@ -369,29 +267,22 @@
 
   .spending-list,
   .spending-header {
-      display: contents;
+    display: contents;
   }
   .card .list {
       background-color: #1a202c;
       border-bottom: 1px solid #2d3748;
       border-radius: 0px;
-      gap: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .assets-liabilities-card .card-row {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-  .transactions-table th,
-  .transactions-table td {
-    font-size: 0.8em;
-    padding: 5px 5px;
+  .card-value {
+    font-size: 1.6em;
+    word-break: break-word;
   }
 
-  :host ::ng-deep .label {
-    font-size: 1.2em;
+  .donut {
+    max-width: 100%;
   }
 }

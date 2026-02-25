@@ -32,7 +32,8 @@ export class DashboardComponent implements OnInit {
 
   noTransactions = false;
 
-  // Pie chart
+  // Donut chart
+  circumference = 848.23;
   savingsAverage: string = '';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
@@ -333,7 +334,7 @@ export class DashboardComponent implements OnInit {
     return this.utilsService.getChangeColorBad(change);
   }
 
-  getChangeColorPie(change: number): string {
+  getChangeColorDonut(change: number): string {
     if (change < 0) return 'negative';
     if (change > 0) return 'positive';
     return 'neutral';
@@ -341,5 +342,15 @@ export class DashboardComponent implements OnInit {
 
   getRelativeMonthName(n: number) : string {
     return this.dateService.getRelativeMonthName(n);
+  }
+
+  getStrokeDashOffset(savingsPercentage: number) {
+    // 0 = 100% filled
+    // 424.12 = 50% filled
+    // 848.23 = 0% filled
+    // 1696.46 = -100% filled
+    let dashoffset = this.circumference * (1 - savingsPercentage / 100);
+    if (dashoffset < 0 || dashoffset > this.circumference * 2) return 0;
+    return dashoffset;
   }
 }
