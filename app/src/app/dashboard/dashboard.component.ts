@@ -54,6 +54,10 @@ export class DashboardComponent implements OnInit {
   balanceLastMonth = '';
   balanceLastMonthPercentage = '';
 
+  // Investments Trend graph
+  investmentsLastMonth = 'R$ 0';
+  investmentsLastMonthPercentage = '0%';
+
   // Bar graphs
   pastIncomeBarHeights = [{ height: '', value: '' }];
   pastExpensesBarHeights = [{ height: '', value: '' }];
@@ -71,7 +75,7 @@ export class DashboardComponent implements OnInit {
   nextMonthExpensePercentage = '';
 
   values: number[] = [];
-  valuesTemp = [30, 45, 80, 60, 20, 90, 40, -70, 50, 85, 40, 60];
+  valuesTemp = [-99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99.0001];
 
   graphWidth = 500;
   graphHeight = 350;
@@ -211,8 +215,8 @@ export class DashboardComponent implements OnInit {
   }
 
   private updateSavingsTrendGraph(): void {
-    this.svgContent = this.graphService.draw(this.values, this.graphWidth, this.graphHeight);
-    this.svgContentTemp = this.graphService.draw(this.valuesTemp, this.graphWidth, this.graphHeight);
+    this.svgContent = this.graphService.draw(this.values, this.graphWidth, this.graphHeight, true);
+    this.svgContentTemp = this.graphService.draw(this.valuesTemp, this.graphWidth, this.graphHeight, false);
   }
 
   private updateMonthCharts(incomeListPast: number[], expenseListPast: number[], incomeListFuture: number[], expenseListFuture: number[]) {

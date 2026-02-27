@@ -72,7 +72,7 @@
     </div>
 
     <div class="graphs-grid">
-      <div class="card chart-card">
+      <div class="card">
         <div class="card-label">Evolução Financeira</div>
         <div class="chart-summary" [style.opacity]="opacity">
           @if (hidden) {
@@ -137,21 +137,23 @@
         </svg>
       </div>
 
-      <div class="card"
-           style="background: repeating-linear-gradient(45deg, rgb(200 200 0), transparent 100px);">
-        <div class="card-label">WIP</div>
+      <div class="card">
+        <div class="card-label">Investimentos</div>
         <div class="chart-summary" [style.opacity]="opacity">
           @if (hidden) {
           <span class="summary-value">
               {{ hiddenValue }}
             </span>
           } @else {
-          <span class="summary-value"></span>
-          <span class="summary-percentage">Em Construção</span>
+          <span class="summary-value">{{ investmentsLastMonth }}</span>
+          <span class="summary-percentage"
+                [ngClass]=getChangeColorGood(investmentsLastMonthPercentage)>
+                {{ investmentsLastMonthPercentage }}
+              </span>
           }
           <span class="summary-period">Últimos 12 Meses</span>
         </div>
-        <svg [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
+        <svg class="animate" [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
              xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContentTemp">
         </svg>
       </div>

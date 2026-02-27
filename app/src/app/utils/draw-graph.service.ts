@@ -1,4 +1,4 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { DateService } from './date.service';
 
@@ -12,7 +12,7 @@ export class DrawGraphService {
   currentMonth = this.dateService.currentDate.getMonth();
   padding = { top: 25, right: 25, bottom: 25, left: 25 };
 
-  draw(values: number[], graphWidth: number, graphHeight: number): SafeHtml {    
+  draw(values: number[], graphWidth: number, graphHeight: number, labels: boolean): SafeHtml {    
     let chartWidth = graphWidth - this.padding.left - this.padding.right;
     let chartHeight = graphHeight - this.padding.top - this.padding.bottom;
     let svg = '';
@@ -39,11 +39,15 @@ export class DrawGraphService {
       svg += `<circle cx="${point.x}" cy="${point.y}" r="4" class="data-point"></circle>
               <text x="${point.x}" y="${graphHeight - this.padding.bottom + 15}" class="label" text-anchor="middle">
                 ${this.dateService.getRelativeMonthName(this.currentMonth + i - 1)}
-              </text>
-              <text x="${point.x}" y="${point.y - 10}" class="label" font-weight="bold" text-anchor="middle">
-                ${values[i]}
               </text>`;
     });
+    if (labels) {
+      points.forEach((point, i) => {
+      svg += `<text x="${point.x}" y="${point.y - 10}" class="label" font-weight="bold" text-anchor="middle">
+                ${values[i]}
+              </text>`;
+      });              
+    }
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   }  
 }
