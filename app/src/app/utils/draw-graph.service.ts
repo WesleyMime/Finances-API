@@ -12,9 +12,10 @@ export class DrawGraphService {
   currentMonth = this.dateService.currentDate.getMonth();
   padding = { top: 25, right: 25, bottom: 25, left: 25 };
 
-  draw(values: number[], graphWidth: number, graphHeight: number, labels: boolean): SafeHtml {    
-    let chartWidth = graphWidth - this.padding.left - this.padding.right;
-    let chartHeight = graphHeight - this.padding.top - this.padding.bottom;
+  draw(values: number[], graphWidth: number, graphHeight: number, labels: boolean, dualGradient: boolean): SafeHtml {    
+    const chartWidth = graphWidth - this.padding.left - this.padding.right;
+    const chartHeight = graphHeight - this.padding.top - this.padding.bottom;
+    const baselineY = dualGradient ? graphHeight / 2 : graphHeight - this.padding.bottom;      
     let svg = '';
 
     const points = values.map((val, i) => ({
@@ -23,16 +24,26 @@ export class DrawGraphService {
     }));
 
     // Create smooth curve path
-    let pathD = `M ${points[0].x},${points[0].y}`;
+    let linePath = `M ${points[0].x},${points[0].y}`;
     for (let i = 0; i < points.length - 1; i++) {
       const current = points[i];
       const next = points[i + 1];
       const controlX = current.x + (next.x - current.x) / 2;
-      pathD += ` C ${controlX},${current.y} ${controlX},${next.y} ${next.x},${next.y}`;
+      linePath += ` C ${controlX},${current.y} ${controlX},${next.y} ${next.x},${next.y}`;
     }
-
+    
     // Draw line
-    svg += `<path d="${pathD}" class="data-line" filter="url(#f1)"></path>`;
+    svg += `<path d="${linePath}" class="data-line" filter="url(#f1)"></path>`;
+
+    // Draw area
+    let areaPath = linePath;
+    areaPath += `L ${points[points.length - 1].x},${baselineY} L ${points[0].x},${baselineY} Z`;
+
+    if (dualGradient) {
+      svg += `<path d="${areaPath}" fill="url(#areaDualGradient)"></path>`;
+    } else {
+      svg += `<path d="${areaPath}" fill="url(#areaGradient)"></path>`;
+    }
 
     // Draw points and labels
     points.forEach((point, i) => {
@@ -49,5 +60,5 @@ export class DrawGraphService {
       });              
     }
     return this.sanitizer.bypassSecurityTrustHtml(svg);
-  }  
+  }
 }

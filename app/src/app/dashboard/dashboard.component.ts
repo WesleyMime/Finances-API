@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
   svgContent: SafeHtml = "";
   svgContentTemp: SafeHtml = "";
   mainPath: SafeHtml = '';
+  areaPath: SafeHtml = '';
 
   hiddenValue = '*****';
   hidden = false;
@@ -185,14 +186,24 @@ export class DashboardComponent implements OnInit {
   private updateNetworthTrendChart(balanceLastFiveYearsList: number[]) {
     this.getLineChartHeights(balanceLastFiveYearsList);
     let startPosition = 25;
+    const topPadding = 2;
 
     this.mainPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
+    this.areaPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
     this.zeroPath = `M ${startPosition} 0`;
+
+    let lastX = startPosition;
     for (let i = 4.9; i > 0; i -= 0.19) {
       startPosition += 20;
-      this.mainPath += ` L ${startPosition + ' ' +  this.lineChartHeights[Math.floor(i)]}`;
+      const y = this.lineChartHeights[Math.floor(i)] + topPadding;
+
+      this.mainPath += ` L ${startPosition} ${y}`;
+      this.areaPath += ` L ${startPosition} ${y}`;
       this.zeroPath += ` L ${startPosition} 0`;
+
+      lastX = startPosition;
     }
+    this.areaPath += ` L ${lastX} 0 L 25 0 Z`;
     this.netWorthTrendChange = this.utilsService.formatCurrency(balanceLastFiveYearsList[0]);
     this.netWorthTrendPercentage = this.utilsService.percentageChangeFormated(balanceLastFiveYearsList[0], balanceLastFiveYearsList[1]);
   }
@@ -215,8 +226,8 @@ export class DashboardComponent implements OnInit {
   }
 
   private updateSavingsTrendGraph(): void {
-    this.svgContent = this.graphService.draw(this.values, this.graphWidth, this.graphHeight, true);
-    this.svgContentTemp = this.graphService.draw(this.valuesTemp, this.graphWidth, this.graphHeight, false);
+    this.svgContent = this.graphService.draw(this.values, this.graphWidth, this.graphHeight, true, true);
+    this.svgContentTemp = this.graphService.draw(this.valuesTemp, this.graphWidth, this.graphHeight, false, false);
   }
 
   private updateMonthCharts(incomeListPast: number[], expenseListPast: number[], incomeListFuture: number[], expenseListFuture: number[]) {

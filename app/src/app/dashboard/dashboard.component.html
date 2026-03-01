@@ -92,14 +92,41 @@
         </div>
         <div class="line-chart">
           <svg viewBox="200 -200 200 350">
-            <path class="data-line animate" [attr.d]="mainPath"
-                  fill="none"
-                  stroke="#9f7aea" stroke-width="3" filter="url(#f1)"/>
+            <path class="data-line animate" [attr.d]="mainPath" filter="url(#f1)"/>
+            <path
+              [attr.d]="areaPath"
+              fill="url(#areaDualGradientLine)"
+              stroke="none">
+            </path>
             <path style="stroke: #a0aec0"
                   [attr.d]="zeroPath"
                   stroke-dasharray="15, 15"
                   stroke-width="3"/>
             <defs>
+              <linearGradient id="areaDualGradientLine"
+                              x1="0" y1="-200"
+                              x2="0" y2="200"
+                              gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
+                <stop offset="35%" stop-color="#48bb78" stop-opacity="0.4"/>
+                <stop offset="50%" stop-color="#0d111c" stop-opacity="0"/>
+                <stop offset="65%" stop-color="#48bb78" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#48bb78" stop-opacity="1"/>
+              </linearGradient>
+              <linearGradient id="areaDualGradient"
+                              x1="0%" y1="0%"
+                              x2="0%" y2="100%"
+                              gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
+                <stop offset="50%" stop-color="#0d111c" stop-opacity="0"/>
+                <stop offset="100%" stop-color="#48bb78" stop-opacity="1"/>
+              </linearGradient>
+              <linearGradient id="areaGradient"
+                              x1="0%" y1="0%"
+                              x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#0d111c" stop-opacity="0"/>
+              </linearGradient>
               <filter id="f1" y="0">
                 <feOffset in="SourceGraphic" dx="0" dy="7"/>
                 <feGaussianBlur stdDeviation="6"/>
