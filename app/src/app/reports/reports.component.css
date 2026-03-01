@@ -9,12 +9,12 @@
 .metric-value {
     font-size: 1.6em;
     font-weight: bold;
-    color: #ffffff;
+    color: var(--highlight-text-color);
 }
 
 .metric-info {
     font-size: 0.9em;
-    color: #a0aec0;
+    color: var(--muted-text-color);
     margin-top: 0.3rem;
 }
 
@@ -36,7 +36,7 @@
     justify-content: space-around;
     gap: 8px;
     font-size: 0.8em;
-    color: #a0aec0;
+    color: var(--muted-text-color);
     margin-top: 5px;
 }
 
@@ -62,8 +62,8 @@
   width: 50px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  border-top: 2px solid #a0aec0;
-  background: linear-gradient(180deg, #364669, transparent 100%);
+  border-top: 2px solid var(--muted-text-color);
+  background: linear-gradient(180deg, var(--highlight-color), transparent 100%);
   animation: bars 3s;
 }
 
@@ -84,7 +84,7 @@
   width: 120px;
   flex-shrink: 0; /* Prevent shrinking */
   font-size: 0.9em;
-  color: #cbd5e0;
+  color: var(--muted-text-color);
 }
 
 .spending-chart .category-bar-container {
@@ -103,10 +103,10 @@
 .category-bar {
   height: 100%;
   max-width: 99%;
-  border-right: 2px solid #a0aec0;
+  border-right: 2px solid var(--muted-text-color);
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
-  background: repeating-linear-gradient(270deg, #364669, transparent 100%);
+  background: repeating-linear-gradient(270deg, var(--highlight-color), transparent 100%);
 }
 
 .category-bar-container .category-bar {
@@ -114,12 +114,23 @@
 }
 
 .category-bar-old {
+  position: relative;
   height: 100%;
   max-width: 99%;
-  border-right: 2px solid #a0aec0;
+  border-right: 2px solid var(--muted-text-color);
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px;
-  background: repeating-linear-gradient(45deg, #36466971, transparent 10px);
+}
+
+.category-bar-old::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+  background: repeating-linear-gradient(45deg, var(--highlight-color), transparent 10px);
+  -webkit-mask: linear-gradient(to right, transparent 0%, black 100%);
+  mask: linear-gradient(to right, transparent 0%, black 100%);
 }
 
 .category-bar-container .category-bar-old {
@@ -138,11 +149,11 @@
   margin-top: 20px;
   margin-bottom: 30px;
   padding: 15px;
-  background-color: #2d3748;
+  background-color: var(--tertiary-color);
   border-radius: 6px;
   font-size: 0.9em;
   line-height: 1.5;
-  color: #cbd5e0;
+  color: var(--text-color);
 }
 
 .key-takeaway p {

@@ -1,19 +1,19 @@
 footer {
-  background-color: #1a202c;
-  color: #cbd5e0;
+  background-color: var(--card-color);
+  color: var(--text-color);
   padding: 11px 40px;
   text-align: center;
   font-size: 0.9em;
-  border-top: 1px solid #2d3748;
+  border-top: 1px solid var(--tertiary-color);
 }
 
 .footer-links a {
-  color: #cbd5e0;
+  color: var(--text-color);
   transition: color 0.2s ease;
 }
 
 .footer-links a:hover {
-  color: #ffffff;
+  color: white;
   text-decoration: underline;
 }
 

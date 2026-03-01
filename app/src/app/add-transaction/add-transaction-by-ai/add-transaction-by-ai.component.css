@@ -1,7 +1,7 @@
 
 .add-transaction-box {
-  background-color: #1a202c;
-  border: 1px solid #2d3748;
+  background-color: var(--card-color);
+  border: 1px solid var(--tertiary-color);
   border-radius: 8px;
   padding: 40px;
   width: 100%;

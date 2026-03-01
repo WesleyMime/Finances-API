@@ -26,8 +26,8 @@
 .profile-dropdown-menu {
   position: absolute;
   right: 0;  /* Align the right edge of the menu with the right edge of the icon container */
-  background-color: #1a202c;
-  border: 1px solid #2d3748;
+  background-color: var(--card-color);
+  border: 1px solid var(--tertiary-color);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   z-index: 1000; /* Ensure it's above other content */
   padding: 8px 0;
@@ -43,11 +43,11 @@
 
 .profile-dropdown-menu li {
   padding: 10px 15px;
-  color: #cbd5e0;
+  color: var(--text-color);
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .profile-dropdown-menu li:hover {
-  color: #e2e8f0;
+  color: var(--highlight-text-color);
 }

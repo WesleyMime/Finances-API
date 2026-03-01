@@ -1,9 +1,22 @@
+:root {
+  --primary-color: #364669;
+  --secondary-color: #345398;
+  --tertiary-color: #2d3748;
+  --background-color: #0d111c;
+  --highlight-text-color: #eeeeee;
+  --text-color: #cbd5e0;
+  --muted-text-color: #a0aec0;
+  --highlight-color: #48bb78;
+  --highlight-red-color: #fc8181;
+  --card-color: #1a202c;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color: #0d111c;
-  color: #e2e8f0;
+  background-color: var(--background-color);
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Ensure it takes at least full viewport height */
@@ -20,18 +33,18 @@ body {
 h1 {
   font-size: 2em;
   margin-bottom: 5px;
-  color: #ffffff;
+  color: var(--highlight-text-color);
 }
 
 .subtitle {
     font-size: 1em;
-    color: #cbd5e0;
+    color: var(--text-color);
     margin-bottom: 30px;
 }
 
 .card {
-  background-color: #1a202c;
-  border: 1px solid #2d3748;
+  background-color: var(--card-color);
+  border: 1px solid var(--tertiary-color);
   border-radius: 8px;
   padding: 25px;
   margin-bottom: 30px;
@@ -48,30 +61,30 @@ h1 {
 
 .card-label {
   font-size: 0.9em;
-  color: #a0aec0;
+  color: var(--muted-text-color);
   margin-bottom: 10px;
 }
 
 .card-value {
   font-size: 1.8em;
   font-weight: bold;
-  color: #ffffff;
+  color: var(--highlight-text-color);
 }
 
 .gray-background {
-  background-color: #1a202c;
+  background-color: var(--card-color);
 }
 
 .green {
-  color: #48bb78;
+  color: var(--highlight-color);
 }
 
 .red {
-  color: #fc8181;
+  color: var(--highlight-red-color);
 }
 
 .gray {
-    color: #a0aec0;
+    color: var(--muted-text-color);
 }
 
 
@@ -87,8 +100,8 @@ h1 {
 }
 
 .form-box {
-  background-color: #1a202c;
-  border: 1px solid #2d3748;
+  background-color: var(--card-color);
+  border: 1px solid var(--tertiary-color);
   border-radius: 8px;
   padding: 40px;
   width: 100%;
@@ -99,7 +112,6 @@ h1 {
 .form-box h2 {
   font-size: 1.8em;
   margin-bottom: 30px;
-  color: #ffffff;
 }
 
 
@@ -111,21 +123,21 @@ h1 {
 .form-group label {
   display: block;
   font-size: 0.9em;
-  color: #a0aec0;
+  color: var(--muted-text-color);
   margin-bottom: 8px;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder
 {
-  color: #718096;
+  color: var(--muted-text-color);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus
 {
-  border-color: #345398;
+  border-color: var(--secondary-color);
 }
 
 .form-group input,
@@ -134,10 +146,10 @@ h1 {
 {
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid #2d3748;
+  border: 1px solid var(--tertiary-color);
   border-radius: 5px;
-  background-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--tertiary-color);
+  color: var(--text-color);
   font-size: 1em;
   box-sizing: border-box;
   outline: none;
@@ -163,13 +175,13 @@ h1 {
 
 
 .validation-error {
-  color: rgb(220, 14, 14);
+  color: var(--highlight-red-color);
   font-size: 0.85em;
   margin-top: 5px;
 }
 
 .server-error {
-  color: rgb(220, 14, 14);
+  color: var(--highlight-red-color);
   margin-top: 15px;
   text-align: center;
 }
@@ -200,19 +212,19 @@ h1 {
 }
 
 .btn.primary {
-  background-color: #364669;
+  background-color: var(--primary-color);
   color: white;
 }
 
 /* Gray button when disabled: */
 
 .btn.primary:hover {
-  background-color: #345398;
+  background-color: var(--secondary-color);
 }
 
 .btn.secondary {
-  background-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--tertiary-color);
+  color: var(--text-color);
 }
 
 .btn.secondary:disabled {
@@ -230,8 +242,7 @@ h1 {
   padding: 12px 20px;
   border: none;
   border-radius: 25px;
-  background-color: #364669;
-  color: white;
+  background-color: var(--primary-color);
   font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
@@ -239,7 +250,7 @@ h1 {
 }
 
 .register-button:hover {
-  background-color: #345398;
+  background-color: var(--secondary-color);
 }
 
 @media (max-width: 480px) {

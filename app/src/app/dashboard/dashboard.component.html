@@ -98,7 +98,7 @@
               fill="url(#areaDualGradientLine)"
               stroke="none">
             </path>
-            <path style="stroke: #a0aec0"
+            <path style="stroke: var(--muted-text-color)"
                   [attr.d]="zeroPath"
                   stroke-dasharray="15, 15"
                   stroke-width="3"/>
@@ -107,25 +107,25 @@
                               x1="0" y1="-200"
                               x2="0" y2="200"
                               gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
-                <stop offset="35%" stop-color="#48bb78" stop-opacity="0.4"/>
-                <stop offset="50%" stop-color="#0d111c" stop-opacity="0"/>
-                <stop offset="65%" stop-color="#48bb78" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#48bb78" stop-opacity="1"/>
+                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
+                <stop offset="35%" stop-color="var(--highlight-color)" stop-opacity="0.4"/>
+                <stop offset="50%" stop-color="var(--background-color)" stop-opacity="0"/>
+                <stop offset="65%" stop-color="var(--highlight-color)" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="var(--highlight-color)" stop-opacity="1"/>
               </linearGradient>
               <linearGradient id="areaDualGradient"
                               x1="0%" y1="0%"
                               x2="0%" y2="100%"
                               gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
-                <stop offset="50%" stop-color="#0d111c" stop-opacity="0"/>
-                <stop offset="100%" stop-color="#48bb78" stop-opacity="1"/>
+                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
+                <stop offset="50%" stop-color="var(--background-color)" stop-opacity="0"/>
+                <stop offset="100%" stop-color="var(--highlight-color)" stop-opacity="1"/>
               </linearGradient>
               <linearGradient id="areaGradient"
                               x1="0%" y1="0%"
                               x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#48bb78" stop-opacity="1"/>
-                <stop offset="100%" stop-color="#0d111c" stop-opacity="0"/>
+                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
+                <stop offset="100%" stop-color="var(--background-color)" stop-opacity="0"/>
               </linearGradient>
               <filter id="f1" y="0">
                 <feOffset in="SourceGraphic" dx="0" dy="7"/>
@@ -204,10 +204,9 @@
         </div>
         <div class="bar-chart">
           @for (bar of pastIncomeBarHeights; track bar) {
-          <div class="bar"
+          <div class="bar positive"
                [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #48bb78;">
+               [title]="bar.value">
           </div>
           }
         </div>
@@ -235,10 +234,9 @@
         </div>
         <div class="bar-chart">
           @for (bar of pastExpensesBarHeights; track bar) {
-          <div class="bar"
+          <div class="bar negative"
                [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #fc8181;">
+               [title]="bar.value">
           </div>
           }
         </div>
@@ -268,10 +266,9 @@
           </div>
         <div class="bar-chart">
           @for (bar of futureIncomeBarHeights; track bar) {
-          <div class="bar"
+          <div class="bar positive"
                [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #48bb78;">
+               [title]="bar.value">
           </div>
           }
         </div>
@@ -299,10 +296,9 @@
         </div>
         <div class="bar-chart">
           @for (bar of futureExpensesBarHeights; track bar) {
-          <div class="bar"
+          <div class="bar negative"
                [style.height]="bar.height + '%'"
-               [title]="bar.value"
-               style="background-color: #fc8181;">
+               [title]="bar.value">
           </div>
           }
         </div>

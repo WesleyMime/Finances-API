@@ -4,7 +4,7 @@ h1 {
 
 a {
   text-decoration: none;
-  color: #cbd5e0;
+  color: var(--text-color);
 }
 
 .card h2 {

@@ -3,9 +3,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 40px;
-  background-color: #1a202c;
-  border-bottom: 1px solid #2d3748;
-  color: #cbd5e0;
+  background-color: var(--card-color);
+  border-bottom: 1px solid var(--tertiary-color);
+  color: var(--text-color);
 }
 
 .logo-container {
@@ -40,7 +40,7 @@
 
 .main-nav a {
   text-decoration: none;
-  color: #cbd5e0;
+  color: var(--text-color);
   font-size: 0.95em;
   transition: color 0.3s ease;
   position: relative; /* Needed for the active indicator */
@@ -61,7 +61,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #345398;
+  background-color: var(--secondary-color);
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
 }

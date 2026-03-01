@@ -46,6 +46,7 @@
 .chart-summary .summary-value {
   font-size: 1.6em;
   font-weight: bold;
+  color: var(--highlight-text-color);
 }
 
 .chart-summary .summary-percentage {
@@ -55,7 +56,7 @@
 
 .chart-summary .summary-period {
   font-size: 0.8em;
-  color: #a0aec0;
+  color: var(--muted-text-color);
 }
 
 .bar-chart {
@@ -66,11 +67,12 @@
 }
 
 .bar {
-  width: 15px;
+  width: 25px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   margin: 0 2px;
   animation: bars 3s;
+  border-top: 2px solid var(--muted-text-color);
 }
 
 .line-chart {
@@ -94,7 +96,7 @@
   display: flex;
   justify-content: space-around;
   font-size: 0.8em;
-  color: #a0aec0;
+  color: var(--muted-text-color);
   margin-top: 5px;
 }
 .chart-labels span {
@@ -108,23 +110,17 @@
 
 :host ::ng-deep .data-line {
   fill: none;
-  stroke: #48bb78;
+  stroke: var(--highlight-color);
   stroke-width: 3;
 }
 
 :host ::ng-deep .data-point {
-  fill: #48bb78;
+  fill: var(--highlight-color);
 }
 
 :host ::ng-deep .label {
   font-size: 0.9em;
-  fill: #a0aec0;
-}
-
-:host ::ng-deep .title {
-  font-size: 16px;
-  font-weight: bold;
-  fill: #a0aec0;
+  fill: var(--muted-text-color);
 }
 
 .donut {
@@ -141,26 +137,28 @@
 .percentage-text {
   font-size: 3em;
   font-weight: bold;
-  fill: #ffffff;
+  fill: var(--highlight-text-color);
   text-anchor: middle;
   dominant-baseline: middle;
 }
 
 .positive {
-  stroke: #48bb78;
+  stroke: var(--highlight-color);
+  background: repeating-linear-gradient(180deg, var(--highlight-color), transparent 150%);
 }
 
 .negative {
-  stroke: #fc8181;
+  stroke: var(--highlight-red-color);
+  background: repeating-linear-gradient(180deg, var(--highlight-red-color), transparent 150%);
 }
 
 .neutral {
-  stroke:#2d3748;
+  stroke:var(--tertiary-color);
 }
 
 .card .list {
   padding: 20px;
-  border-bottom: 1px solid #2d3748;
+  border-bottom: 1px solid var(--tertiary-color);
 }
 
 .spending-list,
@@ -229,7 +227,7 @@
   }
 }
 
-@media (max-width: 750px) {
+@media (max-width: 640px) {
   .cards-grid {
     grid-template-columns: 1fr;
     gap: 0;
@@ -246,9 +244,7 @@
   .donut {
     max-width: 340px;
   }
-}
 
-@media (max-width: 640px) {
   .summary-cards-grid {
     grid-template-columns: 1fr;
   }
@@ -269,10 +265,9 @@
   .spending-header {
     display: contents;
   }
-  .card .list {
-      background-color: #1a202c;
-      border-bottom: 1px solid #2d3748;
-      border-radius: 0px;
+
+  .donut {
+    max-width: 60%;
   }
 }
 
@@ -280,9 +275,5 @@
   .card-value {
     font-size: 1.6em;
     word-break: break-word;
-  }
-
-  .donut {
-    max-width: 100%;
   }
 }

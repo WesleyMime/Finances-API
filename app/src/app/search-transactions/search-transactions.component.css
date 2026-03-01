@@ -18,14 +18,14 @@
 .form-group label {
     margin-bottom: 8px;
     font-weight: bold;
-    color: #cccccc;
+    color: var(--text-color);
 }
 
 .form-group input[type="date"],
 .form-group input[type="text"] {
     padding: 10px;
     border-radius: 4px;
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: 1em;
     outline: none;
     transition: border-color 0.2s ease-in-out;
@@ -39,7 +39,7 @@
 .form-group select {
     padding: 10px;
     border-radius: 4px;
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: 1em;
     outline: none;
     transition: border-color 0.2s ease-in-out;
@@ -62,8 +62,8 @@
 .card .list {
     padding: 20px;
     box-sizing: border-box;
-    background-color: #1a202c;
-    border-bottom: 1px solid #2d3748;
+    background-color: var(--card-color);
+    border-bottom: 1px solid var(--tertiary-color);
     margin-bottom: 1px;
 }
 
@@ -85,7 +85,6 @@
 
 .spending-header {
     font-weight: bold;
-    color: #ffffff;
     margin-bottom: 2px;
 }
 
@@ -120,7 +119,7 @@
 }
 
 .spending-btn .remove {
-    color: #e57373;
+    color: var(--highlight-red-color);
 }
 
 .spending-btn .edit:hover {
@@ -134,7 +133,7 @@
 .no-results {
     text-align: center;
     padding: 20px;
-    color: #c0c0c0;
+    color: var(--text-color);
     font-style: italic;
     justify-content: center;
     display: flex;
@@ -146,10 +145,8 @@
 }
 
 @media (max-width: 870px) {
-
     .spending-btn {
         display: flex;
-        color: #81c784;
         justify-content: space-between;
     }
     .spending-list,
@@ -158,13 +155,10 @@
     }
 
     .card {
-        background-color: #1a202c;
         border-radius: 8px;
     }
 
     .card .list {
-        background-color: #1a202c;
-        border-bottom: 1px solid #2d3748;
         border-radius: 0px;
         gap: 20px;
     }
