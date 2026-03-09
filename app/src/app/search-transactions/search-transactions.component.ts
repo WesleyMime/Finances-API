@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -17,9 +17,17 @@ import { Scroll } from './scroll';
   styleUrls: ['./search-transactions.component.css']
 })
 export class SearchTransactionsComponent implements AfterViewInit{
+  @ViewChild('totalSummaryContainer') totalSummaryContainer!: ElementRef;
+
   date: string | null = null;
   description: string | null = null;
   selectedType: 'Both' | 'Income' | 'Expense' = 'Both';
+
+  selectedTransactions: Transaction[] = [];
+  totalIncomeSelected: number = 0;
+  totalExpenseSelected: number = 0;
+  totalValueSelected: number = 0;
+  isAllSelected: boolean = false;
 
   categories = categoriesEnum;
 
@@ -40,6 +48,7 @@ export class SearchTransactionsComponent implements AfterViewInit{
 
   onSearch(firstSearch: boolean): void {
     this.searching = true;
+    this.isAllSelected = false;
     if (firstSearch) {
       this.clearSearch();
     }
@@ -252,7 +261,76 @@ export class SearchTransactionsComponent implements AfterViewInit{
           this.isSearching = false;
         }, 1000);
       }
+      if (this.selectedTransactions.length != 0) {
+        const container = this.totalSummaryContainer.nativeElement;
+        let containerSize = 350;
+        if (scrollPosition > containerSize) {
+          container.style.position = 'fixed';
+        } else {
+          container.style.position = 'sticky';
+        }
+      }
     });
+  }
+
+  toggleAll() {
+    this.isAllSelected ? this.unselectAll() : this.selectAll();
+  }
+
+  selectAll() {
+    this.searchResults.forEach(transaction => {
+      if (!transaction.selected || transaction.selected == undefined) {
+        this.sumTransaction(transaction);
+      }
+      transaction.selected = true;
+    });
+    this.isAllSelected = true;
+  }
+
+  unselectAll() {
+    this.searchResults.forEach(transaction => {
+      this.subtractTransaction(transaction);
+      transaction.selected = false;
+    });
+    this.isAllSelected = false;
+  }
+
+  selectTransaction(transaction: Transaction): void {
+    const isAlreadySelected = this.selectedTransactions.includes(transaction);
+    if (isAlreadySelected) {
+      this.subtractTransaction(transaction);
+    } else {
+      this.sumTransaction(transaction);
+    }
+  }
+
+  private sumTransaction(transaction: Transaction): void {
+    this.selectedTransactions.push(transaction);
+    this.totalValueSelected += transaction.value;
+    if (transaction.type === "Receita")
+      this.totalIncomeSelected += transaction.value;
+    if (transaction.type === "Despesa")
+      this.totalExpenseSelected += transaction.value;
+  }
+
+  private subtractTransaction(transaction: Transaction): void {
+    const index = this.selectedTransactions.indexOf(transaction);
+    if (index == -1) return;
+
+    this.selectedTransactions.splice(index, 1);
+    this.totalValueSelected -= transaction.value;
+    if (transaction.type === "Receita")
+      this.totalIncomeSelected -= transaction.value;
+    if (transaction.type === "Despesa")
+      this.totalExpenseSelected -= transaction.value;
+  }
+
+  clear() {
+    this.selectedTransactions = [];
+    this.totalIncomeSelected = 0;
+    this.totalExpenseSelected = 0;
+    this.totalValueSelected = 0;
+    this.unselectAll();
   }
 
   isSearching: boolean = false;

@@ -26,19 +26,47 @@
 
       <button class="btn primary search" (click)="onSearch(true)">Pesquisar</button>
     </div>
+    @if (selectedTransactions.length > 0) {
+    <div #totalSummaryContainer class="total-summary">
+      <div class="summary-item">
+        <span class="card-label">Receitas:</span>
+        <span class="card-value">{{ totalIncomeSelected | currency: 'BRL'}}</span>
+      </div>
+      <div class="summary-item">
+        <span class="card-label">Despesas:</span>
+        <span class="card-value">{{ totalExpenseSelected | currency: 'BRL'}}</span>
+      </div>
+      <div class="summary-item">
+        <span class="card-label">Saldo:</span>
+        <span class="card-value">{{ totalValueSelected | currency: 'BRL'}}</span>
+      </div>
+      <div class="summary-item">
+        <button class="btn" (click)="clear()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
+               width="24px" fill="#e3e3e3">
+            <path
+              d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
     <div class="card">
       <div class="list">
         <div class="spending-header">
+          <input class="" type="checkbox" [(ngModel)]="isAllSelected" (click)="toggleAll()">
           <div style="text-align: center">Data</div>
-            <div>Tipo</div>
-            <div>Categoria</div>
-            <div style="text-align: right;">Valor</div>
-            <div>Descrição</div>
+          <div>Tipo</div>
+          <div>Categoria</div>
+          <div style="text-align: right;">Valor</div>
+          <div>Descrição</div>
         </div>
       </div>
       @for (transaction of searchResults; track transaction.id) {
         <div class="list">
           <div class="spending-list">
+            <input class="checkbox" type="checkbox" [(ngModel)]="transaction.selected"
+                   (change)="selectTransaction(transaction)">
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
             <div class="spending-item">{{ transaction.type }}</div>
             <div class="spending-item">{{ transaction.category }}</div>

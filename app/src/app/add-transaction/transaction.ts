@@ -5,6 +5,7 @@ export interface Transaction {
   value: number;
   date: string;
   description: string;
+  selected: boolean;
 }
 
 export const emptyTransaction: Transaction = {
@@ -13,5 +14,6 @@ export const emptyTransaction: Transaction = {
   category: '',
   value: 0,
   date: '',
-  description: ''
+  description: '',
+  selected: false
 }
