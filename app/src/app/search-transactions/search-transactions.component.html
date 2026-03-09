@@ -42,10 +42,8 @@
       </div>
       <div class="summary-item">
         <button class="btn" (click)="clear()">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
-               width="24px" fill="#e3e3e3">
-            <path
-              d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
           </svg>
         </button>
       </div>
@@ -54,19 +52,44 @@
     <div class="card">
       <div class="list">
         <div class="spending-header">
-          <input class="" type="checkbox" [(ngModel)]="isAllSelected" (click)="toggleAll()">
+          <div class="spending-btn">
+            <button (click)="toggleAll()">
+              @if (isAllSelected) {
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                  <path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/>
+                </svg>
+              }
+              @else {
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                  <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Z"/>
+                </svg>
+              }
+            </button>
+          </div>
           <div style="text-align: center">Data</div>
           <div>Tipo</div>
           <div>Categoria</div>
           <div style="text-align: right;">Valor</div>
           <div>Descrição</div>
+          <div style="text-align: center;">Ações</div>
         </div>
       </div>
       @for (transaction of searchResults; track transaction.id) {
         <div class="list">
           <div class="spending-list">
-            <input class="checkbox" type="checkbox" [(ngModel)]="transaction.selected"
-                   (change)="selectTransaction(transaction)">
+            <div class="spending-btn">
+              <button>
+                <input type="checkbox" [(ngModel)]="transaction.selected" (click)="selectTransaction(transaction)">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                @if (transaction.selected) {
+                    <path d="m424-312 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/>
+                }
+                @else {
+                  <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Z"/>
+                }
+                </svg>
+              </button>
+            </div>
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
             <div class="spending-item">{{ transaction.type }}</div>
             <div class="spending-item">{{ transaction.category }}</div>
@@ -74,8 +97,16 @@
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {
               <div class="spending-btn">
-                <a [routerLink]="['/transactions/edit', transaction.id]" (click)="editTransaction(transaction)" class="edit">EDITAR</a>
-                <a class="remove" (click)="removeTransaction(transaction)">REMOVER</a>
+                <button [routerLink]="['/transactions/edit', transaction.id]" (click)="editTransaction(transaction)">
+                  <svg class="edit"  xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                    <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/>
+                  </svg>
+                </button>
+                <button (click)="removeTransaction(transaction)">
+                  <svg class="delete" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                    <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+                  </svg>
+                </button>
               </div>
             }
           </div>

@@ -72,7 +72,7 @@
 .spending-header {
     display: grid;
     /* Define columns: Checkbox, Date, Type, Category, Amount, Description, Actions */
-    grid-template-columns: 30px 90px 65px 95px 120px 1fr 60px 60px;
+    grid-template-columns: 30px 90px 65px 95px 120px 1fr 60px;
     gap: 15px;
     padding: 10px 0;
     justify-items: start;
@@ -100,35 +100,44 @@
     text-overflow: ellipsis;
 }
 
-.spending-item:nth-child(2) { /* The 2th item is the date */
-    text-align: center;
-}
-.spending-item:nth-child(5) { /* The 5th item is the amount */
-    text-align: right;
-}
-
 .spending-btn {
-    display: contents;
-    font-weight: bold;
+    display: flex;
+    gap: 10px;
+}
+
+input[type=checkbox] {
+    opacity: 0;
     cursor: pointer;
-    transition: color 0.2s ease;
+    display: block;
+    position: absolute;
+    margin-left: 2px;
+    width: 20px;
+    height: 20px;
 }
 
-.spending-btn .edit {
-    text-decoration: none;
-    color: #81c784;
+.spending-btn button {
+    cursor: pointer;
+    border: 0;
+    background-color: var(--card-color);
+    fill: var(--muted-text-color);
+    padding: 0px;
 }
 
-.spending-btn .remove {
-    color: var(--highlight-red-color);
+.spending-btn button:hover {
+    fill: var(--highlight-text-color);
 }
 
-.spending-btn .edit:hover {
-    color: #a5d6a7;
+.edit {
+    fill: #81c784;
 }
-
-.spending-btn .remove:hover {
-    color: #ef9a9a;
+.delete {
+    fill: #e57373;
+}
+.edit:hover {
+    fill: #a5d6a7;;
+}
+.delete:hover {
+    fill: #ef9a9a;;
 }
 
 .no-results {
@@ -173,36 +182,6 @@
     padding: 5px;
 }
 
-input[type=checkbox] {
-    position: relative;
-    cursor: pointer;
-}
-
-input[type=checkbox]:before {
-    content: "";
-    display: block;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color:var(--tertiary-color);
-}
-
-input[type=checkbox]:checked:after {
-    content: "";
-    display: block;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-    position: absolute;
-    top: 2px;
-    left: 6px;
-}
-
-
 @media (max-width: 870px) {
     .spending-btn {
         display: flex;
@@ -220,5 +199,15 @@ input[type=checkbox]:checked:after {
     .card .list {
         border-radius: 0px;
         gap: 20px;
+    }
+
+    .spending-item:nth-child(2) { /* The 2th item is the date */
+        text-align: center;
+    }
+    .spending-item:nth-child(5) { /* The 5th item is the amount */
+        text-align: right;
+    }
+    .spending-btn {
+        margin-top: 10px;
     }
 }
