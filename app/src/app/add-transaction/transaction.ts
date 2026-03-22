@@ -1,19 +1,28 @@
+import { Category } from "../category";
+
 export interface Transaction {
-  id?: number | null;
+  id: number;
   type: string;
-  category: string;
+  category: Category;
   value: number;
   date: string;
   description: string;
   selected: boolean;
 }
 
-export const emptyTransaction: Transaction = {
-  id: null,
+export interface TransactionForm {
+  id?: number | null;
+  type: string;
+  category: string;
+  value: number;
+  date: string;
+  description: string;
+}
+
+export const emptyTransaction: TransactionForm = {
   type: '',
   category: '',
   value: 0,
   date: '',
-  description: '',
-  selected: false
+  description: ''
 }

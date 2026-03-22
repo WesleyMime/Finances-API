@@ -141,7 +141,12 @@
         <div class="spending-list">
           @for (category of spendingCategoriesMonth; track category) {
             <div class="spending-item">
-              <span class="category-name">{{ category.namePtBr }}</span>
+              <span class="category-name">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                  <path [attr.d]="category.image"/>
+                </svg>
+                {{ category.namePtBr }}
+              </span>
               <div class="category-bar-container">
                 <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
               </div>
@@ -185,7 +190,12 @@
           <div class="spending-list">
             @for (category of spendingCategories; track category) {
             <div class="spending-item">
-              <span class="category-name">{{ category.namePtBr }}</span>
+              <span class="category-name">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                  <path [attr.d]="category.image"/>
+                </svg>
+                {{ category.namePtBr }}
+              </span>
               <div class="category-bar-container">
                 <div class="category-bar" [ngStyle]="{ 'width': category.percentage }"></div>
               </div>

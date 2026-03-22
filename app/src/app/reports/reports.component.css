@@ -81,10 +81,14 @@
 }
 
 .spending-chart .category-name {
+  display: flex;
+  gap: 10px;
+  align-items: center;
   width: 120px;
   flex-shrink: 0; /* Prevent shrinking */
   font-size: 0.9em;
   color: var(--muted-text-color);
+  fill: var(--muted-text-color);
 }
 
 .spending-chart .category-bar-container {
@@ -176,17 +180,11 @@
   .report-section {
       padding: 20px;
   }
-  .spending-chart .category-name {
-    width: 100px;
-  }
   .spending-chart .category-value {
      margin-left: 0px;
   }
   .cards-grid {
       grid-template-columns: 1fr;
-  }
-  .spending-list .spending-item {
-    display: block;
   }
 }
 
@@ -196,13 +194,6 @@
   }
   .metric-value {
       font-size: 1.4em;
-  }
-  .spending-chart .category-name {
-    width: 80px;
-    margin-right: 5px;
-  }
-  .spending-chart .category-percentage {
-      margin-left: 5px;
   }
   .chart-labels {
       gap: 0px;

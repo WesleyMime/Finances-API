@@ -87,6 +87,30 @@ h1 {
     color: var(--muted-text-color);
 }
 
+.income {
+    color: var(--highlight-color);
+    border: 2px solid var(--highlight-color);
+
+}
+
+.expense {
+    color: var(--highlight-red-color);
+    border: 2px solid var(--highlight-red-color);
+}
+
+.type {
+    padding: 1px 10px;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 65px;
+}
+
+.category {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    fill: var(--text-color);
+}
 
 /* Forms  */
 .form-container {

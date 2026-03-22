@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Transaction } from './transaction';
+import { Transaction, TransactionForm } from './transaction';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class TransactionService {
 
   constructor(readonly http: HttpClient) { }
 
-  addIncome(transaction: Transaction) {
+  addIncome(transaction: TransactionForm) {
     console.log('Adding income transaction:', transaction);
 
     return this.http.post(this.API_URL + this.INCOME_ENDPOINT, transaction).pipe(
@@ -32,7 +32,7 @@ export class TransactionService {
   }
 
 
-  addExpense(transaction: Transaction) {
+  addExpense(transaction: TransactionForm) {
     console.log('Adding expense transaction:', transaction);
 
     return this.http.post(this.API_URL + this.EXPENSE_ENDPOINT, transaction).pipe(
@@ -48,14 +48,14 @@ export class TransactionService {
     );
   }
 
-  updateIncome(transaction: Transaction) {
+  updateIncome(transaction: TransactionForm) {
     console.log('Updating income:', transaction);
 
     return this.http.put(this.API_URL + this.INCOME_ENDPOINT + "/" + transaction.id, transaction).pipe(
       catchError(this.handleError)
     );
   }
-  updateExpense(transaction: Transaction) {
+  updateExpense(transaction: TransactionForm) {
     console.log('Updating expense:', transaction);
 
     return this.http.put(this.API_URL + this.EXPENSE_ENDPOINT + "/" + transaction.id, transaction).pipe(

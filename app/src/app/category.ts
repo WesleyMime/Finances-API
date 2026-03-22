@@ -1,29 +1,28 @@
 export interface Category {
   name: string;
-  namePtBr: string
+  namePtBr: string;
+  image: string
 }
 
 export const categoriesEnum: Category[] = [
-  { name: 'HEALTH', namePtBr: 'Saúde' },
-  { name: 'FOOD', namePtBr: 'Alimentação' },
-  { name: 'HOME', namePtBr: 'Casa' },
-  { name: 'TRANSPORT', namePtBr: 'Transporte' },
-  { name: 'EDUCATION', namePtBr: 'Educação' },
-  { name: 'LEISURE', namePtBr: 'Lazer' },
-  { name: 'UNFORESEEN', namePtBr: 'Imprevístos' },
-  { name: 'SERVICES', namePtBr: 'Serviços' },
-  { name: 'CLOTHES', namePtBr: 'Roupas' },
-  { name: 'OTHERS', namePtBr: 'Outros' }
+  { name: 'HEALTH', namePtBr: 'Saúde', image: "M320-120v-200H120v-320h200v-200h320v200h200v320H640v200H320Zm80-80h160v-200h200v-160H560v-200H400v200H200v160h200v200Zm80-280Z" },
+  { name: 'FOOD', namePtBr: 'Alimentação', image: "M280-80v-366q-51-14-85.5-56T160-600v-280h80v280h40v-280h80v280h40v-280h80v280q0 56-34.5 98T360-446v366h-80Zm400 0v-320H560v-280q0-83 58.5-141.5T760-880v800h-80Z" },
+  { name: 'HOME', namePtBr: 'Casa', image: "M420-280h120v-100h100v-120H540v-100H420v100H320v120h100v100ZM160-120v-480l320-240 320 240v480H160Zm80-80h480v-360L480-740 240-560v360Zm240-270Z" },
+  { name: 'TRANSPORT', namePtBr: 'Transporte', image: "M760-320q-72 0-127-45t-69-115H445l-48-80h167q5-22 13.5-42t22.5-38H348l-48-80h342l-44-120H440v-80h158q26 0 46 14.5t29 38.5l54 147h33q83 0 141.5 58.5T960-520q0 83-58.5 141.5T760-320Zm0-80q50 0 85-35t35-85q0-50-35-85t-85-35h-3l39 107-76 27-38-105q-20 17-31 41t-11 50q0 50 35 85t85 35ZM280-40q-50 0-85-35t-35-85H0v-80h191q15-15 38-27.5t51-12.5q25 0 48 10t41 30h111v-80H0v-80h80v-120H0v-80h280l120 200h80q33 0 56.5 23.5T560-320v80q0 33-23.5 56.5T480-160h-80q0 50-35 85t-85 35ZM160-400h147l-72-120h-75v120Zm120 280q17 0 28.5-11.5T320-160q0-17-11.5-28.5T280-200q-17 0-28.5 11.5T240-160q0 17 11.5 28.5T280-120Zm-40-160Z" },
+  { name: 'EDUCATION', namePtBr: 'Educação', image: "M480-120 200-272v-240L40-600l440-240 440 240v320h-80v-276l-80 44v240L480-120Zm0-332 274-148-274-148-274 148 274 148Zm0 241 200-108v-151L480-360 280-470v151l200 108Zm0-241Zm0 90Zm0 0Z" },
+  { name: 'LEISURE', namePtBr: 'Lazer', image: "m272-440 208 120 208-120-168-97v137h-80v-137l-168 97Zm168-189v-17q-44-13-72-49.5T340-780q0-58 41-99t99-41q58 0 99 41t41 99q0 48-28 84.5T520-646v17l280 161q19 11 29.5 29.5T840-398v76q0 22-10.5 40.5T800-252L520-91q-19 11-40 11t-40-11L160-252q-19-11-29.5-29.5T120-322v-76q0-22 10.5-40.5T160-468l280-161Zm0 378L200-389v67l280 162 280-162v-67L520-251q-19 11-40 11t-40-11Zm82.5-486.5Q540-755 540-780t-17.5-42.5Q505-840 480-840t-42.5 17.5Q420-805 420-780t17.5 42.5Q455-720 480-720t42.5-17.5ZM480-160Z" },
+  { name: 'UNFORESEEN', namePtBr: 'Imprevístos', image: "M40-280v-160h328L120-636v116H40v-240h40l440 242v-282h200l200 240v280H820q0 50-35 85t-85 35q-50 0-85-35t-35-85H360q0 50-35 85t-85 35q-50 0-85-35t-35-85H40Zm243 43q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm460 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17ZM600-560h216L682-720h-82v160Z" },
+  { name: 'SERVICES', namePtBr: 'Serviços', image: "M686-132 444-376q-20 8-40.5 12t-43.5 4q-100 0-170-70t-70-170q0-36 10-68.5t28-61.5l146 146 72-72-146-146q29-18 61.5-28t68.5-10q100 0 170 70t70 170q0 23-4 43.5T584-516l244 242q12 12 12 29t-12 29l-84 84q-12 12-29 12t-29-12Zm29-85 27-27-256-256q18-20 26-46.5t8-53.5q0-60-38.5-104.5T386-758l74 74q12 12 12 28t-12 28L332-500q-12 12-28 12t-28-12l-74-74q9 57 53.5 95.5T360-440q26 0 52-8t47-25l256 256ZM472-488Z" },
+  { name: 'CLOTHES', namePtBr: 'Roupas', image: "m240-522-40 22q-14 8-30 4t-24-18L66-654q-8-14-4-30t18-24l230-132h70q9 0 14.5 5.5T400-820v20q0 33 23.5 56.5T480-720q33 0 56.5-23.5T560-800v-20q0-9 5.5-14.5T580-840h70l230 132q14 8 18 24t-4 30l-80 140q-8 14-23.5 17.5T760-501l-40-20v361q0 17-11.5 28.5T680-120H280q-17 0-28.5-11.5T240-160v-362Zm80-134v456h320v-456l124 68 42-70-172-100q-15 51-56.5 84.5T480-640q-56 0-97.5-33.5T326-758L154-658l42 70 124-68Zm160 177Z" },
+  { name: 'OTHERS', namePtBr: 'Outros', image: "m234-480-12-60q-12-5-22.5-10.5T178-564l-58 18-40-68 46-40q-2-13-2-26t2-26l-46-40 40-68 58 18q11-8 21.5-13.5T222-820l12-60h80l12 60q12 5 22.5 10.5T370-796l58-18 40 68-46 40q2 13 2 26t-2 26l46 40-40 68-58-18q-11 8-21.5 13.5T326-540l-12 60h-80Zm96.5-143.5Q354-647 354-680t-23.5-56.5Q307-760 274-760t-56.5 23.5Q194-713 194-680t23.5 56.5Q241-600 274-600t56.5-23.5ZM592-40l-18-84q-17-6-31.5-14.5T514-158l-80 26-56-96 64-56q-2-18-2-36t2-36l-64-56 56-96 80 26q14-11 28.5-19.5T574-516l18-84h112l18 84q17 6 31.5 14.5T782-482l80-26 56 96-64 56q2 18 2 36t-2 36l64 56-56 96-80-26q-14 11-28.5 19.5T722-124l-18 84H592Zm56-160q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Z" }
 ];
 
-export function getCategoryNameInPortuguese(categoryName: string) {
+export function getCategoryByNameInEnglish(categoryName: string): Category {
   let result = categoriesEnum.filter(category => category.name == categoryName);
-  if (result.length == 0) return categoryName;
-  return result[0].namePtBr;
+  return result[0];
 }
 
-export function getCategoryNameInEnglish(categoryName: string) {
+export function getCategoryByNameInPortuguese(categoryName: string): Category {
   let result = categoriesEnum.filter(category => category.namePtBr == categoryName);
-  if (result.length == 0) return categoryName;
-  return result[0].name;
+  return result[0];
 }

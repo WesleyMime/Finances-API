@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { emptyTransaction, Transaction } from '../transaction';
+import { emptyTransaction, Transaction, TransactionForm } from '../transaction';
 import { AiService } from '../../reports/ai.service';
 import { TransactionService } from '../transaction.service';
 import { ChatResponse } from '../../reports/chat-response';
@@ -15,7 +15,7 @@ import { LoadingValueComponent } from '../../loading-value/loading-value.compone
   styleUrl: './add-transaction-by-ai.component.css'
 })
 export class AddTransactionByAiComponent {
-  transaction: Transaction = JSON.parse(JSON.stringify(emptyTransaction));
+  transaction: TransactionForm = JSON.parse(JSON.stringify(emptyTransaction));
 
   transactionPrompt: Transaction = JSON.parse(JSON.stringify(emptyTransaction));
   successMessageIA: string | null = null;

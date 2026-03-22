@@ -164,9 +164,10 @@
 .spending-list,
 .spending-header {
     display: grid;
-    /* Define columns: Date, Type, Amount, Description  */
-    grid-template-columns: 90px 65px 1fr 1fr;
+    /* Define columns: Date, Type, Category, Amount, Description  */
+    grid-template-columns: 90px 90px 130px 1fr 1fr;
     gap: 15px;
+    align-items: center;
 }
 
 .spending-header {
@@ -183,7 +184,7 @@
 .spending-item:nth-child(1) { /* The 1th item is the date */
     text-align: center;
 }
-.spending-item:nth-child(4) { /* The 4th item is the amount */
+.spending-item:nth-child(5) { /* The 4th item is the amount */
     text-align: right;
 }
 
@@ -268,6 +269,10 @@
 
   .donut {
     max-width: 60%;
+  }
+
+  .spending-item {
+      margin-bottom: 3px;
   }
 }
 

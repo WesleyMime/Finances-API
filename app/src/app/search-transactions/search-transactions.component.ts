@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../header/header.component";
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { Transaction } from '../add-transaction/transaction';
-import { categoriesEnum, getCategoryNameInPortuguese } from '../category';
+import { categoriesEnum, getCategoryByNameInEnglish } from '../category';
 import { SearchService } from './search.service';
 import { RemoveTransactionComponent } from "./remove-transaction/remove-transaction.component";
 import { TransactionService } from '../add-transaction/transaction.service';
@@ -12,7 +12,7 @@ import { Scroll } from './scroll';
 
 @Component({
   selector: 'app-search-transactions',
-  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent, RouterLink],
+  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent, RouterLink, NgClass],
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
@@ -121,7 +121,7 @@ export class SearchTransactionsComponent implements AfterViewInit{
         next: (result: Scroll) => {
           result.data.forEach((transaction) => {
             transaction.type = "Despesa";
-            transaction.category = getCategoryNameInPortuguese(transaction.category);
+            transaction.category = getCategoryByNameInEnglish(transaction.category.toString());
             transaction.value = transaction.value * -1;
           });
           this.searchResults.push(...result.data);
@@ -144,7 +144,7 @@ export class SearchTransactionsComponent implements AfterViewInit{
         next: (result: Transaction[]) => {
           result.forEach((transaction) => {
             transaction.type = "Despesa";
-            transaction.category = getCategoryNameInPortuguese(transaction.category);
+            transaction.category = getCategoryByNameInEnglish(transaction.category.toString());
             transaction.value = transaction.value * -1;
           });
           let filteredResults = this.filterByDescription(result);

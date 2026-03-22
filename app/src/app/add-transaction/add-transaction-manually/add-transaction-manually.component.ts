@@ -2,9 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from "../../header/header.component";
 import { TransactionService } from './../transaction.service';
-import { emptyTransaction, Transaction } from '../transaction';
+import { emptyTransaction, Transaction, TransactionForm } from '../transaction';
 import { Router } from '@angular/router';
-import { categoriesEnum, getCategoryNameInEnglish, getCategoryNameInPortuguese } from '../../category';
+import { categoriesEnum, getCategoryByNameInEnglish, getCategoryByNameInPortuguese } from '../../category';
 import { isExpense, isIncome, transactionTypeEnum } from '../transaction-types';
 import { LoadingValueComponent } from '../../loading-value/loading-value.component';
 
@@ -16,7 +16,7 @@ import { LoadingValueComponent } from '../../loading-value/loading-value.compone
 })
 export class AddTransactionManuallyComponent implements OnInit {
   isEditMode = false;
-  transaction: Transaction = JSON.parse(JSON.stringify(emptyTransaction)); // Copy without reference
+  transaction: TransactionForm = JSON.parse(JSON.stringify(emptyTransaction)); // Copy without reference
 
   successMessage: string | null = null;
   errorMessage: string | null = null;
@@ -31,7 +31,7 @@ export class AddTransactionManuallyComponent implements OnInit {
   ngOnInit() {
     const transaction = window.history.state.transaction;
     if (transaction) {
-      transaction.category = getCategoryNameInPortuguese(transaction.category);
+      transaction.category = getCategoryByNameInEnglish(transaction.category.name).namePtBr;
       this.transaction = transaction;
       this.isEditMode = true;
     }
@@ -58,7 +58,8 @@ export class AddTransactionManuallyComponent implements OnInit {
   }
 
   private addExpense() {
-    this.transaction.category = getCategoryNameInEnglish(this.transaction.category);
+    debugger
+    this.transaction.category = getCategoryByNameInPortuguese(this.transaction.category.toString()).name;
     this.transactionService.addExpense(this.transaction).subscribe({
       next: (response) => {
         this.successMessage = 'Despesa adicionada com sucesso!';
@@ -75,7 +76,8 @@ export class AddTransactionManuallyComponent implements OnInit {
   }
 
   private updateExpense() {
-    this.transaction.category = getCategoryNameInEnglish(this.transaction.category);
+    debugger
+    this.transaction.category = getCategoryByNameInPortuguese(this.transaction.category.toString()).name;
     this.transactionService.updateExpense(this.transaction).subscribe({
       next: async (response) => {
         this.successMessage = 'Despesa editada com sucesso!';
@@ -131,7 +133,7 @@ export class AddTransactionManuallyComponent implements OnInit {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 
-  valid(transaction: Transaction) {
+  valid(transaction: TransactionForm) {
     if (!transaction.type || !transaction.value || !transaction.date || !transaction.description) {
       this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
       this.successMessage = null;
@@ -148,9 +150,5 @@ export class AddTransactionManuallyComponent implements OnInit {
       return false;
     }
     return true;
-  }
-
-  getCategoryNameInPortuguese(categoryName: string) {
-    return getCategoryNameInPortuguese(categoryName);
   }
 }

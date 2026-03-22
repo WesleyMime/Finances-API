@@ -91,8 +91,18 @@
               </button>
             </div>
             <div class="spending-item">{{ transaction.date | date: 'dd/MM/yyyy'}}</div>
-            <div class="spending-item">{{ transaction.type }}</div>
-            <div class="spending-item">{{ transaction.category }}</div>
+            <div class="spending-item type" [ngClass]="transaction.type == 'Receita' ? 'income' : 'expense'">
+              {{ transaction.type }}
+            </div>
+            @if (transaction.category) {
+              <div class="spending-item category">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                  <path [attr.d]="transaction.category.image"/>                  
+                </svg> {{ transaction.category.namePtBr }}
+              </div>
+            } @else {
+              <div></div>
+            }
             <div class="spending-item">{{ transaction.value | currency: 'BRL'}}</div>
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {

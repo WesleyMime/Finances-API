@@ -13,6 +13,7 @@ import { UtilsService } from '../utils/utils.service';
 import { DateService } from '../utils/date.service';
 import { DrawGraphService } from '../utils/draw-graph.service';
 import { Transaction } from '../add-transaction/transaction';
+import { getCategoryByNameInEnglish } from '../category';
 
 @Component({
   selector: 'app-dashboard',
@@ -314,6 +315,7 @@ export class DashboardComponent implements OnInit {
         result.expense.forEach((expense: Transaction) => {
           expense.type = 'Despesa';
           expense.value = expense.value * -1;
+          expense.category = getCategoryByNameInEnglish(expense.category.toString());
         });
         transactions.push(...result.expense);
 
