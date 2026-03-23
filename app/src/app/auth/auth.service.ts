@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
 import { environment } from '../environments/environment';
 import { ClientService } from '../client.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class AuthService {
   private readonly EXPIRATION_MINUTES = 30;
 
   clientService = inject(ClientService);
+  cookieService = inject(CookieService);
 
   constructor(readonly http: HttpClient, readonly router: Router) { }
 
@@ -37,15 +39,14 @@ export class AuthService {
   }
 
   setCookie(name: string, value: string) {
-    let date = new Date();
-    let minutesInMilliseconds = this.EXPIRATION_MINUTES * 60 * 1000;
-    date.setTime(date.getTime() + minutesInMilliseconds);
-
-    localStorage.setItem(name, value);
+    const expires = new Date(Date.now() + this.EXPIRATION_MINUTES * 60 * 1000);
+    this.cookieService.set(name, value, { expires, path: '/', sameSite: 'Strict', secure: location && location.protocol === 'https:' });
   }
 
   getAuthCookie(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    if (this.cookieService.check(this.TOKEN_KEY))
+      return this.cookieService.get(this.TOKEN_KEY);
+    return null;
   }
 
   isLoggedIn(): boolean {
@@ -64,7 +65,7 @@ export class AuthService {
 
   logout(): void {
     this.clientService.removeClient();
-    localStorage.removeItem(this.TOKEN_KEY);
+    this.cookieService.delete(this.TOKEN_KEY, '/');
     this.router.navigate(['/']);
   }
 
