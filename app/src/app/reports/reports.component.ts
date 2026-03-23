@@ -81,6 +81,7 @@ export class ReportsComponent implements OnInit {
   dateService = inject(DateService);
 
   ngOnInit() {
+    this.hidden = this.toggleService.isHidden;
     let lastMonthDate = this.dateService.removeMonths(this.currentDate, 1);
     let lastLastMonthDate = this.dateService.removeMonths(this.currentDate, 2);
 

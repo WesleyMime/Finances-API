@@ -9,10 +9,12 @@ import { RemoveTransactionComponent } from "./remove-transaction/remove-transact
 import { TransactionService } from '../add-transaction/transaction.service';
 import { Router, RouterLink } from '@angular/router';
 import { Scroll } from './scroll';
+import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
+import { HideValueComponent } from '../hide-value/hide-value.component';
 
 @Component({
   selector: 'app-search-transactions',
-  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent, RouterLink, NgClass],
+  imports: [FormsModule, HeaderComponent, DatePipe, CurrencyPipe, RemoveTransactionComponent, RouterLink, NgClass, HideValueComponent],
   templateUrl: './search-transactions.component.html',
   styleUrls: ['./search-transactions.component.css']
 })
@@ -31,9 +33,14 @@ export class SearchTransactionsComponent implements AfterViewInit{
 
   categories = categoriesEnum;
 
+  hiddenValue = '*****';
+  hidden = false;
+  opacity: number = 1;
+
   router = inject(Router);
   searchService = inject(SearchService);
   transactionService = inject(TransactionService);
+  toggleService = inject(ToggleVisibilityService);
 
   transactionPendingRemoval: Transaction | null = null;
   searching = false;
@@ -244,6 +251,24 @@ export class SearchTransactionsComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.addScrollListener();
+    this.hidden = this.toggleService.isHidden;
+  }
+
+  toggleValues() {
+    this.hidden = this.toggleService.isHidden;
+    this.fadeIn();
+  }
+
+  fadeIn(): void {
+    this.opacity = 0;
+    const step = () => {
+      this.opacity += 0.015;
+      if (this.opacity < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
   }
 
   addScrollListener() {

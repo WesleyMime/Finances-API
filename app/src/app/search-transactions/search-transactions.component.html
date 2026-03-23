@@ -1,5 +1,6 @@
 <app-header></app-header>
 <main class="content">
+  <app-hide-value (toggle)="toggleValues()"></app-hide-value>
   <section class="page-overview">
       <h1>Pesquisar Transações</h1>
       <p class="subtitle">Filtre transações por data e/ou descrição para encontrar receitas e despesas específicas.</p>
@@ -28,17 +29,19 @@
     </div>
     @if (selectedTransactions.length > 0) {
     <div #totalSummaryContainer class="total-summary">
-      <div class="summary-item">
+      <app-hide-value (toggle)="toggleValues()"></app-hide-value>
+      <div class="summary-item" [style.opacity]="opacity">
         <span class="card-label">Receitas:</span>
-        <span class="card-value">{{ totalIncomeSelected | currency: 'BRL'}}</span>
+        <span class="card-value">{{ hidden ? hiddenValue : (totalIncomeSelected | currency: 'BRL') }}</span>
       </div>
-      <div class="summary-item">
+      <div class="summary-item" [style.opacity]="opacity">
         <span class="card-label">Despesas:</span>
-        <span class="card-value">{{ totalExpenseSelected | currency: 'BRL'}}</span>
+        <span class="card-value">{{ hidden ? hiddenValue : (totalExpenseSelected | currency: 'BRL') }}</span>
       </div>
-      <div class="summary-item">
+      <div class="summary-item" [style.opacity]="opacity">
         <span class="card-label">Saldo:</span>
-        <span class="card-value">{{ totalValueSelected | currency: 'BRL'}}</span>
+        <span
+          class="card-value">{{ hidden ? hiddenValue : (totalValueSelected | currency: 'BRL') }}</span>
       </div>
       <div class="summary-item">
         <button class="btn" (click)="clear()">
@@ -97,13 +100,15 @@
             @if (transaction.category) {
               <div class="spending-item category">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-                  <path [attr.d]="transaction.category.image"/>                  
+                  <path [attr.d]="transaction.category.image"/>
                 </svg> {{ transaction.category.namePtBr }}
               </div>
             } @else {
               <div></div>
             }
-            <div class="spending-item">{{ transaction.value | currency: 'BRL'}}</div>
+            <div class="spending-item" [style.opacity]="opacity">{{ hidden ? hiddenValue :
+              (transaction.value | currency: 'BRL') }}
+            </div>
             <div class="spending-item">{{ transaction.description }}</div>
             @if (transaction !== transactionPendingRemoval) {
               <div class="spending-btn">

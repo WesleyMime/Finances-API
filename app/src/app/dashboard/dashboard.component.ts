@@ -96,6 +96,7 @@ export class DashboardComponent implements OnInit {
   dateService = inject(DateService);
 
   ngOnInit(): void {
+    this.hidden = this.toggleService.isHidden;
     this.updateTotalNetworth();
 
     let balanceLastFiveYearsList: number[] = [];
