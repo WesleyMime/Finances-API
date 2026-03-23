@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ILoginResponse, ILoginUser, IRegisterUser } from './user.model';
 import { environment } from '../environments/environment';
+import { ClientService } from '../client.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,8 @@ export class AuthService {
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly EXPIRATION_MINUTES = 30;
+
+  clientService = inject(ClientService);
 
   constructor(readonly http: HttpClient, readonly router: Router) { }
 
@@ -60,6 +63,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.clientService.removeClient();
     localStorage.removeItem(this.TOKEN_KEY);
     this.router.navigate(['/']);
   }

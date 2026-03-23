@@ -1,8 +1,8 @@
 import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { Client } from '../../client';
-import { currentClient } from '../../auth/auth.guard';
 import { Router } from '@angular/router';
+import { ClientService } from '../../client.service';
 
 @Component({
   selector: 'app-profile-menu',
@@ -12,15 +12,29 @@ import { Router } from '@angular/router';
 export class ProfileMenuComponent {
   isOpen = false;
   client: Client | undefined;
+  initial: string = '';
 
+  clientService = inject(ClientService);
   authService = inject(AuthService);
 
   // ElementRef is needed to check if a click happened inside or outside the component
-  constructor(readonly elementRef: ElementRef, readonly router: Router) {}
+  constructor(readonly elementRef: ElementRef, readonly router: Router) {
+    if (this.client) {
+      this.initial = this.client.name.charAt(0);
+      return;
+    }
+
+    this.clientService.getClient().subscribe({
+      next: (result: Client) => {
+        this.client = result;
+        this.initial = result.name.charAt(0);
+      },
+      error: (err) => console.error('Failed to load client for profile menu', err)
+    });
+  }
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
-    this.client = currentClient;
   }
 
   // Listen for clicks anywhere on the document
