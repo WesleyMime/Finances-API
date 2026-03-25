@@ -17,18 +17,13 @@ footer {
   text-decoration: underline;
 }
 
-/* Optional: Responsive adjustments */
 @media (max-width: 600px) {
-    footer {
-        padding: 20px;
-    }
+  .footer-links a {
+    margin: 0 5px;
+  }
 
-    .footer-links a {
-        margin: 0 5px; /* Reduce space between links on small screens */
-    }
-
-    .footer-content {
-          flex-direction: column;
-          gap: 8px;
-    }
+  .footer-content {
+    flex-direction: column;
+    gap: 8px;
+  }
 }

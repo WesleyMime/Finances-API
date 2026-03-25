@@ -10,6 +10,7 @@ interface NavItem {
   label: string;
   link: string;
   active?: boolean;
+  image: string;
 }
 
 interface HeaderConfig {
@@ -38,10 +39,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showProfileActions: boolean = false;
 
   appNavItems: NavItem[] = [
-    { label: 'Dashboard', link: '/dashboard' },
-    { label: 'Transação', link: '/add-transaction' },
-    { label: 'Relatório', link: '/reports' },
-    { label: 'Pesquisar', link: '/search' }
+    { label: 'Dashboard', link: '/dashboard', image: "M600-160v-280h280v280H600ZM440-520v-280h440v280H440ZM80-160v-280h440v280H80Zm0-360v-280h280v280H80Zm440-80h280v-120H520v120ZM160-240h280v-120H160v120Zm520 0h120v-120H680v120ZM160-600h120v-120H160v120Zm360 0Zm-80 240Zm240 0ZM280-600Z" },
+    { label: 'Transação', link: '/add-transaction', image: "M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v268q-19-9-39-15.5t-41-9.5v-243H200v560h242q3 22 9.5 42t15.5 38H200Zm0-120v40-560 243-3 280Zm80-40h163q3-21 9.5-41t14.5-39H280v80Zm0-160h244q32-30 71.5-50t84.5-27v-3H280v80Zm0-160h400v-80H280v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40Zm-20-80h40v-100h100v-40H740v-100h-40v100H600v40h100v100Z" },
+    { label: 'Relatório', link: '/reports', image: "M280-280h80v-200h-80v200Zm320 0h80v-400h-80v400Zm-160 0h80v-120h-80v120Zm0-200h80v-80h-80v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" },
+    { label: 'Pesquisar', link: '/search', image: "M400-320q100 0 170-70t70-170q0-100-70-170t-170-70q-100 0-170 70t-70 170q0 100 70 170t170 70Zm-40-120v-280h80v280h-80Zm-140 0v-200h80v200h-80Zm280 0v-160h80v160h-80ZM824-80 597-307q-41 32-91 49.5T400-240q-134 0-227-93T80-560q0-134 93-227t227-93q134 0 227 93t93 227q0 56-17.5 106T653-363l227 227-56 56Z" }
   ];
 
   // Define header states for different route patterns.

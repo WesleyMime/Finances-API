@@ -157,7 +157,7 @@ input[type=checkbox] {
 
 .total-summary {
     position: sticky;
-    top: 0;
+    top: var(--header-height);
     z-index: 100;
     width: calc(100vw - 60px);
     max-width: 1200px;
@@ -167,6 +167,7 @@ input[type=checkbox] {
     justify-content: space-around;
     border-radius: 8px;
     margin-bottom: 30px;
+    font-size: 0.8em;
 }
 
 .summary-item {

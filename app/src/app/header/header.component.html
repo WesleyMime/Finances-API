@@ -9,6 +9,9 @@
       <ul>
         @for (item of appNavItems; track item) {
           <li>
+            <svg class="category" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+              <path [attr.d]="item.image"/>
+            </svg>
             <!-- Bind active class based on the item.active property managed in TS -->
             <a [routerLink]="item.link" [class.active]="item.active">{{ item.label }}</a>
           </li>

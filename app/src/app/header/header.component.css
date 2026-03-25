@@ -1,4 +1,8 @@
 .app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,6 +10,8 @@
   background-color: var(--card-color);
   border-bottom: 1px solid var(--tertiary-color);
   color: var(--text-color);
+  z-index: 1000;
+  height: 30px;
 }
 
 .logo-container {
@@ -29,13 +35,21 @@
   font-weight: bold;
   color: #e2e8f0;
 }
+.main-nav {
+  display: flex;
+  gap: 20px;
+}
 
 .main-nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
-  gap: 25px;
+  gap: 20px;
+}
+
+.main-nav svg {
+  display: none;
 }
 
 .main-nav a {
@@ -94,14 +108,41 @@
 }
 
 @media (max-width: 640px) {
+  .main-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-color);
+    border-top: 1px solid var(--tertiary-color);
+    padding: 10px 0;
+    z-index: 1000;
+    height: 65px;
+  }
+
   .main-nav ul {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    gap: 0px;
+  }
+
+  .main-nav li {
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
   }
+
+  .main-nav svg{
+    display: flex;
+  }
+
 }
 
-@media (max-width: 480px) {
+@media (max-width: 490px) {
   .app-name {
     display: none;
   }
@@ -110,11 +151,6 @@
     min-width: initial;
     justify-content: space-between;
     align-content: stretch;
-  }
-  .main-nav ul {
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
   }
 }
 

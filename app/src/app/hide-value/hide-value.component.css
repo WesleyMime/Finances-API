@@ -19,10 +19,3 @@
     top: 100px;
   }
 }
-
-@media (max-width: 480px) {
-  .toggle-icon {
-    top: 100px;
-    right: 18px;
-  }
-}

@@ -9,11 +9,12 @@
   --highlight-color: #48bb78;
   --highlight-red-color: #fc8181;
   --card-color: #1a202c;
+  --header-height: 60px;
 }
 
 body {
   margin: 0;
-  padding: 0;
+  padding-top: var(--header-height);
   font-family: sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
