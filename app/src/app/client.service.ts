@@ -39,6 +39,13 @@ export class ClientService {
     );
   }
 
+  deleteClient(): Observable<any> {
+    return this.http.delete(this.API_URL + this.CLIENT_ENDPOINT).pipe(
+      tap(result => this.client = result),
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Falha na requisição, tente novamente mais tarde.';
     if (error.status == 422) {

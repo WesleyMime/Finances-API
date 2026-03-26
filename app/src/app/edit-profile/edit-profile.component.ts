@@ -12,22 +12,24 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./edit-profile.component.css']
 })
 export class EditProfileComponent implements OnInit{
-  
+
   passwordVisible: boolean = false;
   clientService = inject(ClientService);
   authService = inject(AuthService);
-  
+
   errorMessageName: string | undefined;
   errorMessageEmail: string | undefined;
   errorMessagePassword: string | undefined;
   successMessageName: string | undefined;
   successMessageEmail: string | undefined;
   successMessagePassword: string | undefined;
-  
+
+  pendingRemoval: boolean = false;
+
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
-  
+
   ngOnInit(): void {
     this.clientService.getClient().subscribe((result) => {
       this.client = result;
@@ -80,7 +82,7 @@ export class EditProfileComponent implements OnInit{
       this.errorMessagePassword = 'Senha atual é obrigatória!';
       return;
     }
-      
+
     this.authService.login({email: this.client.email, password: this.currentPassword}).subscribe({
       next: () => {
         this.clientService.patchClient({password: this.newPassword}).subscribe({
@@ -97,6 +99,26 @@ export class EditProfileComponent implements OnInit{
       error: () => {
         this.successMessagePassword = undefined;
         this.errorMessagePassword = 'Senha atual incorreta';
+      }
+    });
+  }
+
+  removeAccount() {
+    this.pendingRemoval = true;
+  }
+
+  cancelRemoval() {
+    this.pendingRemoval = false;
+  }
+
+  confirmRemoval() {
+    this.clientService.deleteClient().subscribe({
+      next: () => {
+        this.authService.logout();
+      },
+      error: (error: Error) => {
+        this.pendingRemoval = false;
+        alert('Erro ao remover conta: ' + error.message);
       }
     });
   }

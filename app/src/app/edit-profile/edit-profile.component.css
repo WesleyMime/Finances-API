@@ -43,3 +43,11 @@
   font-size: 1.1em; 
   user-select: none; /* Prevent text selection on icon */
 }
+
+.danger-text {
+  color: var(--highlight-red-color);
+}
+
+.danger-button {
+  background-color: var(--highlight-red-color);
+}

@@ -6,7 +6,7 @@
   right: 38px;
   border: none;
   background-color: unset;
-  z-index: 1000;
+  z-index: 500;
 }
 
 @media (min-width: 1920px) {

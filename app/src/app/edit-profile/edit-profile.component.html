@@ -92,5 +92,23 @@
         }
       </div>
     </div>
+    <div class="form-group">
+      <h3>Excluir Conta</h3>
+      <p class="gray">Excluir sua conta é uma ação permanente e irreversível. Todos os dados associados à sua conta serão apagados.</p>
+      <div>
+        @if (!pendingRemoval) {
+          <button class="btn secondary animate-fade-in" (click)="removeAccount()">Excluir Conta</button>
+        }
+        @if (pendingRemoval) {
+          <div class="animate-slide-in-down">
+            <p class="danger-text">Tem certeza que deseja excluir sua conta? Esta ação é irreversível.</p>
+            <div class="form-action">
+              <button class="btn danger-button" (click)="confirmRemoval()">Excluir Conta</button>
+              <button class="btn primary" (click)="cancelRemoval()">Cancelar</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
   </div>
 </main>
