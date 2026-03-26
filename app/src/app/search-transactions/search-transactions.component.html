@@ -1,6 +1,6 @@
 <app-header></app-header>
+<app-hide-value (toggle)="toggleValues()"></app-hide-value>
 <main class="content">
-  <app-hide-value (toggle)="toggleValues()"></app-hide-value>
   <section class="page-overview">
       <h1>Pesquisar Transações</h1>
       <p class="subtitle">Filtre transações por data e/ou descrição para encontrar receitas e despesas específicas.</p>
@@ -79,7 +79,7 @@
       </div>
       @for (transaction of searchResults; track transaction.id) {
         <div class="list">
-          <div class="spending-list">
+          <div class="spending-list animate-stagger">
             <div class="spending-btn">
               <button>
                 <input type="checkbox" [(ngModel)]="transaction.selected" (click)="selectTransaction(transaction)">
