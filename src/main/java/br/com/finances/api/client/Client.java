@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,12 +23,23 @@ public class Client implements UserDetails{
 
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+
 	@NotBlank
-	@Size(min = 3, max = 255)
+	@Size(min = 3)
+	@ColumnTransformer(
+			read = "pgp_sym_decrypt(name::bytea, current_setting('encrypt.key'))",
+			write = "pgp_sym_encrypt(?, current_setting('encrypt.key'))"
+	)
 	private String name;
+
 	@NotBlank
 	@Email
+	@ColumnTransformer(
+			read = "pgp_sym_decrypt(email::bytea, current_setting('encrypt.key'))",
+			write = "pgp_sym_encrypt(?, current_setting('encrypt.key'))"
+	)
 	private String email;
+
 	@NotBlank
 	@Size(min = 8)
 	private String password;
@@ -66,6 +78,10 @@ public class Client implements UserDetails{
 
 	@Override
 	public String getUsername() {
+		return this.getEmail();
+	}
+
+	public String getEmail() {
 		return email;
 	}
 

@@ -2,6 +2,7 @@ package br.com.finances.api.generic;
 
 import br.com.finances.api.client.Client;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +15,10 @@ public abstract class GenericModel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@ColumnTransformer(
+			read = "pgp_sym_decrypt(description::bytea, current_setting('encrypt.key'))",
+			write = "pgp_sym_encrypt(?, current_setting('encrypt.key'))"
+	)
 	private String description;
 
 	private BigDecimal value;
