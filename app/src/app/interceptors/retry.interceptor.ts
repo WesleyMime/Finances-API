@@ -17,7 +17,7 @@ export const retryInterceptor: HttpInterceptorFn = (req, next) => {
       delay: (error: { status: any; statusCode: any; }, retryCount: number) => {        
         // If error is a client error (4xx except 429 Too Many Requests), do not retry
         const status = error.status as number;        
-        if (status >= 400 && status < 500 && status !== 429 && status !== 404)
+        if (status >= 400 && status < 500 && status !== 429)
           return throwError(() => error);
 
         // exponential backoff (2^retryCount * base)
