@@ -58,7 +58,8 @@ export class AddTransactionManuallyComponent implements OnInit {
   }
 
   private addExpense() {
-    this.transaction.category = getCategoryByNameInPortuguese(this.transaction.category.toString()).name;
+    let categoryInPortuguese = this.transaction.category.toString();
+    this.transaction.category = getCategoryByNameInPortuguese(categoryInPortuguese).name;
     this.transactionService.addExpense(this.transaction).subscribe({
       next: (response) => {
         this.successMessage = 'Despesa adicionada com sucesso!';
@@ -72,6 +73,8 @@ export class AddTransactionManuallyComponent implements OnInit {
         this.isLoading = false;
       }
     });
+    // Return to portuguese to show in form
+    this.transaction.category = categoryInPortuguese;
   }
 
   private updateExpense() {
