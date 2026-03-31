@@ -58,7 +58,6 @@ export class AddTransactionManuallyComponent implements OnInit {
   }
 
   private addExpense() {
-    debugger
     this.transaction.category = getCategoryByNameInPortuguese(this.transaction.category.toString()).name;
     this.transactionService.addExpense(this.transaction).subscribe({
       next: (response) => {

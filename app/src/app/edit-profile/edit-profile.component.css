@@ -1,8 +1,13 @@
+h1 {
+  padding-bottom: 10px;
+}
+
 .form-group {
     padding-bottom: 10px;
     border-bottom: 1px solid var(--tertiary-color);
     display: grid;
     gap: 10px;
+    overflow-wrap: anywhere;
 }
 
 .form-group h3 {
@@ -18,7 +23,10 @@
   flex-direction: row-reverse;
   justify-content: space-between;
   align-items: center;
+}
 
+.server-success {
+  text-align: center;
 }
 
 .server-error {
@@ -50,4 +58,12 @@
 
 .danger-button {
   background-color: var(--highlight-red-color);
+}
+
+@media (max-width: 480px) {  
+  .form-action {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
 }

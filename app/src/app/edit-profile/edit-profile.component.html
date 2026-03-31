@@ -9,15 +9,17 @@
         type="text"
         id="fullName"
         placeholder="Nome"
+        minlength="3"
+        maxlength="50"
         [(ngModel)]="form.name"
       />
       <div class="form-action">
         <button class="btn secondary" (click)="saveFullName()">Salvar Nome</button>
         @if (errorMessageName) {
-        <p class="server-error">{{ errorMessageName }}</p>
+        <p class="server-error animate-slide-in-down">{{ errorMessageName }}</p>
         }
         @if (successMessageName) {
-        <p class="server-success">{{ successMessageName }}</p>
+        <p class="server-success animate-slide-in-down">{{ successMessageName }}</p>
         }
       </div>
     </div>
@@ -28,15 +30,16 @@
         type="email"
         id="emailAddress"
         placeholder="Email"
+          maxlength="50"
         [(ngModel)]="form.email"
       />
       <div class="form-action">
         <button class="btn secondary" (click)="saveEmailAddress()">Salvar Email</button>
         @if (errorMessageEmail) {
-        <p class="server-error">{{ errorMessageEmail }}</p>
+        <p class="server-error animate-slide-in-down">{{ errorMessageEmail }}</p>
         }
         @if (successMessageEmail) {
-        <p class="server-success">{{ successMessageEmail }}</p>
+        <p class="server-success animate-slide-in-down">{{ successMessageEmail }}</p>
         }
       </div>
     </div>
@@ -85,10 +88,10 @@
       <div class="form-action">
         <button class="btn secondary" (click)="savePassword()">Salvar Senha</button>
         @if (errorMessagePassword) {
-        <p class="server-error">{{ errorMessagePassword }}</p>
+        <p class="server-error animate-slide-in-down">{{ errorMessagePassword }}</p>
         }
         @if (successMessagePassword) {
-        <p class="server-success">{{ successMessagePassword }}</p>
+        <p class="server-success animate-slide-in-down">{{ successMessagePassword }}</p>
         }
       </div>
     </div>
