@@ -10,29 +10,24 @@
   <section class="features-section">
     <h2>Features</h2>
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520ZM320-620h200v-60H320v60ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Zm45-60h115v-80h200v80h115l63-210 102-35v-175h-52L640-728q1-25 6.5-48.5T658-824q-38 10-72 29.5T534-740H300q-66.29 0-113.14 46.86Q140-646.29 140-580q0 103.16 29 201.58Q198-280 225-180Zm255-322Z"/></svg>
-        </div>
-        <div class="feature-text">Ferramentas de Orçamento</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M120-120v-76l60-60v136h-60Zm165 0v-236l60-60v296h-60Zm165 0v-296l60 61v235h-60Zm165 0v-235l60-60v295h-60Zm165 0v-396l60-60v456h-60ZM120-356v-85l280-278 160 160 280-281v85L560-474 400-634 120-356Z"/></svg>
-        </div>
-        <div class="feature-text">Cálculo de Investimentos <br> WIP</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M284-277h60v-205h-60v205Zm332 0h60v-420h-60v420Zm-166 0h60v-118h-60v118Zm0-205h60v-60h-60v60ZM180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h600v-600H180v600Zm0-600v600-600Z"/></svg>
-        </div>
-        <div class="feature-text">Relatórios Financeiros</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M400.06-300Q508-300 584.5-376.13 661-452.25 661-561q0-107.92-76.5-183.46T400.06-820q-107.94 0-183.5 75.54T141-561q0 108.75 75.56 184.87Q292.12-300 400.06-300ZM371-448v-267h60v267h-60Zm-145 0v-184h60v184h-60Zm290 0v-143h60v143h-60ZM838-80 605-314q-42 35-94.24 54.5Q458.51-240 400-240q-133 0-226-93.5T81-560.7q0-133.71 92.8-226.5Q266.59-880 400.3-880q133.7 0 227.2 93T721-561q0 58.51-19.5 110.76Q682-398 647-356l233 233-42 43Z"/></svg>        </div>
-        <div class="feature-text">Análise por IA <br></div>
-      </div>
+      @for (feature of features; track feature.title; let i = $index) {
+        <button class="feature-card" (click)="toggleFeature(i)">
+          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3">
+            <path [attr.d]="feature.iconSvg"/>
+          </svg>
+          <h3 class="feature-text">{{ feature.title }}</h3>
+          @if (feature.open) {
+          <p class="feature-description animate-slide-in-down" [id]="'desc-' + i">
+            {{ feature.description }}
+          </p>
+          }
+          <span class="arrow-icon" [class.open]="feature.open">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 10l5 5 5-5" stroke="#b8c0cc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+      }
     </div>
   </section>
 </main>
