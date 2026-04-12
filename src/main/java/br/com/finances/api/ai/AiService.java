@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 @Service
 public class AiService {
@@ -17,7 +18,8 @@ public class AiService {
 	private static final String INITIAL_PROMPT = """
 			You are a financial advisor and you should give responses direct responses, without saying hello,
 			repeating the prompt or explaining what you going to analyze, no need to offer help, using less than
-			500 characters, in portuguese and in a friendly and encouraging tone.
+			1000 characters, format only with bold and line breaks, don't use emotes, in Portuguese,
+			in a friendly and encouraging tone for people that may not have a lot of financial knowledge.
 			""";
 
 	public AiService(ChatClient.Builder chatClientBuilder) {
@@ -36,35 +38,44 @@ public class AiService {
 				on the user's overall financial health.
 				""";
 		String data = "Income difference: " + income + ", Expenses difference: " + expenses;
-		String response = this.chatClient.prompt(prompt + data)
-				.options(chatOptions)
-				.system(INITIAL_PROMPT)
-				.call()
-				.content();
-		assert response != null;
-		String finalResponse = removeThinking(response);
-		return new ChatResponseDTO(finalResponse);
+		return callAI(prompt + data);
 	}
 
-	//	@Cacheable("financialBalanceTakeaway")
+	@Cacheable("financialBalanceTakeaway")
 	public ChatResponseDTO getFinancialBalanceTakeaway(String balanceEachMonth) {
 		String prompt = """ 
-				Analyze the user's financial data for the past year and provide a summary of their
+				Analyze the user's financial data for the past 12 months, provide a summary of their
 				monthly financial balance. The summary should include a brief explanation of the implications of
-				the user's financial balance on their overall financial health. Don't include the average in the
-				response, don't repeat the numbers and every positive number is a positive balance.
+				the user's financial balance on their overall financial health.
+				Additionally, based on this historical data, provide a short-term (6-12 month) financial forecast.  This forecast should:
+				
+				1.  Identify Key Trends:  Analyze the monthly balances to identify patterns - are there seasonal fluctuations?
+				Are balances consistently increasing or decreasing?  Are there specific months that consistently show a surplus or deficit?
+				
+				2.  Project Future Balances:  Using these trends, create a projected balance for the next 6-12 months.
+				This projection should be presented as a range rather than a fixed number to account for potential changes.
+				(e.g., "Based on recent trends, the user’s balance is projected to range between $X and $Y over the next six months.")
+				
+				3.  Highlight Potential Risks & Opportunities: Based on the forecast and the historical data, identify potential risks
+				(e.g., extended periods of deficit, large drops in balance) and opportunities (e.g., consistent surpluses that could be invested).
+				
+				4.  Offer Preliminary Recommendations: Suggest 1-2 high-level recommendations based on the forecast and risk/opportunity assessment.
+				These recommendations should be tailored to the situation revealed in the data (e.g., "Given the projected deficits,
+				consider reducing discretionary spending" or "Given the projected surpluses, explore low-risk investment options.").
+				
+				The overall response should provide a clear assessment of the user's financial health today and a reasonable,
+				data-driven expectation of their financial situation in the near future.
+				Should not exceed 1000 characters.
 				""";
-		String data =
-				"Final Balance for each month, separated by commas, starting from " + LocalDate.now().minusMonths(
-				12) + " until " + LocalDate.now().minusMonths(1) + ": " + balanceEachMonth;
-		String response = this.chatClient.prompt(prompt + data)
-				.options(chatOptions)
-				.system(INITIAL_PROMPT)
-				.call()
-				.content();
-		assert response != null;
-		String finalResponse = removeThinking(response);
-		return new ChatResponseDTO(finalResponse);
+
+		LocalDate date = LocalDate.now().minusMonths(12);
+		String[] balance = balanceEachMonth.split(",");
+		for (int i = 0; i < balance.length; i++) {
+			balance[i] = balance[i].concat(" for " + date.getMonth() + " " + date.getYear());
+			date = date.plusMonths(1);
+		}
+		String data = "Final Balance for each month: " + Arrays.toString(balance);
+		return callAI(prompt + data);
 	}
 
 	@Cacheable("spendingByCategoryLastMonthTakeaway")
@@ -74,17 +85,10 @@ public class AiService {
 				habits. The summary should include:
 				A statement of which categories account for the largest portion of the user's spending
 				A recommendation for reviewing and optimizing the user's spending in these categories
-				to identify potential savings. Don't use ** to bold words.
+				to identify potential savings.
 				""";
 		String data = "Expenses for last month divided by category: " + spendingByCategoryMonth;
-		String response = this.chatClient.prompt(prompt + data)
-				.options(chatOptions)
-				.system(INITIAL_PROMPT)
-				.call()
-				.content();
-		assert response != null;
-		String finalResponse = removeThinking(response);
-		return new ChatResponseDTO(finalResponse);
+		return callAI(prompt + data);
 	}
 
 	@Cacheable("spendingByCategoryYearTakeaway")
@@ -94,17 +98,10 @@ public class AiService {
 				habits. The summary should include:
 				A statement of which categories account for the largest portion of the user's spending
 				A recommendation for reviewing and optimizing the user's spending in these categories
-				to identify potential savings. Don't use ** to bold words.
+				to identify potential savings.
 				""";
 		String data = "Total expenses for last 12 months divided by category: " + spendingByCategoryYear;
-		String response = this.chatClient.prompt(prompt + data)
-				.options(chatOptions)
-				.system(INITIAL_PROMPT)
-				.call()
-				.content();
-		assert response != null;
-		String finalResponse = removeThinking(response);
-		return new ChatResponseDTO(finalResponse);
+		return callAI(prompt + data);
 	}
 
 	@Cacheable("savingsTakeaway")
@@ -117,17 +114,10 @@ public class AiService {
 				indicates about the user's ability to save.
 				""";
 		String data = "Savings percentage for last 12 months: " + savings;
-		String response = this.chatClient.prompt(prompt + data)
-				.options(chatOptions)
-				.system(INITIAL_PROMPT)
-				.call()
-				.content();
-		assert response != null;
-		String finalResponse = removeThinking(response);
-		return new ChatResponseDTO(finalResponse);
+		return callAI(prompt + data);
 	}
 
-	public ChatResponseDTO getJSONForTransactionsUsingAI(String info, String type) {
+	public ChatResponseDTO getJSONForTransactionsUsingAI(String request, String transactionType) {
 		// Few-shot prompting
 		String prompt = """
 				Parse a user's transaction into valid JSON
@@ -143,7 +133,7 @@ public class AiService {
 					}
 				]
 				EXAMPLE 2:
-				120 Supermercado no dia 1 e 45 no dia 10 de maio de 2024.
+				120 Supermercado no dia 1 e 45,99 na farmacia no dia 10 de maio de 2024.
 				JSON Response:
 				[
 					{
@@ -154,7 +144,7 @@ public class AiService {
 					},
 					{
 					 "description": "Farmácia",
-					 "value": "45",
+					 "value": "45.99",
 					 "date": "2024-05-10",
 					 "category": "HEALTH"
 					}
@@ -196,8 +186,12 @@ public class AiService {
 					CLOTHES
 				""";
 		LocalDate now = LocalDate.now();
+		return callAI(String.format("%s %s %s Today is: %s", prompt, request, transactionType, now));
+	}
+
+	private ChatResponseDTO callAI(String prompt) {
 		String response = this.chatClient
-				.prompt(prompt + " " + info + " " + type + " Today is: " + now)
+				.prompt(prompt)
 				.options(chatOptions)
 				.system(INITIAL_PROMPT)
 				.call()
@@ -206,6 +200,7 @@ public class AiService {
 		String finalResponse = removeThinking(response);
 		return new ChatResponseDTO(finalResponse);
 	}
+
 
 	private static String removeThinking(String response) {
 		int indexFinalOfThinkSection = response.lastIndexOf(">"); // </think>

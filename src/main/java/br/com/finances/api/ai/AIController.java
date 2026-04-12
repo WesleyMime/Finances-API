@@ -48,9 +48,9 @@ public class AIController {
 	}
 
 	@PostMapping("/jsonForTransactions")
-	public ResponseEntity<ChatResponseDTO> getJSONForTransactionsUsingAI(@RequestBody String info,
-																		 @RequestParam("type") String type) {
-		ChatResponseDTO response = this.aiService.getJSONForTransactionsUsingAI(info, type);
+	public ResponseEntity<ChatResponseDTO> getJSONForTransactionsUsingAI(@RequestBody String request,
+																		 @RequestParam("type") String transactionType) {
+		ChatResponseDTO response = this.aiService.getJSONForTransactionsUsingAI(request, transactionType);
 		return ResponseEntity.ok(response);
 	}
 }
