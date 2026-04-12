@@ -13,6 +13,7 @@ import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service
 import { HideValueComponent } from '../hide-value/hide-value.component';
 import { UtilsService } from '../utils/utils.service';
 import { DateService } from '../utils/date.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-reports',
@@ -46,6 +47,7 @@ export class ReportsComponent implements OnInit {
   incomeChangePercentage = '';
   expenseChangePercentage = '';
   monthComparisonTakeaway = '';
+  monthComparisonTakeawayHtml: SafeHtml = '';
 
   currentDate = new Date();
 
@@ -55,6 +57,7 @@ export class ReportsComponent implements OnInit {
   incomeExpenseBarHeights = [{ height: '', value: '' }];
   currentYear = 0;
   financialBalanceTakeaway = '';
+  financialBalanceTakeawayHtml: SafeHtml = '';
 
   // Data for Spending by Category
   spendingCategoriesMonth = categoriesEnum.map(category => ({
@@ -68,17 +71,21 @@ export class ReportsComponent implements OnInit {
     percentageDifference: '0%'
   }));
   spendingByCategoriesMonthTakeaway = '';
+  spendingByCategoriesMonthTakeawayHtml: SafeHtml = '';
   spendingCategories = categoriesEnum.map(category => ({ ...category, value: 0, valueBefore: 0, valueCurrency: '', percentage: '0%' }));
   spendingByCategoriesYearTakeaway = '';
+  spendingByCategoriesYearTakeawayHtml: SafeHtml = '';
 
   savingsRate = '';
   savingsTakeaway = '';
+  savingsTakeawayHtml: SafeHtml = '';
 
   summaryService = inject(SummaryService);
   aiService = inject(AiService);
   toggleService = inject(ToggleVisibilityService);
   utilsService = inject(UtilsService);
   dateService = inject(DateService);
+  sanitizer = inject(DomSanitizer);
 
   ngOnInit() {
     this.hidden = this.toggleService.isHidden;
@@ -102,6 +109,7 @@ export class ReportsComponent implements OnInit {
         this.aiService.getSavingsTakeaway(this.savingsRate).subscribe({
           next: (response: AiMessage) => {
             this.savingsTakeaway = response.message;
+            this.savingsTakeawayHtml = this.transformAiToHtml(response.message);
           }
         })
       }
@@ -147,6 +155,7 @@ export class ReportsComponent implements OnInit {
     this.aiService.getMonthOverMonthComparisonTakeaway(incomeValueDifference, expenseValueDifference).subscribe({
       next: (response: AiMessage) => {
         this.monthComparisonTakeaway = response.message;
+        this.monthComparisonTakeawayHtml = this.transformAiToHtml(response.message);
       }
     })
 
@@ -165,8 +174,18 @@ export class ReportsComponent implements OnInit {
     this.aiService.getFinancialBalanceTakeaway(summary.finalBalanceEachMonth.toString()).subscribe({
       next: (response: AiMessage) => {
         this.financialBalanceTakeaway = response.message;
+        this.financialBalanceTakeawayHtml = this.transformAiToHtml(response.message);
       }
     })
+  }
+
+  private transformAiToHtml(text: string): SafeHtml {
+    if (!text) return this.sanitizer.bypassSecurityTrustHtml('');
+    let html = text
+      .replaceAll(/\n/g, '<br/>')
+      .replaceAll(/\n\n/g, '<br/><br/>')
+      .replaceAll(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   private updateSpendingByCategoryLastMonth(lastYearSummary: SummaryLastYear, lastMonthSummary: SummaryByMonth, lastLastMonthSummary: SummaryByMonth): void {
@@ -190,6 +209,7 @@ export class ReportsComponent implements OnInit {
     }))).subscribe({
       next: (response: AiMessage) => {
         this.spendingByCategoriesMonthTakeaway = response.message;
+        this.spendingByCategoriesMonthTakeawayHtml = this.transformAiToHtml(response.message);
       }
     });
   }
@@ -208,6 +228,7 @@ export class ReportsComponent implements OnInit {
     }))).subscribe({
       next: (response: AiMessage) => {
         this.spendingByCategoriesYearTakeaway = response.message;
+        this.spendingByCategoriesYearTakeawayHtml = this.transformAiToHtml(response.message);
       }
     });;
   }

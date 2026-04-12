@@ -79,7 +79,7 @@
     <div class="key-takeaway">
       <app-loading-value [value]="monthComparisonTakeaway" [message]="loading"
                          loadingImg="/assets/loading-ezgif-takeaway.gif">
-        <p>{{ monthComparisonTakeaway }}</p>
+        <p [innerHTML]="monthComparisonTakeawayHtml"></p>
       </app-loading-value>
     </div>
 
@@ -113,7 +113,7 @@
     <div class="key-takeaway">
       <app-loading-value [value]="financialBalanceTakeaway" [message]="loading"
                          loadingImg="/assets/loading-ezgif-takeaway.gif">
-        <p>{{ financialBalanceTakeaway }}</p>
+        <p [innerHTML]="financialBalanceTakeawayHtml"></p>
       </app-loading-value>
     </div>
 
@@ -173,7 +173,7 @@
     <div class="key-takeaway">
       <app-loading-value [value]="spendingByCategoriesMonthTakeaway" [message]="loading"
                          loadingImg="/assets/loading-ezgif-takeaway.gif">
-        <p>{{ spendingByCategoriesMonthTakeaway }}</p>
+        <p [innerHTML]="spendingByCategoriesMonthTakeawayHtml"></p>
       </app-loading-value>
     </div>
     <div class="card">
@@ -209,7 +209,7 @@
     <div class="key-takeaway">
       <app-loading-value [value]="spendingByCategoriesYearTakeaway" [message]="loading"
                          loadingImg="/assets/loading-ezgif-takeaway.gif">
-        <p>{{ spendingByCategoriesYearTakeaway }}</p>
+        <p [innerHTML]="spendingByCategoriesYearTakeawayHtml"></p>
       </app-loading-value>
     </div>
 
@@ -225,7 +225,7 @@
     <div class="key-takeaway">
       <app-loading-value [value]="savingsTakeaway" [message]="loading"
                          loadingImg="/assets/loading-ezgif-takeaway.gif">
-        <p>{{ savingsTakeaway }}</p>
+        <p [innerHTML]="savingsTakeawayHtml"></p>
       </app-loading-value>
     </div>
   </section>
