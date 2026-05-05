@@ -48,8 +48,8 @@ Virtual do Google Cloud, com DNS e HTTPS da Cloudflare.
 
 Os links para acesso são:
 
-- Aplicação Angular https://marujo.site
-- API Spring Boot https://finances.marujo.site
+- Aplicação Angular https://marujo.website
+- API Spring Boot https://finances.marujo.website
 
 ![](https://user-images.githubusercontent.com/55067868/191626878-96f58635-f938-40e5-acd7-7692d039c29d.png#vitrinedev)
 
@@ -108,7 +108,7 @@ Distribuído sob a licença do MIT. Consulte `LICENSE.txt` para obter mais infor
 [workflow-shield]: https://img.shields.io/github/actions/workflow/status/wesleymime/Finances-API/main.yml?style=for-the-badge
 [workflow-url]: https://img.shields.io/github/actions/workflow/status/wesleymime/Finances-API/main.yml
 [deploy-status]: http://167.234.233.130:3001/api/badge/5/status?upColor=lightdarkgreen&style=for-the-badge
-[deploy-url]: https://marujo.site/
+[deploy-url]: https://marujo.website/
 
 [java]: https://img.shields.io/badge/Java-000000?logo=openjdk&logoColor=white&style=for-the-badge
 [spring]: https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=fff&style=for-the-badge
