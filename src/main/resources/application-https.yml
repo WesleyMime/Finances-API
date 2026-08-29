@@ -1,0 +1,7 @@
+server:
+  port: ${SERVER_PORT:8443}
+  ssl:
+    enabled: true
+    certificate: ${SSL_CERTIFICATE}
+    certificate-private-key: ${SSL_CERTIFICATE_PRIVATE_KEY}
+    enabled-protocols: TLSv1.3,TLSv1.2

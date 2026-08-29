@@ -1,0 +1,12 @@
+services:
+  api:
+    ports:
+      - "8443:8443"
+    volumes:
+      - ${SSL_CERTIFICATE_PATH:-./certs/filename.crt}:/run/secrets/filename.crt:ro
+      - ${SSL_PRIVATE_KEY_PATH:-./certs/filename.key}:/run/secrets/filename.key:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: prod,https
+      SERVER_PORT: 8443
+      SSL_CERTIFICATE: /run/secrets/filename.crt
+      SSL_CERTIFICATE_PRIVATE_KEY: /run/secrets/filename.key

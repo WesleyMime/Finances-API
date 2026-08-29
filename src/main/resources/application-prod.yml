@@ -1,7 +1,10 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 finances:
   jwt:
     expiration: 1800000
-    secret: ${JWT_SECRET:ME7SXkNLos9X6azj8/SMMLXxiq7Wg32PBzTNNohxZ+ykIwKVKMeWmtMwJNl6zhi8QgvcWCmjWu9m4fQagyW0IQ==}
+    secret: ${JWT_SECRET}
 spring:
   sql:
     init:

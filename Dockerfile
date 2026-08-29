@@ -4,5 +4,5 @@ RUN addgroup --system spring && adduser --system spring && adduser spring spring
 USER spring:spring
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
-EXPOSE 80
+EXPOSE 8080 8443
 ENTRYPOINT ["java","-jar","/app.jar"]

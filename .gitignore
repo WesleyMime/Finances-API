@@ -33,3 +33,6 @@ build/
 .vscode/
 
 deploy.sh
+
+# Local TLS keystores
+certs/
