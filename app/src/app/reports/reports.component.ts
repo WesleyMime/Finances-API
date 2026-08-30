@@ -14,10 +14,19 @@ import { HideValueComponent } from '../hide-value/hide-value.component';
 import { UtilsService } from '../utils/utils.service';
 import { DateService } from '../utils/date.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration } from 'chart.js';
+
+const chartPalette = {
+  positive: '#48bb78',
+  negative: '#fc8181',
+  tertiary_color: '#2d3748',
+  muted_text_color: '#a0aec0'
+};
 
 @Component({
   selector: 'app-reports',
-  imports: [NgClass, NgStyle, HeaderComponent, LoadingValueComponent, HideValueComponent],
+  imports: [NgClass, NgStyle, HeaderComponent, LoadingValueComponent, HideValueComponent, BaseChartDirective],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })
@@ -55,6 +64,30 @@ export class ReportsComponent implements OnInit {
   incomeExpenseTotal = '';
   monthOrderIncomeExpenseComparison: string[] = [];
   incomeExpenseBarHeights = [{ height: '', value: '' }];
+  incomeExpenseChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: [],
+    datasets: [{
+      data: [],
+      label: 'Saldo',
+      borderRadius: 8,
+      borderSkipped: false,
+      borderWidth: 1,
+      backgroundColor: chartPalette.positive
+    }]
+  };
+  incomeExpenseChartOptions: ChartConfiguration<'bar'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 3600,
+      easing: 'easeInOutQuad'
+    },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  };
   currentYear = 0;
   financialBalanceTakeaway = '';
   financialBalanceTakeawayHtml: SafeHtml = '';
@@ -170,6 +203,48 @@ export class ReportsComponent implements OnInit {
     this.currentYear = currentDate.getFullYear();
     this.incomeExpenseTotal = this.utilsService.formatCurrency(summary.avgBalanceYear);
     this.getIncomeExpenseBarHeights(summary.finalBalanceEachMonth);
+    const maxAbs = Math.max(...summary.finalBalanceEachMonth.map((value) => Math.abs(value)), 1);
+    this.incomeExpenseChartData = {
+      labels: this.buildSavingsTrendLabels(),
+      datasets: [{
+        data: summary.finalBalanceEachMonth,
+        label: 'Saldo',
+        borderRadius: 4,
+        backgroundColor: summary.finalBalanceEachMonth.map(value => value >= 0 ? chartPalette.positive : chartPalette.negative),
+        borderColor: chartPalette.muted_text_color,
+        borderWidth: {
+          top: 2,
+          bottom: 2
+        },
+      }]
+    };
+    const currentScales = this.incomeExpenseChartOptions?.scales as any;
+    this.incomeExpenseChartOptions = {
+      ...this.incomeExpenseChartOptions,
+      scales: {
+        x: {
+          ...(currentScales?.x ?? {}),
+          display: true,
+          grid: { display: false },
+          ticks: {
+            ...(currentScales?.x?.ticks ?? {}),
+            color: chartPalette.muted_text_color,
+            autoSkip: false,
+            maxRotation: 0,
+            minRotation: 0
+          }
+        },
+        y: {
+          ...(currentScales?.y ?? {}),
+          suggestedMin: -maxAbs,
+          suggestedMax: maxAbs,
+          display: true,
+          beginAtZero: false,
+          grid: { display: true, color: chartPalette.tertiary_color },
+          ticks: { color: chartPalette.muted_text_color }
+        }
+      }
+    };
 
     this.aiService.getFinancialBalanceTakeaway(summary.finalBalanceEachMonth.toString()).subscribe({
       next: (response: AiMessage) => {
@@ -177,6 +252,14 @@ export class ReportsComponent implements OnInit {
         this.financialBalanceTakeawayHtml = this.transformAiToHtml(response.message);
       }
     })
+  }
+
+  private buildSavingsTrendLabels(): string[] {
+    const labels: string[] = [];
+    for (let offset = -12; offset < 0; offset++) {
+      labels.push(this.dateService.getRelativeMonthName(offset));
+    }
+    return labels;
   }
 
   private transformAiToHtml(text: string): SafeHtml {

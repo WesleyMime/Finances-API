@@ -30,41 +30,16 @@
   margin-bottom: 20px;
 }
 
-/* Chart Labels */
-.chart-labels {
-    display: flex;
-    justify-content: space-around;
-    gap: 8px;
-    font-size: 0.8em;
-    color: var(--muted-text-color);
-    margin-top: 5px;
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
 }
 
-.chart-labels span {
-    text-align: center;
-    flex-grow: 1; /* Ensure labels distribute space evenly */
-}
-
-
-/* Income vs. Expenses Chart */
-.income-expense-chart .chart-bars {
-  display: flex;
-  align-items: flex-end;
-  height: 120px;
-  gap: 8px;
-  padding: 0 5px;
-  box-sizing: border-box;
-  justify-content: space-around;
-}
-
-.income-expense-chart .bar {
-  flex-grow: 1;
-  width: 50px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  border-top: 2px solid var(--muted-text-color);
-  background: linear-gradient(180deg, var(--highlight-color), transparent 100%);
-  animation: bars 3s;
+.chart-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 
@@ -194,8 +169,5 @@
   }
   .metric-value {
       font-size: 1.4em;
-  }
-  .chart-labels {
-      gap: 0px;
   }
 }

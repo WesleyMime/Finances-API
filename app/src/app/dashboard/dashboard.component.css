@@ -28,13 +28,6 @@
   gap: 20px;
 }
 
-.animate {
-  font-size: 0.8em;
-  stroke-dasharray: 1250;
-  stroke-dashoffset: 1300;
-  animation: draw-line 7s linear forwards;
-}
-
 .chart-summary {
   margin-bottom: 20px;
   display: flex;
@@ -59,101 +52,38 @@
   color: var(--muted-text-color);
 }
 
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 150px;
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
 }
 
-.bar {
-  width: 25px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  margin: 0 2px;
-  animation: bars 3s;
-  border-top: 2px solid var(--muted-text-color);
+.donut-container {
+  max-width: 240px;
+  margin: 0 auto;
+  height: 220px;
 }
 
-.line-chart {
+.donut-center-label {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
+  font-size: 2em;
+  font-weight: 700;
+  color: var(--highlight-text-color);
+  pointer-events: none;
 }
 
-.line-chart svg {
-  width: 100%;
-  height: 190px;
-}
-
-
-:host ::ng-deep .line-chart .data-line {
-  stroke-width: 6;
-}
-
-.chart-labels {
-  display: flex;
-  justify-content: space-around;
-  font-size: 0.8em;
-  color: var(--muted-text-color);
-  margin-top: 5px;
-}
-.chart-labels span {
-  text-align: center;
-  flex-grow: 1;
+.line-chart-container,
+.trend-chart-container,
+.bar-chart-container {
+  height: 180px;
 }
 
 .recent-transactions .card {
   padding: 0;
-}
-
-:host ::ng-deep .data-line {
-  fill: none;
-  stroke: var(--highlight-color);
-  stroke-width: 3;
-}
-
-:host ::ng-deep .data-point {
-  fill: var(--highlight-color);
-}
-
-:host ::ng-deep .label {
-  font-size: 0.9em;
-  fill: var(--muted-text-color);
-}
-
-.donut {
-  margin: 0 auto;
-  display: block;
-  max-width: 240px;
-}
-
-.progress-donut {
-  justify-self: center;
-  margin-top: 30px;
-  animation: fillDonut 3s ease-in-out;
-}
-.percentage-text {
-  font-size: 3em;
-  font-weight: bold;
-  fill: var(--highlight-text-color);
-  text-anchor: middle;
-  dominant-baseline: middle;
-}
-
-.positive {
-  stroke: var(--highlight-color);
-  background: repeating-linear-gradient(180deg, var(--highlight-color), transparent 150%);
-}
-
-.negative {
-  stroke: var(--highlight-red-color);
-  background: repeating-linear-gradient(180deg, var(--highlight-red-color), transparent 150%);
-}
-
-.neutral {
-  stroke:var(--tertiary-color);
 }
 
 .card .list {
@@ -189,35 +119,9 @@
 }
 
 
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes fillDonut {
-  from {
-    stroke-dashoffset: 848.23; /* circunference */
-  }
-}
-
-@keyframes bars {
-  from { height: 0; }
-  to { height: 100; }
-}
-
-@media (min-width: 1049px) {
-  .line-chart svg {
-    max-height: 200px;
-  }
-}
-
-
 @media (max-width: 1049px) {
   .graphs-grid {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .line-chart svg {
-     height: 25vw;
   }
 }
 
@@ -238,10 +142,6 @@
     grid-template-columns: 1fr;
   }
 
-  .line-chart svg {
-    height: 50vw;
-  }
-
   .summary-cards-grid {
     grid-template-columns: 1fr;
   }
@@ -250,21 +150,9 @@
     grid-template-columns: 1fr;
   }
 
-  .bar-chart {
-    height: 100px;
-  }
-
-  svg {
-    font-size: 1em;
-  }
-
   .spending-list,
   .spending-header {
     display: contents;
-  }
-
-  .donut {
-    max-width: 55%;
   }
 
   .spending-item {
@@ -276,9 +164,5 @@
   .card-value {
     font-size: 1.6em;
     word-break: break-word;
-  }
-
-  .donut {
-    max-width: 75%;
   }
 }

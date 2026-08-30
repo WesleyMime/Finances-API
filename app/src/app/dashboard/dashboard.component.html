@@ -29,24 +29,14 @@
           }
           <span class="summary-period">Últimos 5 Anos</span>
         </div>
-        <svg class="donut neutral" height="76%" viewBox="0 0 300 300"
-             xmlns="http://www.w3.org/2000/svg">
-          <circle
-            r="135" cx="150" cy="150"
-            stroke-width="30"
-            fill="transparent"
-          />
-          <circle
-            [ngClass]="'progress-donut ' + getChangeColorDonut(savingsPercentage)"
-            r="135" cx="150" cy="150"
-            fill="transparent"
-            stroke-width="30"
-            [attr.stroke-dasharray]="circumference"
-            [attr.stroke-dashoffset]="getStrokeDashOffset(savingsPercentage)"
-            transform="rotate(-90 150 150)"
-          />
-          <text class="percentage-text" x="150" y="150">{{ savingsPercentageFormated }}</text>
-        </svg>
+        <div class="chart-container donut-container">
+          <canvas baseChart
+                  [data]="savingsDonutChartData"
+                  [options]="donutChartOptions"
+                  type="doughnut">
+          </canvas>
+          <div class="donut-center-label">{{ savingsPercentageFormated }}</div>
+        </div>
       </div>
       <div class="cards-line-grid">
         <div class="card net-worth-card">
@@ -87,57 +77,13 @@
               <span class="summary-percentage" [ngClass]=getChangeColorGood(netWorthTrendPercentage)>{{ netWorthTrendPercentage }}</span>
             </app-loading-value>
           }
-          <span
-            class="summary-period">Saldo Anual ({{ currentYear - 2 }}-{{ currentYear - 1 }})</span>
         </div>
-        <div class="line-chart">
-          <svg viewBox="200 -200 200 350">
-            <path class="data-line animate" [attr.d]="mainPath" filter="url(#f1)"/>
-            <path
-              [attr.d]="areaPath"
-              fill="url(#areaDualGradientLine)"
-              stroke="none">
-            </path>
-            <path style="stroke: var(--muted-text-color)"
-                  [attr.d]="zeroPath"
-                  stroke-dasharray="15, 15"
-                  stroke-width="3"/>
-            <defs>
-              <linearGradient id="areaDualGradientLine"
-                              x1="0" y1="-200"
-                              x2="0" y2="200"
-                              gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
-                <stop offset="35%" stop-color="var(--highlight-color)" stop-opacity="0.4"/>
-                <stop offset="50%" stop-color="var(--background-color)" stop-opacity="0"/>
-                <stop offset="65%" stop-color="var(--highlight-color)" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="var(--highlight-color)" stop-opacity="1"/>
-              </linearGradient>
-              <linearGradient id="areaDualGradient"
-                              x1="0%" y1="0%"
-                              x2="0%" y2="100%"
-                              gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
-                <stop offset="50%" stop-color="var(--background-color)" stop-opacity="0"/>
-                <stop offset="100%" stop-color="var(--highlight-color)" stop-opacity="1"/>
-              </linearGradient>
-              <linearGradient id="areaGradient"
-                              x1="0%" y1="0%"
-                              x2="0%" y2="100%">
-                <stop offset="0%" stop-color="var(--highlight-color)" stop-opacity="1"/>
-                <stop offset="100%" stop-color="var(--background-color)" stop-opacity="0"/>
-              </linearGradient>
-              <filter id="f1" y="0">
-                <feOffset in="SourceGraphic" dx="0" dy="7"/>
-                <feGaussianBlur stdDeviation="6"/>
-                <feBlend in="SourceGraphic" in2="blurOut"/>
-              </filter>
-            </defs>
-          </svg>
-        </div>
-        <div class="chart-labels">
-          <span>{{ currentYear - 5 }}</span><span>{{ currentYear - 4 }}</span><span>{{ currentYear - 3 }}</span>
-          <span>{{ currentYear - 2 }}</span><span>{{ currentYear - 1 }}</span>
+        <div class="chart-container line-chart-container">
+          <canvas baseChart
+                  [data]="financialEvolutionChartData"
+                  [options]="trendChartOptions"
+                  type="line">
+          </canvas>
         </div>
       </div>
 
@@ -159,9 +105,13 @@
           <span class="summary-period">{{ this.getRelativeMonthName(-2) }} - {{ this.getRelativeMonthName(-1) }}
           </span>
         </div>
-        <svg class="animate" [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
-             xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContent">
-        </svg>
+        <div class="chart-container trend-chart-container">
+          <canvas baseChart
+                  [data]="savingsTrendChartData"
+                  [options]="trendChartOptions"
+                  type="line">
+          </canvas>
+        </div>
       </div>
 
       <div class="card">
@@ -180,9 +130,13 @@
           }
           <span class="summary-period">Últimos 12 Meses</span>
         </div>
-        <svg class="animate" [attr.viewBox]="'0 0 ' + graphWidth + ' ' + graphHeight"
-             xmlns="http://www.w3.org/2000/svg" [innerHTML]="svgContentTemp">
-        </svg>
+        <div class="chart-container trend-chart-container">
+          <canvas baseChart
+                  [data]="investmentsTrendChartData"
+                  [options]="trendChartOptions"
+                  type="line">
+          </canvas>
+        </div>
       </div>
     </div>
 
@@ -202,18 +156,12 @@
             </span>
           }
         </div>
-        <div class="bar-chart">
-          @for (bar of pastIncomeBarHeights; track bar) {
-          <div class="bar positive"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value">
-          </div>
-          }
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>{{ this.getRelativeMonthName(-6) }}</span><span>{{ this.getRelativeMonthName(-5) }}</span>
-          <span>{{ this.getRelativeMonthName(-4) }}</span><span>{{ this.getRelativeMonthName(-3) }}</span>
-          <span>{{ this.getRelativeMonthName(-2) }}</span><span>{{ this.getRelativeMonthName(-1) }}</span>
+        <div class="chart-container bar-chart-container">
+          <canvas baseChart
+                  [data]="pastIncomeChartData"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
         </div>
       </div>
 
@@ -232,18 +180,12 @@
             </span>
           }
         </div>
-        <div class="bar-chart">
-          @for (bar of pastExpensesBarHeights; track bar) {
-          <div class="bar negative"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value">
-          </div>
-          }
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>{{ this.getRelativeMonthName(-6) }}</span><span>{{ this.getRelativeMonthName(-5) }}</span>
-          <span>{{ this.getRelativeMonthName(-4) }}</span><span>{{ this.getRelativeMonthName(-3) }}</span>
-          <span>{{ this.getRelativeMonthName(-2) }}</span><span>{{ this.getRelativeMonthName(-1) }}</span>
+        <div class="chart-container bar-chart-container">
+          <canvas baseChart
+                  [data]="pastExpensesChartData"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
         </div>
       </div>
     </div>
@@ -264,18 +206,12 @@
             </span>
             }
           </div>
-        <div class="bar-chart">
-          @for (bar of futureIncomeBarHeights; track bar) {
-          <div class="bar positive"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value">
-          </div>
-          }
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>{{ this.getRelativeMonthName(1) }}</span><span>{{ this.getRelativeMonthName(2) }}</span>
-          <span>{{ this.getRelativeMonthName(3) }}</span><span>{{ this.getRelativeMonthName(4) }}</span>
-          <span>{{ this.getRelativeMonthName(5) }}</span><span>{{ this.getRelativeMonthName(6) }}</span>
+        <div class="chart-container bar-chart-container">
+          <canvas baseChart
+                  [data]="futureIncomeChartData"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
         </div>
       </div>
 
@@ -294,18 +230,12 @@
             </span>
           }
         </div>
-        <div class="bar-chart">
-          @for (bar of futureExpensesBarHeights; track bar) {
-          <div class="bar negative"
-               [style.height]="bar.height + '%'"
-               [title]="bar.value">
-          </div>
-          }
-        </div>
-        <div class="chart-labels bar-labels">
-          <span>{{ this.getRelativeMonthName(1) }}</span><span>{{ this.getRelativeMonthName(2) }}</span>
-          <span>{{ this.getRelativeMonthName(3) }}</span><span>{{ this.getRelativeMonthName(4) }}</span>
-          <span>{{ this.getRelativeMonthName(5) }}</span><span>{{ this.getRelativeMonthName(6) }}</span>
+        <div class="chart-container bar-chart-container">
+          <canvas baseChart
+                  [data]="futureExpensesChartData"
+                  [options]="barChartOptions"
+                  type="bar">
+          </canvas>
         </div>
       </div>
     </div>

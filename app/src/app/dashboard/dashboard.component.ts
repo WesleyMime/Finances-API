@@ -1,7 +1,6 @@
 import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
 import { HeaderComponent } from "../header/header.component";
 import { Component, OnInit, inject } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { SummaryService } from '../summary/summary.service';
 import { LoadingValueComponent } from '../loading-value/loading-value.component';
@@ -11,23 +10,27 @@ import { HideValueComponent } from "../hide-value/hide-value.component";
 import { ToggleVisibilityService } from '../hide-value/toggle-visibility.service';
 import { UtilsService } from '../utils/utils.service';
 import { DateService } from '../utils/date.service';
-import { DrawGraphService } from '../utils/draw-graph.service';
 import { Transaction } from '../add-transaction/transaction';
 import { getCategoryByNameInEnglish } from '../category';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration } from 'chart.js';
+
+const chartPalette = {
+  positive: '#48bb78',
+  negative: '#fc8181',
+  neutral: '#2d3748',
+  fill: '#48bb7865',
+  muted_text_color: '#a0aec0'
+};
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoadingValueComponent, NgClass, HeaderComponent, RouterLink, HideValueComponent, DatePipe, CurrencyPipe],
+  imports: [LoadingValueComponent, NgClass, HeaderComponent, RouterLink, HideValueComponent, DatePipe, CurrencyPipe, BaseChartDirective],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  svgContent: SafeHtml = "";
-  svgContentTemp: SafeHtml = "";
-  mainPath: SafeHtml = '';
-  areaPath: SafeHtml = '';
-
   hiddenValue = '*****';
   hidden = false;
   opacity: number = 1;
@@ -35,11 +38,27 @@ export class DashboardComponent implements OnInit {
   noTransactions = false;
 
   // Donut chart
-  circumference = 848.23;
   savingsAverage: string = '';
   savingsPercentage = 0;
   savingsPercentageFormated = '';
   savingsTrendPercentage = '';
+  savingsDonutChartData: ChartConfiguration<'doughnut'>['data'] = {
+    datasets: [{
+      data: [0, 100],
+      borderWidth: 1,
+      backgroundColor: [chartPalette.positive, chartPalette.neutral]
+    }]
+  };
+  donutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    animation: {
+      duration: 5000
+    },
+    rotation: 0,
+    cutout: '80%',
+    plugins: {
+      legend: { display: false }
+    }
+  };
 
   // Net worth
   netWorth: string = '';
@@ -47,24 +66,79 @@ export class DashboardComponent implements OnInit {
   totalLiabilities: string = '';
 
   // Line graph
-  lineChartHeights: number[] = [];
-  zeroPath: string = '';
   netWorthTrendChange: string = '';
   netWorthTrendPercentage = '';
+  financialEvolutionChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [{
+      data: [],
+      label: ' Patrimônio',
+      borderColor: chartPalette.positive,
+      backgroundColor: chartPalette.fill,
+      fill: true,
+      tension: 0.35,
+      pointRadius: 3,
+      pointBackgroundColor: chartPalette.positive
+    }]
+  };
+  trendChartOptions: ChartConfiguration<'line'>['options'] = {
+    animation: {
+      duration: 3600,
+      easing: 'easeInOutQuad'
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        display: true,
+        grid: { display: false },
+        ticks: { color: chartPalette.muted_text_color }
+      },
+      y: {
+        display: false,
+        beginAtZero: false,
+        grid: { display: false },
+        ticks: { color: chartPalette.muted_text_color }
+      }
+    }
+  };
 
   // Savings Trend graph
   balanceLastMonth = '';
   balanceLastMonthPercentage = '';
+  savingsTrendChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [{
+      data: [],
+      label: ' Poupança',
+      borderColor: chartPalette.positive,
+      backgroundColor: chartPalette.fill,
+      fill: true,
+      tension: 0.35,
+      pointRadius: 3,
+      pointBackgroundColor: chartPalette.positive
+    }]
+  };
 
   // Investments Trend graph
   investmentsLastMonth = 'R$ 0';
   investmentsLastMonthPercentage = '0%';
+  investmentsTrendChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [{
+      data: [],
+      label: ' Investimentos',
+      borderColor: chartPalette.positive,
+      backgroundColor: chartPalette.fill,
+      fill: true,
+      tension: 0.35,
+      pointRadius: 3,
+      pointBackgroundColor: chartPalette.positive
+    }]
+  };
 
   // Bar graphs
-  pastIncomeBarHeights = [{ height: '', value: '' }];
-  pastExpensesBarHeights = [{ height: '', value: '' }];
-  futureIncomeBarHeights = [{ height: '', value: '' }];
-  futureExpensesBarHeights = [{ height: '', value: '' }];
   currentIncomeFormated = '';
   currentExpenseFormated = '';
   lastMonthIncomeValue = '';
@@ -77,13 +151,31 @@ export class DashboardComponent implements OnInit {
   nextMonthExpensePercentage = '';
 
   values: number[] = [];
-  valuesTemp = [-99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99.0001];
-
-  graphWidth = 500;
-  graphHeight = 350;
+  valuesTemp = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  pastIncomeChartData: ChartConfiguration<'bar'>['data'] = {datasets: [] };
+  pastExpensesChartData: ChartConfiguration<'bar'>['data'] = {datasets: [] };
+  futureIncomeChartData: ChartConfiguration<'bar'>['data'] = {datasets: [] };
+  futureExpensesChartData: ChartConfiguration<'bar'>['data'] = {datasets: [] };
+  barChartOptions: ChartConfiguration<'bar'>['options'] = {
+    responsive: true,
+    animation: {
+      duration: 3600,
+      easing: 'easeInOutQuad'
+    },
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { display: false } ,
+        ticks: { color: chartPalette.muted_text_color }
+      },
+      y: {
+        display: false
+      }
+    }
+  };
 
   recentTransactions: Transaction[] = [];
-
 
   currentDate = new Date();
   currentYear = this.currentDate.getFullYear();
@@ -91,7 +183,6 @@ export class DashboardComponent implements OnInit {
 
   summaryService = inject(SummaryService);
   toggleService = inject(ToggleVisibilityService);
-  graphService = inject(DrawGraphService);
   utilsService = inject(UtilsService);
   dateService = inject(DateService);
 
@@ -178,36 +269,51 @@ export class DashboardComponent implements OnInit {
       this.savingsPercentageFormated = this.utilsService.formatPercentage(this.savingsPercentage);
       let savingsBeforeLastYear = totalBalanceFiveYears - balanceYearsList[0];
       this.savingsTrendPercentage = this.utilsService.percentageChangeFormated(totalSavingsAverage, savingsBeforeLastYear);
+
+      const percentageValue = Math.min(Math.abs(this.savingsPercentage), 100);
+      const isNegative = this.savingsPercentage < 0;
+      this.savingsDonutChartData = {
+        labels: [isNegative ? 'Dívida' : 'Poupança', isNegative ? '' : 'Gastos'],
+        datasets: [{
+          data: [percentageValue, 100 - percentageValue],
+          backgroundColor: [isNegative ? chartPalette.negative : chartPalette.positive, chartPalette.neutral],
+          borderColor: [isNegative ? chartPalette.negative : chartPalette.positive, chartPalette.neutral],
+          borderWidth: 1
+        }]
+      };
     } else {
       this.savingsAverage = this.utilsService.formatCurrency(0);
       this.savingsPercentage = 0;
       this.savingsPercentageFormated = this.utilsService.formatPercentage(0);
+      this.savingsDonutChartData = {
+        datasets: [{ data: [0, 100], backgroundColor: [chartPalette.positive, chartPalette.neutral], borderColor: [chartPalette.positive, chartPalette.neutral], borderWidth: 1 }]
+      };
     }
   }
 
   private updateNetworthTrendChart(balanceLastFiveYearsList: number[]) {
-    this.getLineChartHeights(balanceLastFiveYearsList);
-    let startPosition = 25;
-    const topPadding = 2;
-
-    this.mainPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
-    this.areaPath = `M ${startPosition} ${this.lineChartHeights[4]}`;
-    this.zeroPath = `M ${startPosition} 0`;
-
-    let lastX = startPosition;
-    for (let i = 4.9; i > 0; i -= 0.19) {
-      startPosition += 20;
-      const y = this.lineChartHeights[Math.floor(i)] + topPadding;
-
-      this.mainPath += ` L ${startPosition} ${y}`;
-      this.areaPath += ` L ${startPosition} ${y}`;
-      this.zeroPath += ` L ${startPosition} 0`;
-
-      lastX = startPosition;
-    }
-    this.areaPath += ` L ${lastX} 0 L 25 0 Z`;
     this.netWorthTrendChange = this.utilsService.formatCurrency(balanceLastFiveYearsList[0]);
     this.netWorthTrendPercentage = this.utilsService.percentageChangeFormated(balanceLastFiveYearsList[0], balanceLastFiveYearsList[1]);
+    const labels = [
+      this.currentYear - 5,
+      this.currentYear - 4,
+      this.currentYear - 3,
+      this.currentYear - 2,
+      this.currentYear - 1
+    ];
+    this.financialEvolutionChartData = {
+      labels,
+      datasets: [{
+        data: balanceLastFiveYearsList.reverse(),
+        label: ' Patrimônio',
+        borderColor: chartPalette.positive,
+        backgroundColor: chartPalette.fill,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 3,
+        pointBackgroundColor: chartPalette.positive
+      }]
+    };
   }
 
   private updateSavingsTrendValues(totalIncome: number, totalExpense: number, totalBalance: number) {
@@ -228,8 +334,49 @@ export class DashboardComponent implements OnInit {
   }
 
   private updateSavingsTrendGraph(): void {
-    this.svgContent = this.graphService.draw(this.values, this.graphWidth, this.graphHeight, true, true);
-    this.svgContentTemp = this.graphService.draw(this.valuesTemp, this.graphWidth, this.graphHeight, false, false);
+    const labels = this.buildLastTwelveMonthLabels();
+    this.savingsTrendChartData = {
+      labels,
+      datasets: [{
+        data: this.values,
+        label: ' Poupança',
+        borderColor: chartPalette.positive,
+        backgroundColor: chartPalette.fill,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 3,
+        pointBackgroundColor: chartPalette.positive
+      }]
+    };
+    this.investmentsTrendChartData = {
+      labels,
+      datasets: [{
+        data: this.valuesTemp,
+        label: ' Investimentos',
+        borderColor: chartPalette.positive,
+        backgroundColor: chartPalette.fill,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 3,
+        pointBackgroundColor: chartPalette.positive
+      }]
+    };
+  }
+
+  private buildLastTwelveMonthLabels(): string[] {
+    const labels: string[] = [];
+    for (let i = -11; i <= 0; i++) {
+      labels.push(this.dateService.getRelativeMonthName(i));
+    }
+    return labels;
+  }
+
+  private buildRelativeMonthLabels(offsetStart: number, offsetEnd: number): string[] {
+    const labels: string[] = [];
+    for (let i = offsetStart; i <= offsetEnd; i++) {
+      labels.push(this.dateService.getRelativeMonthName(i));
+    }
+    return labels;
   }
 
   private updateMonthCharts(incomeListPast: number[], expenseListPast: number[], incomeListFuture: number[], expenseListFuture: number[]) {
@@ -238,17 +385,87 @@ export class DashboardComponent implements OnInit {
     this.currentIncomeFormated = this.utilsService.formatCurrency(currentIncome);
     this.currentExpenseFormated = this.utilsService.formatCurrency(currentExpense);
 
+    const pastIncomeValues = incomeListPast.slice(6, 12);
+    const pastExpenseValues = expenseListPast.slice(6, 12);
+    const futureIncomeValues = incomeListFuture.slice(1, 7);
+    const futureExpenseValues = expenseListFuture.slice(1, 7);
+
     // only last 6 months
-    this.pastIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListPast.slice(6, 12));
-    this.pastExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListPast.slice(6, 12));
+    this.pastIncomeChartData = {
+      labels: this.buildRelativeMonthLabels(-6, -1),
+      datasets: [{
+        label: ' Receitas',
+        data: pastIncomeValues,
+        backgroundColor: this.buildBarGradient(chartPalette.positive),
+        borderColor: chartPalette.muted_text_color,
+        maxBarThickness: 40,
+        borderWidth: {
+          top: 2
+        },
+        borderRadius: 8,
+      }]
+    };
+    this.pastExpensesChartData = {
+      labels: this.buildRelativeMonthLabels(-6, -1),
+      datasets: [{
+        label: ' Despesas',
+        data: pastExpenseValues,
+        backgroundColor: this.buildBarGradient(chartPalette.negative),
+        borderColor: chartPalette.muted_text_color,
+        maxBarThickness: 40,
+        borderWidth: {
+          top: 2
+        },
+        borderRadius: 8,
+      }]
+    };
     this.getLastMonth(incomeListPast, currentIncome, expenseListPast, currentExpense);
 
     this.getNextMonth(incomeListFuture[1], currentIncome, expenseListFuture[1], currentExpense);
     // Removes current month
     incomeListFuture.shift();
     expenseListFuture.shift();
-    this.futureIncomeBarHeights = this.getIncomeExpenseBarHeights(incomeListFuture);
-    this.futureExpensesBarHeights = this.getIncomeExpenseBarHeights(expenseListFuture);
+    this.futureIncomeChartData = {
+      labels: this.buildRelativeMonthLabels(1, 6),
+      datasets: [{
+        label: ' Receitas',
+        data: futureIncomeValues,
+        backgroundColor: this.buildBarGradient(chartPalette.positive),
+        borderColor: chartPalette.muted_text_color,
+        maxBarThickness: 40,
+        borderWidth: {
+          top: 2
+        },
+        borderRadius: 8,
+      }]
+    };
+    this.futureExpensesChartData = {
+      labels: this.buildRelativeMonthLabels(1, 6),
+      datasets: [{
+        label: ' Despesas',
+        data: futureExpenseValues,
+        backgroundColor: this.buildBarGradient(chartPalette.negative),
+        borderColor: chartPalette.muted_text_color,
+        maxBarThickness: 40,
+        borderWidth: {
+          top: 2
+        },
+        borderRadius: 8,
+      }]
+    };
+  }
+
+  private buildBarGradient(baseColor: string) {
+    return (context: any) => {
+      const { chart } = context;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return baseColor;
+
+      const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient.addColorStop(0, `${baseColor}55`);
+      gradient.addColorStop(1, baseColor);
+      return gradient;
+    };
   }
 
   private getNextMonth(incomeNextMonth: number, currentIncome: number, expenseNextMonth: number, currentExpense: number) {
@@ -268,38 +485,6 @@ export class DashboardComponent implements OnInit {
     let balanceLastMonth = incomeListPast[11] - expenseListPast[11];
     this.balanceLastMonth = this.utilsService.formatCurrency(balanceLastMonth);
     this.balanceLastMonthPercentage = this.utilsService.percentageChangeFormated(balanceLastMonth, incomeListPast[10] - expenseListPast[10]);
-  }
-
-  // Get the biggest value and consider it 100%, and then calculate the percentage for each month
-  private getLineChartHeights(list: any): void {
-    let maxBalance = Math.max(...list);
-    if (maxBalance <= 0) {
-      maxBalance = Math.min(...list);
-      list.map((balance: number) => {
-        let percentage = this.utilsService.getPercentageChange(balance, maxBalance);
-        this.lineChartHeights.push(percentage + 100);
-      });
-    } else {
-      list.map((balance: number) => {
-        // Calculate the percentage height based on the maximum balances
-        let percentage = this.utilsService.getPercentageChange(balance, maxBalance) * -1;
-        this.lineChartHeights.push(percentage - 100);
-      });
-    }
-  }
-
-  // Get the biggest value and consider it 100%, and then calculate the percentage for each month
-  private getIncomeExpenseBarHeights(list: any): any {
-    let valueBarHeights: any = [];
-    let maxValue = Math.max(...list);
-    if (maxValue == 0) list = [-100, -100, -100, -100, -100, -100]; // To not show bars when empty
-    list.map((value: number) => {
-      let balanceCurrency = this.utilsService.formatCurrency(value);
-      // Calculate the percentage height based on the maximum balances
-      let percentage = (100 + this.utilsService.getPercentageChange(value, maxValue));
-      valueBarHeights.push({ height: percentage, value: balanceCurrency });
-    });
-    return valueBarHeights;
   }
 
   private getLastFiveTransactions() {
@@ -360,15 +545,5 @@ export class DashboardComponent implements OnInit {
 
   getRelativeMonthName(n: number) : string {
     return this.dateService.getRelativeMonthName(n);
-  }
-
-  getStrokeDashOffset(savingsPercentage: number) {
-    // 0 = 100% filled
-    // 424.12 = 50% filled
-    // 848.23 = 0% filled
-    // 1696.46 = -100% filled
-    let dashoffset = this.circumference * (1 - savingsPercentage / 100);
-    if (dashoffset < 0 || dashoffset > this.circumference * 2) return 0;
-    return dashoffset;
   }
 }

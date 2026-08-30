@@ -95,20 +95,13 @@
         </app-loading-value>
         <div class="metric-info">Média dos últimos 12 meses.</div>
       </div>
-      <div class="income-expense-chart">
-        <div class="chart-bars">
-          @for (bar of incomeExpenseBarHeights; track bar) {
-            <div class="bar" [ngStyle]="{ 'height': bar.height}" title="{{ bar.value }}"></div>
-          }
-        </div>
-        <div class="chart-labels">
-          @for (month of monthOrderIncomeExpenseComparison; track month) {
-            <span>{{ month }}</span>
-          }
-        </div>
+      <div class="chart-container">
+        <canvas baseChart
+                [data]="incomeExpenseChartData"
+                [options]="incomeExpenseChartOptions"
+                type="bar">
+        </canvas>
       </div>
-
-      <div class="metric-info">{{ currentYear -1}} - {{ currentYear }}</div>
     </div>
     <div class="key-takeaway">
       <app-loading-value [value]="financialBalanceTakeaway" [message]="loading"
